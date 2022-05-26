@@ -1,33 +1,35 @@
                      PanelOLS Estimation Summary                     
-Dep. Variable:   ,death_rate_age  ,  R-squared:           ,0.2367    
-Estimator:       ,PanelOLS        ,  R-squared (Between): ,-0.0185   
-No. Observations:,16780           ,  R-squared (Within):  ,0.2366    
-Date:            ,Thu, May 26 2022,  R-squared (Overall): ,0.1902    
-Time:            ,10:45:37        ,  Log-likelihood       ,1.688e+04 
+Dep. Variable:   ,death_rate      ,  R-squared:           ,0.2551    
+Estimator:       ,PanelOLS        ,  R-squared (Between): ,0.2049    
+No. Observations:,16780           ,  R-squared (Within):  ,0.2622    
+Date:            ,Thu, May 26 2022,  R-squared (Overall): ,0.2553    
+Time:            ,15:19:49        ,  Log-likelihood       ,1.709e+04 
 Cov. Estimator:  ,Robust          ,                       ,          
-                 ,                ,  F-statistic:         ,859.78    
+                 ,                ,  F-statistic:         ,712.11    
 Entities:        ,262             ,  P-value              ,0.0000    
-Avg Obs:         ,64.046          ,  Distribution:        ,F(6,16635)
+Avg Obs:         ,64.046          ,  Distribution:        ,F(8,16633)
 Min Obs:         ,0.0000          ,                       ,          
-Max Obs:         ,180.00          ,  F-statistic (robust):,9308.7    
+Max Obs:         ,180.00          ,  F-statistic (robust):,615.73    
                  ,                ,  P-value              ,0.0000    
-Time periods:    ,38              ,  Distribution:        ,F(6,16635)
+Time periods:    ,38              ,  Distribution:        ,F(8,16633)
 Avg Obs:         ,441.58          ,                       ,          
 Min Obs:         ,90.000          ,                       ,          
 Max Obs:         ,942.00          ,                       ,          
                  ,                ,                       ,          
-                               Parameter Estimates                               
-                          ,Parameter,Std. Err.,T-stat,P-value, Lower CI ,Upper CI
-C(age_grp_dummy)[T.1.0]   ,0.1622   ,0.0383   ,4.2325,0.0000 ,0.0871    ,0.2373  
-C(age_grp_dummy)[T.2.0]   ,0.0783   ,0.0387   ,2.0210,0.0433 ,0.0024    ,0.1542  
-C(age_grp_dummy)[T.3.0]   ,0.0495   ,0.0387   ,1.2802,0.2005 ,-0.0263   ,0.1253  
-C(age_grp_dummy)[T.4.0]   ,0.0319   ,0.0387   ,0.8258,0.4089 ,-0.0439   ,0.1077  
-C(age_grp_dummy)[T.5.0]   ,0.0196   ,0.0388   ,0.5048,0.6137 ,-0.0564   ,0.0955  
-log_restriction_2_3       ,0.0094   ,0.0048   ,1.9427,0.0521 ,-8.435e-05,0.0189  
-log_restriction_2_3_cohort,0.0007   ,0.0051   ,0.1299,0.8966 ,-0.0093   ,0.0106  
+                              Parameter Estimates                               
+                          ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
+C(age_grp_dummy)[T.1.0]   ,0.0954   ,0.0448   ,2.1311 ,0.0331 ,0.0077  ,0.1831  
+C(age_grp_dummy)[T.2.0]   ,0.0114   ,0.0454   ,0.2517 ,0.8012 ,-0.0775 ,0.1004  
+C(age_grp_dummy)[T.3.0]   ,-0.0172  ,0.0452   ,-0.3804,0.7037 ,-0.1059 ,0.0715  
+C(age_grp_dummy)[T.4.0]   ,-0.0347  ,0.0452   ,-0.7683,0.4423 ,-0.1234 ,0.0539  
+C(age_grp_dummy)[T.5.0]   ,-0.0473  ,0.0453   ,-1.0435,0.2967 ,-0.1360 ,0.0415  
+entry_rate_whole          ,0.0156   ,0.0572   ,0.2729 ,0.7849 ,-0.0966 ,0.1278  
+entry_rate_whole_cohort   ,0.3227   ,0.0618   ,5.2248 ,0.0000 ,0.2016  ,0.4437  
+log_restriction_2_3       ,0.0085   ,0.0047   ,1.8014 ,0.0717 ,-0.0007 ,0.0177  
+log_restriction_2_3_cohort,0.0048   ,0.0054   ,0.8918 ,0.3725 ,-0.0057 ,0.0153  
 
-F-test for Poolability: 34.507
+F-test for Poolability: 21.505
 P-value: 0.0000
-Distribution: F(138,16635)
+Distribution: F(138,16633)
 
 Included effects: Entity, Time

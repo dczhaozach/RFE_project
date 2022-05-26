@@ -3,8 +3,9 @@ make_data:
   regdata_path: "Regdata/regdata_4_0_industries.csv"
   bds_naics_4_path: "bds2019_naics_4_age.csv"
   gdp_path: "BEA/gdp.csv"
-  cleaned_data_path: "data/cleaned/clean_data.csv"
+  cleaned_data_path: "data/cleaned"
 
 model:
-  cleaned_data_path: "data/cleaned/clean_data.csv"
+  cohort_path: "data/cleaned/cohort.csv"
+  life_path_path: "data/cleaned/life_path.csv"
   results_tables_path: "results/tables"
