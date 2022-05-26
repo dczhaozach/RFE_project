@@ -1,0 +1,33 @@
+                     PanelOLS Estimation Summary                     
+Dep. Variable:   ,death_rate_age  ,  R-squared:           ,0.2367    
+Estimator:       ,PanelOLS        ,  R-squared (Between): ,-0.0185   
+No. Observations:,16780           ,  R-squared (Within):  ,0.2366    
+Date:            ,Thu, May 26 2022,  R-squared (Overall): ,0.1902    
+Time:            ,10:45:37        ,  Log-likelihood       ,1.688e+04 
+Cov. Estimator:  ,Robust          ,                       ,          
+                 ,                ,  F-statistic:         ,859.78    
+Entities:        ,262             ,  P-value              ,0.0000    
+Avg Obs:         ,64.046          ,  Distribution:        ,F(6,16635)
+Min Obs:         ,0.0000          ,                       ,          
+Max Obs:         ,180.00          ,  F-statistic (robust):,9308.7    
+                 ,                ,  P-value              ,0.0000    
+Time periods:    ,38              ,  Distribution:        ,F(6,16635)
+Avg Obs:         ,441.58          ,                       ,          
+Min Obs:         ,90.000          ,                       ,          
+Max Obs:         ,942.00          ,                       ,          
+                 ,                ,                       ,          
+                               Parameter Estimates                               
+                          ,Parameter,Std. Err.,T-stat,P-value, Lower CI ,Upper CI
+C(age_grp_dummy)[T.1.0]   ,0.1622   ,0.0383   ,4.2325,0.0000 ,0.0871    ,0.2373  
+C(age_grp_dummy)[T.2.0]   ,0.0783   ,0.0387   ,2.0210,0.0433 ,0.0024    ,0.1542  
+C(age_grp_dummy)[T.3.0]   ,0.0495   ,0.0387   ,1.2802,0.2005 ,-0.0263   ,0.1253  
+C(age_grp_dummy)[T.4.0]   ,0.0319   ,0.0387   ,0.8258,0.4089 ,-0.0439   ,0.1077  
+C(age_grp_dummy)[T.5.0]   ,0.0196   ,0.0388   ,0.5048,0.6137 ,-0.0564   ,0.0955  
+log_restriction_2_3       ,0.0094   ,0.0048   ,1.9427,0.0521 ,-8.435e-05,0.0189  
+log_restriction_2_3_cohort,0.0007   ,0.0051   ,0.1299,0.8966 ,-0.0093   ,0.0106  
+
+F-test for Poolability: 34.507
+P-value: 0.0000
+Distribution: F(138,16635)
+
+Included effects: Entity, Time

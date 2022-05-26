@@ -1,0 +1,10 @@
+make_data:
+  data_file_path: "C:/Users/zach_/Nobackupfile/Data/BDS"     # raw data file dir
+  regdata_path: "Regdata/regdata_4_0_industries.csv"
+  bds_naics_4_path: "bds2019_naics_4_age.csv"
+  gdp_path: "BEA/gdp.csv"
+  cleaned_data_path: "data/cleaned/clean_data.csv"
+
+model:
+  cleaned_data_path: "data/cleaned/clean_data.csv"
+  results_tables_path: "results/tables"
