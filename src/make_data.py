@@ -265,6 +265,48 @@ def data_life_path(config):
             
     return df
 
+def data_average(config):
+    """
+    data_average function 
+        - utilize life path data to create the average regulation of surviving firms
+        - create log and flow measure measurements on each cohort life path
+        
+    Args:
+        config [str]: config file
+    Returns:
+        data with average measure
+    """
+    
+    ####################
+    # Load lift path data
+    ####################
+    
+    df = data_life_path(config)
+
+    ####################
+    # Calculate avg
+    ####################
+        
+    for age in range(1, 6):
+        exo_var_list = []
+        for lags in range(1, age + 1):
+            exo_var_list.append(f"L_{lags}_log_restriction_2_0")
+        
+        df.loc[df.age_grp_dummy == age ,'avg_log_restriction_2_0'] = df[exo_var_list].sum(axis=1)/age
+        
+        exo_var_list = []    
+        for lags in range(1, age + 1):    
+            exo_var_list.append(f"L_{lags}_entry_rate_whole")
+        
+        df.loc[df.age_grp_dummy == age ,'avg_entry_rate_whole'] = df[exo_var_list].sum(axis=1)/age
+            
+        for lags in range(1, age + 1):    
+            exo_var_list.append(f"L_{lags}_log_gdp")
+        
+        df.loc[df.age_grp_dummy == age ,'avg_log_gdp'] = df[exo_var_list].sum(axis=1)/age 
+        
+    return df
+
 def data_output(config_file):
     """
     data_clean function clean and create the final dataset
@@ -281,12 +323,13 @@ def data_output(config_file):
     
     df_cohort = data_cohort(config)
     df_life_path = data_life_path(config)
+    df_average = data_average(config)
     
     # store cleaned dataset
     cleaned_data_path = Path(config["make_data"]["cleaned_data_path"])
     df_cohort.to_csv(Path.cwd()/cleaned_data_path/"cohort.csv")
     df_life_path.to_csv(Path.cwd()/cleaned_data_path/"life_path.csv")
-    
+    df_average.to_csv(Path.cwd()/cleaned_data_path/"average.csv")
 
 @click.command()
 @click.argument("config_file", type=str, default="src/config.yaml") 

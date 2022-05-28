@@ -9,3 +9,4 @@ model:
   cohort_path: "data/cleaned/cohort.csv"
   life_path_path: "data/cleaned/life_path.csv"
   results_tables_path: "results/tables"
+  average_path: "data/cleaned/average.csv"
