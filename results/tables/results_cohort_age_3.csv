@@ -1,0 +1,33 @@
+                    PanelOLS Estimation Summary                     
+Dep. Variable:   ,death_rate      ,  R-squared:           ,0.0067   
+Estimator:       ,PanelOLS        ,  R-squared (Between): ,-0.3219  
+No. Observations:,6046            ,  R-squared (Within):  ,-0.0176  
+Date:            ,Thu, Jun 02 2022,  R-squared (Overall): ,-0.0167  
+Time:            ,13:50:49        ,  Log-likelihood       ,7405.2   
+Cov. Estimator:  ,Robust          ,                       ,         
+                 ,                ,  F-statistic:         ,6.7780   
+Entities:        ,21              ,  P-value              ,0.0000   
+Avg Obs:         ,287.90          ,  Distribution:        ,F(6,5993)
+Min Obs:         ,0.0000          ,                       ,         
+Max Obs:         ,779.00          ,  F-statistic (robust):,5.8767   
+                 ,                ,  P-value              ,0.0000   
+Time periods:    ,34              ,  Distribution:        ,F(6,5993)
+Avg Obs:         ,177.82          ,                       ,         
+Min Obs:         ,146.00          ,                       ,         
+Max Obs:         ,308.00          ,                       ,         
+                 ,                ,                       ,         
+                             Parameter Estimates                             
+                       ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
+const                  ,-0.0907  ,0.1187   ,-0.7640,0.4449 ,-0.3233 ,0.1419  
+L_0_entry_rate_whole   ,-0.1188  ,0.1112   ,-1.0679,0.2856 ,-0.3368 ,0.0993  
+L_0_log_gdp            ,-0.0558  ,0.0227   ,-2.4604,0.0139 ,-0.1003 ,-0.0113 
+L_0_log_restriction_2_0,0.0396   ,0.0115   ,3.4450 ,0.0006 ,0.0171  ,0.0622  
+L_3_entry_rate_whole   ,0.1802   ,0.1098   ,1.6418 ,0.1007 ,-0.0350 ,0.3954  
+L_3_log_gdp            ,0.0566   ,0.0206   ,2.7499 ,0.0060 ,0.0163  ,0.0970  
+L_3_log_restriction_2_0,-0.0180  ,0.0128   ,-1.4044,0.1602 ,-0.0431 ,0.0071  
+
+F-test for Poolability: 7.2614
+P-value: 0.0000
+Distribution: F(46,5993)
+
+Included effects: Entity, Time

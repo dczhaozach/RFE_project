@@ -2,11 +2,15 @@ make_data:
   data_file_path: "C:/Users/zach_/Nobackupfile/Data/BDS"     # raw data file dir
   regdata_path: "Regdata/regdata_4_0_industries.csv"
   bds_naics_4_path: "bds2019_naics_4_age.csv"
+  bds_sector_size: "bds2019_sector_size_age.csv"
   gdp_path: "BEA/gdp.csv"
   cleaned_data_path: "data/cleaned"
+  
 
 model:
-  cohort_path: "data/cleaned/cohort.csv"
-  life_path_path: "data/cleaned/life_path.csv"
+  cohort_robust_path: "data/cleaned/cohort_robust.csv"
+  life_path_sec_ag_path: "data/cleaned/life_path_sec_ag.csv"
+  average_sec_ag_path: "data/cleaned/average_sec_ag.csv"
+  life_path_sec_sz_ag_path: "data/cleaned/life_path_sec_sz_ag.csv"
+  average_sec_sz_ag_path: "data/cleaned/average_sec_sz_ag.csv"
   results_tables_path: "results/tables"
-  average_path: "data/cleaned/average.csv"

@@ -16,6 +16,8 @@ cookiecutter = "*"
 pyyaml = "*"
 lxml = "*"
 tabulate = "*"
+requests = "*"
+python-dotenv = "*"
 
 [dev-packages]
 pylint = "*"

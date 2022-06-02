@@ -1,37 +1,37 @@
                      PanelOLS Estimation Summary                      
-Dep. Variable:   ,death_rate      ,  R-squared:           ,0.2790     
-Estimator:       ,PanelOLS        ,  R-squared (Between): ,0.2246     
-No. Observations:,30277           ,  R-squared (Within):  ,0.2696     
-Date:            ,Fri, May 27 2022,  R-squared (Overall): ,0.2723     
-Time:            ,10:21:31        ,  Log-likelihood       ,3.251e+04  
+Dep. Variable:   ,death_rate      ,  R-squared:           ,0.2457     
+Estimator:       ,PanelOLS        ,  R-squared (Between): ,0.0418     
+No. Observations:,30277           ,  R-squared (Within):  ,0.2332     
+Date:            ,Thu, Jun 02 2022,  R-squared (Overall): ,0.2358     
+Time:            ,13:50:55        ,  Log-likelihood       ,2.995e+04  
 Cov. Estimator:  ,Robust          ,                       ,           
-                 ,                ,  F-statistic:         ,1163.5     
-Entities:        ,262             ,  P-value              ,0.0000     
-Avg Obs:         ,115.56          ,  Distribution:        ,F(10,30069)
+                 ,                ,  F-statistic:         ,984.31     
+Entities:        ,21              ,  P-value              ,0.0000     
+Avg Obs:         ,1441.8          ,  Distribution:        ,F(10,30220)
 Min Obs:         ,0.0000          ,                       ,           
-Max Obs:         ,200.00          ,  F-statistic (robust):,1183.0     
+Max Obs:         ,3883.0          ,  F-statistic (robust):,774.88     
                  ,                ,  P-value              ,0.0000     
-Time periods:    ,34              ,  Distribution:        ,F(10,30069)
+Time periods:    ,34              ,  Distribution:        ,F(10,30220)
 Avg Obs:         ,890.50          ,                       ,           
 Min Obs:         ,735.00          ,                       ,           
 Max Obs:         ,1538.0          ,                       ,           
                  ,                ,                       ,           
                              Parameter Estimates                             
                        ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
-C(age_grp_dummy)[T.1.0],0.1022   ,0.0616   ,1.6575 ,0.0974 ,-0.0187 ,0.2230  
-C(age_grp_dummy)[T.2.0],0.0228   ,0.0617   ,0.3697 ,0.7116 ,-0.0982 ,0.1438  
-C(age_grp_dummy)[T.3.0],-0.0051  ,0.0617   ,-0.0832,0.9337 ,-0.1260 ,0.1157  
-C(age_grp_dummy)[T.4.0],-0.0218  ,0.0617   ,-0.3540,0.7234 ,-0.1427 ,0.0990  
-C(age_grp_dummy)[T.5.0],-0.0328  ,0.0616   ,-0.5329,0.5941 ,-0.1536 ,0.0879  
-L_0_entry_rate_whole   ,-0.0057  ,0.0559   ,-0.1023,0.9185 ,-0.1153 ,0.1039  
-L_0_log_gdp            ,-0.0696  ,0.0134   ,-5.2068,0.0000 ,-0.0958 ,-0.0434 
-L_0_log_restriction_2_0,0.0391   ,0.0074   ,5.3113 ,0.0000 ,0.0247  ,0.0535  
-avg_entry_rate_whole   ,0.1222   ,0.0597   ,2.0450 ,0.0409 ,0.0051  ,0.2393  
-avg_log_gdp            ,0.0763   ,0.0129   ,5.9150 ,0.0000 ,0.0510  ,0.1016  
-avg_log_restriction_2_0,-0.0303  ,0.0079   ,-3.8463,0.0001 ,-0.0457 ,-0.0149 
+C(age_grp_dummy)[T.1.0],0.1054   ,0.0675   ,1.5607 ,0.1186 ,-0.0270 ,0.2377  
+C(age_grp_dummy)[T.2.0],0.0259   ,0.0676   ,0.3832 ,0.7016 ,-0.1066 ,0.1584  
+C(age_grp_dummy)[T.3.0],-0.0029  ,0.0675   ,-0.0424,0.9662 ,-0.1352 ,0.1295  
+C(age_grp_dummy)[T.4.0],-0.0198  ,0.0675   ,-0.2934,0.7693 ,-0.1521 ,0.1125  
+C(age_grp_dummy)[T.5.0],-0.0313  ,0.0674   ,-0.4651,0.6419 ,-0.1634 ,0.1008  
+L_0_entry_rate_whole   ,-0.3111  ,0.0739   ,-4.2077,0.0000 ,-0.4560 ,-0.1662 
+L_0_log_gdp            ,-0.0658  ,0.0153   ,-4.3096,0.0000 ,-0.0957 ,-0.0359 
+L_0_log_restriction_2_0,0.0417   ,0.0080   ,5.1991 ,0.0000 ,0.0260  ,0.0574  
+avg_entry_rate_whole   ,0.2738   ,0.0763   ,3.5869 ,0.0003 ,0.1242  ,0.4234  
+avg_log_gdp            ,0.0700   ,0.0147   ,4.7766 ,0.0000 ,0.0413  ,0.0987  
+avg_log_restriction_2_0,-0.0301  ,0.0086   ,-3.5029,0.0005 ,-0.0470 ,-0.0133 
 
-F-test for Poolability: 26.223
+F-test for Poolability: 33.637
 P-value: 0.0000
-Distribution: F(197,30069)
+Distribution: F(46,30220)
 
 Included effects: Entity, Time
