@@ -345,6 +345,11 @@ def data_average(df_raw, config):
     ####################
     # Calculate avg not including entry year
     ####################    
+    age = 1
+    df.loc[df.age_grp_dummy == age ,"cohort_log_restriction_2_0"] = df[f"L_{age}_log_restriction_2_0"]
+    df.loc[df.age_grp_dummy == age ,"cohort_entry_rate_whole"] = df[f"L_{age}_entry_rate_whole"]
+    df.loc[df.age_grp_dummy == age ,"cohort_log_gdp"] = df[f"L_{age}_log_gdp"]
+        
     for age in range(2, 6):
         exo_var_list = []
         for lags in range(1, age):

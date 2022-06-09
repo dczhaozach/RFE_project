@@ -140,7 +140,7 @@ def model_life_path(config):
         coefs_cohort.append(dict1)
 
     df_coefs_cohort = pd.DataFrame(coefs_cohort)
-    df_coefs_cohort.to_csv(Path.cwd()/results_tables_path/"test_1.csv") 
+    df_coefs_cohort.to_csv(Path.cwd()/results_tables_path/"results_cohort_age_LP.csv") 
 
     ####################
     # Regression including all controls in life path by each age
@@ -194,7 +194,7 @@ def model_life_path(config):
         coefs_age.append(dict1)
 
     df_coefs_age = pd.DataFrame(coefs_age)
-    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"test_2.csv")
+    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"results_path_age_LP.csv")
     
 def model_life_path_hetero(config):
     """
@@ -431,6 +431,63 @@ def model_average_age(config):
     # regression
     data = data.set_index(['sector', 'year'])
     
+    # age = 1
+    # regression
+    coefs_age = []
+    
+    age = 1
+    data1 = data.loc[data.age_grp_dummy == age, ["L_0_log_restriction_2_0", "L_0_entry_rate_whole", "L_0_log_gdp",
+                    "avg_log_restriction_2_0", "avg_entry_rate_whole", "avg_log_gdp",
+                    'death_rate']].dropna()
+    
+    mod1 = PanelOLS.from_formula(formula = f'death_rate ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
+                                            + avg_log_restriction_2_0 + avg_entry_rate_whole + avg_log_gdp \
+                                            + EntityEffects + TimeEffects', data = data1, drop_absorbed=True)
+    res1 = mod1.fit(cov_type = 'heteroskedastic')
+
+    # results
+    results = res1.summary
+
+    file_path = Path.cwd()/results_tables_path/f"results_average_all_age_{age}.csv"
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(results.as_csv())
+        
+    # regression
+    data2 = data.loc[data.age_grp_dummy == age, ["L_0_log_restriction_2_0", "L_0_entry_rate_whole", "L_0_log_gdp",
+                    "cohort_log_restriction_2_0",
+                    "cohort_entry_rate_whole",
+                    "cohort_log_gdp",
+                    'death_rate']].dropna()
+    mod2 = PanelOLS.from_formula(formula = f'death_rate ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
+                                            + cohort_log_restriction_2_0 \
+                                            + cohort_entry_rate_whole \
+                                            + cohort_log_gdp \
+                                            + EntityEffects + TimeEffects', data = data2, drop_absorbed=True)
+    res2 = mod2.fit(cov_type = 'heteroskedastic')
+
+    # results
+    results = res2.summary
+
+    file_path = Path.cwd()/results_tables_path/f"results_average_cohort_inc_age_{age}.csv"
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(results.as_csv())
+        
+        
+    # coefs
+        
+    # get input row in dictionary format
+    # key = col_name
+    dict1 = {}
+    
+    v_name = f"cohort_log_restriction_2_0"
+    coefs_value = res2.params[v_name]
+    lower_ci = res2.conf_int().loc[v_name, "lower"]
+    upper_ci = res2.conf_int().loc[v_name, "upper"]
+    dict1.update({"age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
+    coefs_age.append(dict1)
+    
+
+    coefs_age_2 = []
     for age in range(2, 6):
         # regression
         data1 = data.loc[data.age_grp_dummy == age, ["L_0_log_restriction_2_0", "L_0_entry_rate_whole", "L_0_log_gdp",
@@ -468,6 +525,35 @@ def model_average_age(config):
         file_path = Path.cwd()/results_tables_path/f"results_average_cohort_inc_age_{age}.csv"
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(results.as_csv())
+        
+            # coefs
+        
+        # get input row in dictionary format
+        # key = col_name
+        dict1 = {}
+        v_name = f"cohort_log_restriction_2_0"
+        coefs_value = res2.params[v_name]
+        lower_ci = res2.conf_int().loc[v_name, "lower"]
+        upper_ci = res2.conf_int().loc[v_name, "upper"]
+        dict1.update({"age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
+        coefs_age.append(dict1)
+        
+        # get input row in dictionary format
+        # key = col_name
+        dict2 = {}
+        v_name = f"inc_avg_log_restriction_2_0"
+        coefs_value = res2.params[v_name]
+        lower_ci = res2.conf_int().loc[v_name, "lower"]
+        upper_ci = res2.conf_int().loc[v_name, "upper"]
+        dict2.update({"age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
+        coefs_age_2.append(dict2)
+        
+    df_coefs_age = pd.DataFrame(coefs_age)
+    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"results_average_cohort_inc_age_LP.csv")
+        
+    df_coefs_age_2 = pd.DataFrame(coefs_age_2)
+    df_coefs_age_2.to_csv(Path.cwd()/results_tables_path/"results_average_cohort_inc_age_LP_2.csv")
+        
         
         
 @click.command()
