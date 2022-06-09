@@ -22,10 +22,10 @@ config.s_mul = 5;                                          % range configeter fo
 
 config.n_z = 10;
 
-config.n_s = 100;
+config.n_s = 30;
 
 
-config.n_epi = 100;
+config.n_epi = 30;
 
 %% x initial guess
 f_e = 800;                                           % fixed costs of e firms

@@ -1,4 +1,4 @@
-function output = f_VFI(xval, config, w, output_mode)
+function output = f_VFI_trans(xval, config, w, c_reg, EV, output_mode)
 %%
 % This function calculate equilibrium labor demand and distributions of the
 %     state variables given state prices and parameters.
@@ -12,6 +12,8 @@ function output = f_VFI(xval, config, w, output_mode)
 %% Loading parameters______________________________________________________
 %% Internally calibrated parameters
 c_f = xval.c_f;
+c_e = xval.c_e;                                         % entry costs
+c_one = xval.c_one;
 
 delta = xval.delta;                                        % exogensous exit rate
 rho = xval.rho;                                          % productivity shocks persistence
@@ -60,40 +62,22 @@ P = pdist(rho, sig_epsi, grid, log_st_val);           % transition matrix from d
 
 
 %% 3.VFI___________________________________________________________________
-% Initialization
-EV = 0;
-V = 0;
-dif_VFI = 10;                                               % intital difference
-dif_tol_VFI = 1e-3;                                         % tolerance of the difference
-num_itr = 0;                                                % number of iteration
-max_itr = 30;
-
 l_demand = (beta.*exp_z(ZIND(:),1) .* exp_s(SIND(:),1)./w).^(1./(1-beta));
 profit = exp_z(ZIND(:),1) .* exp_s(SIND(:),1) .* (l_demand.^beta) ...
-    - w .* l_demand - c_f;
+    - w .* l_demand - c_f -  c_reg;
 
-while dif_VFI > dif_tol_VFI && num_itr < max_itr
-    %% iteration block
-    num_itr = num_itr + 1;
-      
-    V_next = profit + sigma .* (1 - delta) .* max(0, EV);
-          
-    
-    % firm type selection
-    V_next = reshape(V_next,n_z,n_s);    
-    dif_VFI = max(abs(V_next - V),[],'all');
-    V = V_next;
-    
-    % intrapolate value function
-    V_intra = griddedInterpolant(exp_z(ZIND),exp_s(SIND),V,interp_type,extrap_type);
-    
-    EV = sum(P(SIND(:),:) .* ...
-          V_intra(repmat(exp_z(ZIND(:)),1,n_s),repmat(exp_s',n_z*n_s,1)),2);
+V_next = profit + sigma .* (1 - delta) .* max(0, EV);
+
+V_next = reshape(V_next,n_z,n_s);
+
+% intrapolate value function
+V_intra = griddedInterpolant(exp_z(ZIND),exp_s(SIND),V_next,interp_type,extrap_type);
+
+EV = sum(P(SIND(:),:) .* ...
+      V_intra(repmat(exp_z(ZIND(:)),1,n_s),repmat(exp_s',n_z*n_s,1)),2);
 
 %     display(num_itr)
 %     display(dif_VFI)
-
-end
 
 %% entry distribution
 % Entry Distribution
@@ -101,7 +85,7 @@ en_p_z = disc_npdf(z,log_z_val,sig_z);                      % Initial(and therea
 en_p_s = disc_npdf(s,log_s0_mean,sig_s0);                   % initial distribution of s: normal
 dist_en = sparse(en_p_z(ZIND(:)) .* en_p_s(SIND(:)));
 
-EV_en = dist_en' * V(:);
+EV_en = dist_en' * V_next(:);
 
 %% Output
 switch output_mode
@@ -111,17 +95,12 @@ switch output_mode
     case "Equilibrium"
         I_nq = EV > 0;
         
-        output.EV_en = EV_en;
         output.EV = EV;
-        output.V = V;
+        output.EV_en = EV_en;
         output.I_nq = I_nq;
         output.l_policy = l_demand;
         output.dist_en = dist_en;
 end
-        
-        
-        
-        
 
 end
         

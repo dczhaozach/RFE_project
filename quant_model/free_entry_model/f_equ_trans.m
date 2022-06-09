@@ -1,7 +1,7 @@
-function output = f_equ(xval, config, c_e)
+function output = f_equ_trans(xval, config, c_reg, c_reg_sum, EV)
 
 %% load parameters
-c_reg = xval.c_reg;                                        % fixed costs of e firms
+c_e = xval.c_e;                                         % entry costs
 
 %% solve for equilibrium wage
 
@@ -13,8 +13,8 @@ w_initial = config.w_initial;
 
 
 % find zeros
-EV = @(w) f_VFI(xval, config, w, "EV");
-fun = @(w) EV(w) - c_e;
+EV_fun = @(w) f_VFI_trans(xval, config, w, c_reg, EV, "EV");
+fun = @(w) EV_fun(w) - c_e - c_reg_sum;
 [w_eq,fval] = fzero(fun,w_initial,option_f0);
 % warning message
 if abs(fval) > 1e-3
@@ -22,7 +22,7 @@ if abs(fval) > 1e-3
 end
 
 %% Value and Policy functions
-output = f_VFI(xval, config, w_eq, "Equilibrium");
+output = f_VFI_trans(xval, config, w_eq, c_reg, EV, "Equilibrium");
 
 %% Output
 output.w = w_eq;
