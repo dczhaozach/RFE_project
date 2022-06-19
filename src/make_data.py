@@ -12,6 +12,7 @@ import pandas as pd
 import numpy as np
 
 from src.utility import parse_config
+from src.utility import lag_variable
 
 # options of pandas
 pd.options.mode.use_inf_as_na = True
@@ -75,14 +76,27 @@ def data_load(config):
     ####################
     
     # change variable types
+    df_sec_ag["job_creation_rate"] = pd.to_numeric(df_sec_ag["job_creation_rate"], errors="coerce", downcast=None)
+    df_sec_ag["net_job_creation_rate"] = pd.to_numeric(df_sec_ag["net_job_creation_rate"], errors="coerce", downcast=None)
+    df_sec_ag["job_destruction_rate"] = pd.to_numeric(df_sec_ag["job_destruction_rate"], errors="coerce", downcast=None)
+    df_sec_ag["job_creation_continuers"] = pd.to_numeric(df_sec_ag["job_creation_continuers"], errors="coerce", downcast=None)
+    df_sec_ag["emp"] = pd.to_numeric(df_sec_ag["emp"], errors="coerce", downcast=None)
+    df_sec_ag["log_emp"] = np.log(df_sec_ag["emp"])
     df_sec_ag["firms"] = pd.to_numeric(df_sec_ag["firms"], errors="coerce", downcast=None)
     df_sec_ag["death"] = pd.to_numeric(df_sec_ag["firmdeath_firms"], errors="coerce", downcast=None)
     df_sec_ag["death_rate"] = df_sec_ag["death"]/df_sec_ag["firms"]
-    df_sec_ag["sector"] = df_sec_ag["sector"].astype(str).str.slice(0,2)
+    df_sec_ag["sector"] = df_sec_ag["sector"].astype(str).str.slice(0,4)
     df_sec_ag["sector"] = pd.to_numeric(df_sec_ag["sector"])
     df_sec_ag["year"] = pd.to_numeric(df_sec_ag["year"])
     
+    
     # change variable types
+    df_sec_sz_ag["job_creation_rate"] = pd.to_numeric(df_sec_sz_ag["job_creation_rate"], errors="coerce", downcast=None)
+    df_sec_sz_ag["net_job_creation_rate"] = pd.to_numeric(df_sec_sz_ag["net_job_creation_rate"], errors="coerce", downcast=None)
+    df_sec_sz_ag["job_destruction_rate"] = pd.to_numeric(df_sec_sz_ag["job_destruction_rate"], errors="coerce", downcast=None)
+    df_sec_sz_ag["job_creation_continuers"] = pd.to_numeric(df_sec_sz_ag["job_creation_continuers"], errors="coerce", downcast=None)
+    df_sec_sz_ag["emp"] = pd.to_numeric(df_sec_sz_ag["emp"], errors="coerce", downcast=None)
+    df_sec_sz_ag["log_emp"] = np.log(df_sec_sz_ag["emp"])
     df_sec_sz_ag["firms"] = pd.to_numeric(df_sec_sz_ag["firms"], errors="coerce", downcast=None)
     df_sec_sz_ag["death"] = pd.to_numeric(df_sec_sz_ag["firmdeath_firms"], errors="coerce", downcast=None)
     df_sec_sz_ag["death_rate"] = df_sec_sz_ag["death"]/df_sec_sz_ag["firms"]
@@ -90,19 +104,33 @@ def data_load(config):
     df_sec_sz_ag["sector"] = pd.to_numeric(df_sec_sz_ag["sector"])
     df_sec_sz_ag["year"] = pd.to_numeric(df_sec_sz_ag["year"])
     
-    # aggregate entry by sector
-    # create aggregation for entry and death measure
+    for age in range(1, 6):
+        df_sec_ag = lag_variable(df_sec_ag, ["year"], ["sector", "fage"], ["emp"], age)
+        df_sec_sz_ag = lag_variable(df_sec_sz_ag, ["year"], ["sector", "fage", "fsize"], ["emp"], age)
+    
+    return df_sec_sz_ag, df_sec_ag, regdata, gdp
 
+
+def data_sector_entry(df):
+    """
+    data_sector_entry function that
+        - load raw bds data
+        - create Entry at sector level
+
+    Args:
+        df [DataFrame]: bds data
+    Returns:
+        Entry data
+
+    """
     df_age = pd.DataFrame()
     df_age["entry_whole"] = \
-        df_sec_ag.loc[df_sec_ag["fage"] == "a) 0", :].groupby(["year", "sector"])["firms"].sum()
+        df.loc[df["fage"] == "a) 0", :].groupby(["year", "sector"])["firms"].sum()
     df_age["incumbents_whole"] = \
-        df_sec_ag.loc[df_sec_ag["fage"] != "a) 0", :].groupby(["year", "sector"])["firms"].sum()
+        df.loc[df["fage"] != "a) 0", :].groupby(["year", "sector"])["firms"].sum()
     df_age = df_age.reset_index()
-    # df_age["death"] = \
-    #   df_sec_ag.loc[df_sec_ag["fage"] != "a) 0", :].groupby(["year", "sector"])["firmdeath_firms"].sum()
-
-    return df_sec_sz_ag, df_sec_ag, regdata, gdp, df_age
+    
+    return df_age
 
 
 def data_cohort_robust(config):
@@ -120,8 +148,10 @@ def data_cohort_robust(config):
     ####################
     # Load data
     ####################
-    df, regdata, gdp, df_age= data_load(config)[1:5]
-
+    df, regdata, gdp = data_load(config)[1:4]
+    
+    df_age = data_sector_entry(df)
+    
     ####################
     # Merge Datasets at observed years
     ####################
@@ -190,11 +220,16 @@ def data_cohort_robust(config):
 
     df = df.merge(gdp, how = "left", left_on=["cohort", "sector_2"], right_on=["cohort", "sector_2"])
 
+    df_emp = df[["year","sector","emp"]]
+    df_emp = df_emp.rename(columns={"emp": "emp_cohort", "year": "cohort"})
+    df = df.merge(df_emp, how = "left", left_on=["cohort", "sector"], right_on=["cohort", "sector"])
+    
     # merge the entry rate at the cohort level
     df_age_new = df_age.rename(columns={"year": "cohort", 
                                         "entry_whole": "entry_whole_cohort",
                                         "incumbents_whole": "incumbents_whole_cohort"})
     df_age_new = df_age_new[["cohort", "sector", "entry_whole_cohort", "incumbents_whole_cohort"]]
+    
     df = df.merge(df_age_new, 
         how = "left", left_on=["cohort", "sector"], right_on=["cohort", "sector"])
 
@@ -206,7 +241,9 @@ def data_cohort_robust(config):
 
         df["entry_rate_whole"] = df["entry_whole"]/df["incumbents_whole"]  
         df["entry_rate_whole_cohort"] = df["entry_whole_cohort"]/df["incumbents_whole_cohort"]       
-
+        df["log_emp_cohort"] = np.log(df["emp_cohort"])
+        df["log_emp_chg"] = df["log_emp"] - df["log_emp_cohort"]
+        df["per_emp_chg"] = 2 * (df["emp"] - df["emp_cohort"])/(df["emp"] + df["emp_cohort"])
     return df
 
 
@@ -226,7 +263,9 @@ def data_life_path(df_raw, config):
     # Load raw and merged data
     ####################
     df = df_raw
-    regdata, gdp, df_age = data_load(config)[2:5]
+    regdata, gdp = data_load(config)[2:4]
+    
+    df_age = data_sector_entry(df)
 
     ####################
     # Define coarse age groups and cohort year variables
@@ -287,6 +326,7 @@ def data_life_path(df_raw, config):
         df = df.rename(columns={"entry_whole": f"L_{age}_entry_whole",
                                 "incumbents_whole": f"L_{age}_incumbents_whole"})
         df = df.drop(columns = {"year_entry"})
+    
         
         # create log variables
         with warnings.catch_warnings(): # suppress log zero warnings
@@ -298,6 +338,16 @@ def data_life_path(df_raw, config):
             
             df[f"L_{age}_entry_rate_whole"] = df[f"L_{age}_entry_whole"]/df[f"L_{age}_incumbents_whole"]
             
+    # create emp changes
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        for age in range(1, 6):
+            df.loc[df["age_grp_dummy"] == age, "log_emp_cohort"] = np.log(df.loc[df["age_grp_dummy"] == age, f"L_{age}_emp"])
+            df.loc[df["age_grp_dummy"] == age, "log_emp_chg"] = np.log(df.loc[df["age_grp_dummy"] == age, "emp"]) - \
+                np.log(df.loc[df["age_grp_dummy"] == age, f"L_{age}_emp"])
+            df.loc[df["age_grp_dummy"] == age,"per_emp_chg"] = 2 * (df.loc[df["age_grp_dummy"] == age, "emp"] - 
+                df.loc[df["age_grp_dummy"] == age, f"L_{age}_emp"]) /  (df.loc[df["age_grp_dummy"] == age, "emp"] +
+                df.loc[df["age_grp_dummy"] == age, f"L_{age}_emp"])
     return df
 
 
@@ -319,7 +369,7 @@ def data_average(df_raw, config):
     ####################
     
     df = data_life_path(df_raw, config)
-
+    
     ####################
     # Calculate avg including entry year
     ####################

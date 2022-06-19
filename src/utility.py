@@ -1,6 +1,5 @@
 import logging
 from pathlib import Path
-
 import pandas as pd
 import yaml
 
@@ -32,5 +31,25 @@ def set_logger(log_path):
     logger.info(f"Finished logger configuration!")
     return logger
 
+def lag_variable(df, time_var, id_var, var, lags):
+    """
+    lag_variable create lag variables by groups   
+    Args:
+        df [DataFrame]: dataframe
+        time_var [str]: time variable
+        id_var [list of string]: id variable
+        var [str]: lagged varible
+        lags: number of lags (1 means one lag)
+    """
 
+    index_var = time_var + id_var
 
+    df = df.set_index(index_var)
+    df_shift = df[var]
+    
+    shifted = df_shift.groupby(level=id_var).shift(-lags)
+    shifted = shifted.rename(columns={var[0]: f"L_{lags}_{var[0]}"})
+    df = df.join(shifted)
+    df = df.reset_index()
+    
+    return df

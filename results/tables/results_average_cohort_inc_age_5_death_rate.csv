@@ -1,0 +1,36 @@
+                     PanelOLS Estimation Summary                     
+Dep. Variable:   ,death_rate      ,  R-squared:           ,0.0145    
+Estimator:       ,PanelOLS        ,  R-squared (Between): ,0.2442    
+No. Observations:,5518            ,  R-squared (Within):  ,-0.0168   
+Date:            ,Sun, Jun 19 2022,  R-squared (Overall): ,0.2035    
+Time:            ,15:35:04        ,  Log-likelihood       ,8549.2    
+Cov. Estimator:  ,Clustered       ,                       ,          
+                 ,                ,  F-statistic:         ,7.8262    
+Entities:        ,262             ,  P-value              ,0.0000    
+Avg Obs:         ,21.061          ,  Distribution:        ,F(10,5315)
+Min Obs:         ,0.0000          ,                       ,          
+Max Obs:         ,38.000          ,  F-statistic (robust):,18.715    
+                 ,                ,  P-value              ,0.0000    
+Time periods:    ,33              ,  Distribution:        ,F(10,5315)
+Avg Obs:         ,167.21          ,                       ,          
+Min Obs:         ,0.0000          ,                       ,          
+Max Obs:         ,306.00          ,                       ,          
+                 ,                ,                       ,          
+                               Parameter Estimates                               
+                           ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
+L_0_entry_rate_whole       ,0.0679   ,0.0523   ,1.2981 ,0.1943 ,-0.0346 ,0.1705  
+L_0_log_gdp                ,-0.0180  ,0.0290   ,-0.6210,0.5346 ,-0.0750 ,0.0389  
+L_0_log_restriction_2_0    ,0.0310   ,0.0191   ,1.6203 ,0.1052 ,-0.0065 ,0.0685  
+cohort_entry_rate_whole    ,0.1298   ,0.0411   ,3.1545 ,0.0016 ,0.0491  ,0.2105  
+cohort_log_gdp             ,0.0175   ,0.0107   ,1.6436 ,0.1003 ,-0.0034 ,0.0384  
+cohort_log_restriction_2_0 ,-0.0175  ,0.0106   ,-1.6542,0.0981 ,-0.0382 ,0.0032  
+inc_avg_entry_rate_whole   ,-0.1489  ,0.0644   ,-2.3115,0.0208 ,-0.2752 ,-0.0226 
+inc_avg_log_gdp            ,0.0131   ,0.0280   ,0.4682 ,0.6397 ,-0.0418 ,0.0681  
+inc_avg_log_restriction_2_0,-0.0177  ,0.0220   ,-0.8058,0.4204 ,-0.0608 ,0.0254  
+log_emp_cohort             ,-0.0022  ,0.0034   ,-0.6441,0.5195 ,-0.0088 ,0.0045  
+
+F-test for Poolability: 9.1019
+P-value: 0.0000
+Distribution: F(192,5315)
+
+Included effects: Entity, Time

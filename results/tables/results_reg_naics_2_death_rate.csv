@@ -1,0 +1,36 @@
+                     PanelOLS Estimation Summary                      
+Dep. Variable:   ,death_rate      ,  R-squared:           ,0.2368     
+Estimator:       ,PanelOLS        ,  R-squared (Between): ,0.2079     
+No. Observations:,322171          ,  R-squared (Within):  ,0.2432     
+Date:            ,Sun, Jun 19 2022,  R-squared (Overall): ,0.2494     
+Time:            ,15:34:45        ,  Log-likelihood       ,3.09e+05   
+Cov. Estimator:  ,Clustered       ,                       ,           
+                 ,                ,  F-statistic:         ,1.11e+04   
+Entities:        ,262             ,  P-value              ,0.0000     
+Avg Obs:         ,1229.7          ,  Distribution:        ,F(9,321957)
+Min Obs:         ,0.0000          ,                       ,           
+Max Obs:         ,2137.0          ,  F-statistic (robust):,273.88     
+                 ,                ,  P-value              ,0.0000     
+Time periods:    ,42              ,  Distribution:        ,F(9,321957)
+Avg Obs:         ,7670.7          ,                       ,           
+Min Obs:         ,0.0000          ,                       ,           
+Max Obs:         ,3.352e+04       ,                       ,           
+                 ,                ,                       ,           
+                              Parameter Estimates                               
+                          ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
+C(age_grp_dummy)[T.1.0]   ,0.2324   ,0.1085   ,2.1423 ,0.0322 ,0.0198  ,0.4450  
+C(age_grp_dummy)[T.2.0]   ,0.1511   ,0.1066   ,1.4172 ,0.1564 ,-0.0579 ,0.3600  
+C(age_grp_dummy)[T.3.0]   ,0.1184   ,0.1072   ,1.1048 ,0.2692 ,-0.0917 ,0.3285  
+C(age_grp_dummy)[T.4.0]   ,0.0995   ,0.1078   ,0.9225 ,0.3563 ,-0.1119 ,0.3108  
+C(age_grp_dummy)[T.5.0]   ,0.0860   ,0.1089   ,0.7900 ,0.4295 ,-0.1274 ,0.2994  
+entry_rate_whole          ,0.0068   ,0.0935   ,0.0732 ,0.9416 ,-0.1764 ,0.1901  
+entry_rate_whole_cohort   ,0.2283   ,0.1093   ,2.0882 ,0.0368 ,0.0140  ,0.4426  
+log_emp_cohort            ,-0.0002  ,0.0004   ,-0.4668,0.6407 ,-0.0009 ,0.0005  
+log_restriction_2_2       ,0.0350   ,0.0137   ,2.5483 ,0.0108 ,0.0081  ,0.0619  
+log_restriction_2_2_cohort,-0.0351  ,0.0145   ,-2.4275,0.0152 ,-0.0634 ,-0.0068 
+
+F-test for Poolability: 202.62
+P-value: 0.0000
+Distribution: F(204,321957)
+
+Included effects: Entity, Time

@@ -1,0 +1,32 @@
+                     PanelOLS Estimation Summary                      
+Dep. Variable:   ,job_creation_rate,  R-squared:           ,0.0122    
+Estimator:       ,PanelOLS         ,  R-squared (Between): ,0.7477    
+No. Observations:,7149             ,  R-squared (Within):  ,0.0093    
+Date:            ,Sun, Jun 19 2022 ,  R-squared (Overall): ,0.6431    
+Time:            ,14:38:12         ,  Log-likelihood       ,-2.821e+04
+Cov. Estimator:  ,Clustered        ,                       ,          
+                 ,                 ,  F-statistic:         ,14.295    
+Entities:        ,262              ,  P-value              ,0.0000    
+Avg Obs:         ,27.286           ,  Distribution:        ,F(6,6941) 
+Min Obs:         ,0.0000           ,                       ,          
+Max Obs:         ,44.000           ,  F-statistic (robust):,4.5316    
+                 ,                 ,  P-value              ,0.0001    
+Time periods:    ,38               ,  Distribution:        ,F(6,6941) 
+Avg Obs:         ,188.13           ,                       ,          
+Min Obs:         ,160.00           ,                       ,          
+Max Obs:         ,328.00           ,                       ,          
+                 ,                 ,                       ,          
+                              Parameter Estimates                               
+                          ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
+L_0_entry_rate_whole      ,27.253   ,10.556   ,2.5816 ,0.0099 ,6.5587  ,47.946  
+L_0_log_gdp               ,2.5664   ,3.4773   ,0.7380 ,0.4605 ,-4.2502 ,9.3829  
+L_0_log_restriction_2_0   ,8.6625   ,4.3471   ,1.9927 ,0.0463 ,0.1409  ,17.184  
+cohort_entry_rate_whole   ,-1.4168  ,3.5356   ,-0.4007,0.6886 ,-8.3475 ,5.5140  
+cohort_log_gdp            ,-3.0972  ,4.2922   ,-0.7216,0.4706 ,-11.511 ,5.3168  
+cohort_log_restriction_2_0,-4.5788  ,3.8617   ,-1.1857,0.2358 ,-12.149 ,2.9913  
+
+F-test for Poolability: 6.3185
+P-value: 0.0000
+Distribution: F(201,6941)
+
+Included effects: Entity, Time

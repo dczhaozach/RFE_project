@@ -18,7 +18,7 @@ from src.utility import parse_config
 pd.options.mode.use_inf_as_na = True
 
 
-def model_cohort_robust(config):
+def model_cohort_robust(config, depend_var):
     """
     model_cohort function load the clean data and run the regression
     to study the effects of regulation on firm exit rates
@@ -46,32 +46,37 @@ def model_cohort_robust(config):
         # load data
         data = df
         # sample restriction
-        data = data[data.year > 1985]
+        data = data[data.year > 1981]
         data = data[data.age_grp_dummy <= 5]
         
         # regression
         data = data.set_index(['sector', 'cohort'])
-        data = data.loc[:, ['entry_rate_whole', 'entry_rate_whole_cohort', 'death_rate', 'age_grp_dummy', 'year', 'log_gdp', 'log_gdp_cohort',
-                            f'log_restriction_2_{naics_curr}', f'log_restriction_2_{naics_curr}_cohort']].dropna()
-        mod = PanelOLS.from_formula(formula = f'death_rate ~ log_restriction_2_{naics_curr} + log_restriction_2_{naics_curr}_cohort \
-                                                + entry_rate_whole + entry_rate_whole_cohort  \
+        X_array = ['entry_rate_whole', 'entry_rate_whole_cohort', 'age_grp_dummy', 'year', 'log_gdp', 'log_gdp_cohort',
+                            f'log_restriction_2_{naics_curr}', f'log_restriction_2_{naics_curr}_cohort', 'sector_2', "log_emp_cohort"]
+        y_array = [depend_var]
+        all_array = y_array + X_array
+        
+        data = data.loc[:, all_array].dropna()
+        mod = PanelOLS.from_formula(formula = f'{depend_var} ~ log_restriction_2_{naics_curr} + log_restriction_2_{naics_curr}_cohort \
+                                                + entry_rate_whole + entry_rate_whole_cohort + log_emp_cohort \
                                                 + C(age_grp_dummy) + EntityEffects + TimeEffects', data = data, drop_absorbed=True)
-        res = mod.fit(cov_type = 'heteroskedastic')
+        res = mod.fit(cov_type='clustered', clusters= data["sector_2"])
 
         # results
         results = res.summary
 
-        file_path = Path.cwd()/results_tables_path/f"results_reg_naics_{naics_curr}.csv"
+        file_path = Path.cwd()/results_tables_path/f"results_reg_naics_{naics_curr}_{depend_var}.csv"
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(results.as_csv())
             
             
-def model_life_path(config):
+def model_life_path(config, depend_var):
     """
     model_life_path function load the clean data and run the regression
     to study the effects of regulation on firm exit rates
     Args:
         config [str]: config file
+        depend_var [str]: dependent variable
     Returns:
         Final data
     """
@@ -95,7 +100,7 @@ def model_life_path(config):
         data = df
         
         # sample restriction
-        data = data[data.year > 1985]
+        data = data[data.year > 1981]
         data = data[data.age_grp_dummy == age]
         
         # regression
@@ -109,21 +114,22 @@ def model_life_path(config):
         exo_var_list.append(f"L_{age}_log_restriction_2_0")
         exo_var_list.append(f"L_{age}_entry_rate_whole")
         exo_var_list.append(f"L_{age}_log_gdp")
+        exo_var_list.append(f"log_emp_cohort")
         
         exo_var_list.sort()
-        sample_data = data.loc[:, ["death_rate"] + exo_var_list].dropna()
+        sample_data = data.loc[:, [depend_var, 'sector_2'] + exo_var_list].dropna()
         exo_vars = sm.add_constant(sample_data[exo_var_list])
         
         # regression
-        mod = PanelOLS(sample_data.death_rate, exo_vars, entity_effects=True, time_effects=True)
-        res = mod.fit(cov_type = 'heteroskedastic')
+        mod = PanelOLS(sample_data[depend_var], exo_vars, entity_effects=True, time_effects=True)
+        res = mod.fit(cov_type='clustered', clusters=sample_data.sector_2)
 
         # results
         results = res.summary
         
         # saving results
         # table
-        file_path = Path.cwd()/results_tables_path/f"results_cohort_age_{age}.csv"
+        file_path = Path.cwd()/results_tables_path/f"results_cohort_age_{age}_{depend_var}.csv"
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(results.as_csv())  
             
@@ -140,7 +146,7 @@ def model_life_path(config):
         coefs_cohort.append(dict1)
 
     df_coefs_cohort = pd.DataFrame(coefs_cohort)
-    df_coefs_cohort.to_csv(Path.cwd()/results_tables_path/"results_cohort_age_LP.csv") 
+    df_coefs_cohort.to_csv(Path.cwd()/results_tables_path/f"results_cohort_age_LP_{depend_var}.csv") 
 
     ####################
     # Regression including all controls in life path by each age
@@ -152,7 +158,7 @@ def model_life_path(config):
         data = df
         
         # sample restriction
-        data = data[data.year > 1985]
+        data = data[data.year > 1981]
         data = data[data.age_grp_dummy == age]
         
         # regression
@@ -164,20 +170,23 @@ def model_life_path(config):
             exo_var_list.append(f"L_{lags}_log_restriction_2_0")
             exo_var_list.append(f"L_{lags}_entry_rate_whole")
             exo_var_list.append(f"L_{lags}_log_gdp")
+        
+        exo_var_list.append(f"log_emp_cohort")
+        
         exo_var_list.sort()
-        sample_data = data.loc[:, ["death_rate"] + exo_var_list].dropna()
+        sample_data = data.loc[:, [depend_var, 'sector_2'] + exo_var_list].dropna()
         exo_vars = sm.add_constant(sample_data[exo_var_list])
         
         # regression
-        mod = PanelOLS(sample_data.death_rate, exo_vars, entity_effects=True, time_effects=True)
-        res = mod.fit(cov_type = 'heteroskedastic')
+        mod = PanelOLS(sample_data[depend_var], exo_vars, entity_effects=True, time_effects=True)
+        res = mod.fit(cov_type='clustered', clusters=sample_data['sector_2'])
 
         # results
         results = res.summary
         
         # saving results
         # table
-        file_path = Path.cwd()/results_tables_path/f"results_path_age_{age}.csv"
+        file_path = Path.cwd()/results_tables_path/f"results_path_age_{age}_{depend_var}.csv"
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(results.as_csv())
 
@@ -194,9 +203,9 @@ def model_life_path(config):
         coefs_age.append(dict1)
 
     df_coefs_age = pd.DataFrame(coefs_age)
-    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"results_path_age_LP.csv")
+    df_coefs_age.to_csv(Path.cwd()/results_tables_path/f"results_path_age_LP_{depend_var}.csv")
     
-def model_life_path_hetero(config):
+def model_life_path_hetero(config, depend_var):
     """
     model_life_path function load the clean data and run the regression
     to study the heterogeneous effects of regulation on firm exit rates
@@ -224,7 +233,7 @@ def model_life_path_hetero(config):
         data = df
         
         # sample restriction
-        data = data[data.year > 1985]
+        data = data[data.year > 1981]
         data = data[data.age_grp_dummy == age]
         
         # regression
@@ -240,14 +249,15 @@ def model_life_path_hetero(config):
         exo_var_list.append(f"L_{age}_entry_rate_whole")
         exo_var_list.append(f"L_{age}_log_gdp")
         
+        exo_var_list.append(f"log_emp_cohort")
         exo_var_list.append("large_firm")    
         exo_var_list.append("cross")
         exo_var_list.sort()
-        sample_data = data.loc[:, ["death_rate"] + exo_var_list].dropna()
+        sample_data = data.loc[:, [depend_var] + exo_var_list].dropna()
         exo_vars = sm.add_constant(sample_data[exo_var_list])
         
         # regression
-        mod = PanelOLS(sample_data.death_rate, exo_vars, entity_effects=True, time_effects=True)
+        mod = PanelOLS(sample_data[depend_var], exo_vars, entity_effects=True, time_effects=True)
         res = mod.fit(cov_type = 'heteroskedastic')
 
         # results
@@ -255,7 +265,7 @@ def model_life_path_hetero(config):
         
         # saving results
         # table
-        file_path = Path.cwd()/results_tables_path/f"results_cohort_age_{age}_hetero.csv"
+        file_path = Path.cwd()/results_tables_path/f"results_cohort_age_{age}_hetero_{depend_var}.csv"
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(results.as_csv())  
 
@@ -268,7 +278,7 @@ def model_life_path_hetero(config):
         data = df
         
         # sample restriction
-        data = data[data.year > 1985]
+        data = data[data.year > 1981]
         data = data[data.age_grp_dummy == age]
         
         # regression
@@ -281,14 +291,15 @@ def model_life_path_hetero(config):
             exo_var_list.append(f"L_{lags}_entry_rate_whole")
             exo_var_list.append(f"L_{lags}_log_gdp")
         
+        exo_var_list.append(f"log_emp_cohort")
         exo_var_list.append("large_firm")    
         exo_var_list.append("cross")
         exo_var_list.sort()
-        sample_data = data.loc[:, ["death_rate"] + exo_var_list].dropna()
+        sample_data = data.loc[:, [depend_var] + exo_var_list].dropna()
         exo_vars = sm.add_constant(sample_data[exo_var_list])
         
         # regression
-        mod = PanelOLS(sample_data.death_rate, exo_vars, entity_effects=True, time_effects=True)
+        mod = PanelOLS(sample_data[depend_var], exo_vars, entity_effects=True, time_effects=True)
         res = mod.fit(cov_type = 'heteroskedastic')
 
         # results
@@ -302,7 +313,7 @@ def model_life_path_hetero(config):
         
             
         
-def model_average(config):
+def model_average(config, depend_var):
     """
     model_average function load the clean data and run the regression
     to study the effects of regulation on firm exit rates
@@ -321,51 +332,50 @@ def model_average(config):
     data = df
     
     # sample restriction
-    data = data[data.year > 1985]
+    data = data[data.year > 1981]
     
     # regression
     data = data.set_index(['sector', 'year'])
-    
 
     # regression
     data1 = data.loc[:, ["L_0_log_restriction_2_0", "L_0_entry_rate_whole", "L_0_log_gdp",
-                    "avg_log_restriction_2_0", "avg_entry_rate_whole", "avg_log_gdp",
-                    'death_rate', 'age_grp_dummy']].dropna()
-    mod1 = PanelOLS.from_formula(formula = f'death_rate ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
-                                            + avg_log_restriction_2_0 + avg_entry_rate_whole + avg_log_gdp \
+                    "avg_log_restriction_2_0", "avg_entry_rate_whole", "avg_log_gdp", 'sector_2', "log_emp_cohort", 
+                    depend_var, 'age_grp_dummy']].dropna()
+    mod1 = PanelOLS.from_formula(formula = f'{depend_var} ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
+                                            + avg_log_restriction_2_0 + avg_entry_rate_whole + avg_log_gdp + log_emp_cohort \
                                             + C(age_grp_dummy) + EntityEffects + TimeEffects', data = data1, drop_absorbed=True)
-    res1 = mod1.fit(cov_type = 'heteroskedastic')
+    res1 = mod1.fit(cov_type='clustered', clusters=data1["sector_2"])
 
     # results
     results = res1.summary
 
-    file_path = Path.cwd()/results_tables_path/f"results_average_all.csv"
+    file_path = Path.cwd()/results_tables_path/f"results_average_all_{depend_var}.csv"
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(results.as_csv())
         
     # regression
     data2 = data.loc[:, ["L_0_log_restriction_2_0", "L_0_entry_rate_whole", "L_0_log_gdp",
                     "inc_avg_log_restriction_2_0", "cohort_log_restriction_2_0",
-                    "inc_avg_entry_rate_whole", "cohort_entry_rate_whole",
+                    "inc_avg_entry_rate_whole", "cohort_entry_rate_whole", 'sector_2', "log_emp_cohort",
                     "inc_avg_log_gdp", "cohort_log_gdp",
-                    'death_rate', 'age_grp_dummy']].dropna()
-    mod2 = PanelOLS.from_formula(formula = f'death_rate ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
+                    depend_var, 'age_grp_dummy']].dropna()
+    mod2 = PanelOLS.from_formula(formula = f'{depend_var} ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
                                             + cohort_log_restriction_2_0 + inc_avg_log_restriction_2_0 \
                                             + inc_avg_entry_rate_whole + cohort_entry_rate_whole \
-                                            + inc_avg_log_gdp + cohort_log_gdp \
+                                            + inc_avg_log_gdp + cohort_log_gdp + log_emp_cohort \
                                             + C(age_grp_dummy) + EntityEffects + TimeEffects', data = data2, drop_absorbed=True)
-    res2 = mod2.fit(cov_type = 'heteroskedastic')
+    res2 = mod2.fit(cov_type='clustered', clusters=data2["sector_2"])
 
     # results
     results = res2.summary
 
-    file_path = Path.cwd()/results_tables_path/f"results_average_cohort_inc.csv"
+    file_path = Path.cwd()/results_tables_path/f"results_average_cohort_inc_{depend_var}.csv"
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(results.as_csv())
         
         
         
-def model_average_hetero(config):
+def model_average_hetero(config, depend_var):
     """
     model_average function load the clean data and run the regression
     to study the effects of regulation on firm exit rates
@@ -384,30 +394,30 @@ def model_average_hetero(config):
     data = df
     
     # sample restriction
-    data = data[data.year > 1985]
+    data = data[data.year > 1981]
     
     # regression
     data = data.set_index(['sector', 'year'])
     
     # regression
     data = data.loc[:, ["L_0_log_restriction_2_0", "L_0_entry_rate_whole", "L_0_log_gdp",
-                    "avg_log_restriction_2_0", "avg_entry_rate_whole", "avg_log_gdp",
-                    'death_rate', 'age_grp_dummy', "large_firm"]].dropna()
-    mod = PanelOLS.from_formula(formula = f'death_rate ~ L_0_log_restriction_2_0  \
-        + L_0_entry_rate_whole + L_0_log_gdp + avg_entry_rate_whole + avg_log_gdp\
-        + avg_log_restriction_2_0 + large_firm + large_firm * avg_log_restriction_2_0\
+                    "avg_log_restriction_2_0", "avg_entry_rate_whole", "avg_log_gdp", "log_emp_cohort",
+                    depend_var, 'age_grp_dummy', "large_firm"]].dropna()
+    mod = PanelOLS.from_formula(formula = f'{depend_var} ~ L_0_log_restriction_2_0  \
+        + L_0_entry_rate_whole + L_0_log_gdp + avg_entry_rate_whole + avg_log_gdp \
+        + avg_log_restriction_2_0 + large_firm + large_firm * avg_log_restriction_2_0 + log_emp_cohort \
         + C(age_grp_dummy) + EntityEffects + TimeEffects', data = data, drop_absorbed=True)
     res = mod.fit(cov_type = 'heteroskedastic')
 
     # results
     results = res.summary
 
-    file_path = Path.cwd()/results_tables_path/f"results_average_all_hetero.csv"
+    file_path = Path.cwd()/results_tables_path/f"results_average_all_hetero_{depend_var}.csv"
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(results.as_csv())  
 
 
-def model_average_age(config):
+def model_average_age(config, depend_var):
     """
     model_average function load the clean data and run the regression
     to study the effects of regulation on firm exit rates
@@ -426,7 +436,7 @@ def model_average_age(config):
     data = df
     
     # sample restriction
-    data = data[data.year > 1985]
+    data = data[data.year > 1981]
     
     # regression
     data = data.set_index(['sector', 'year'])
@@ -437,18 +447,18 @@ def model_average_age(config):
     
     age = 1
     data1 = data.loc[data.age_grp_dummy == age, ["L_0_log_restriction_2_0", "L_0_entry_rate_whole", "L_0_log_gdp",
-                    "avg_log_restriction_2_0", "avg_entry_rate_whole", "avg_log_gdp",
-                    'death_rate']].dropna()
+                    "avg_log_restriction_2_0", "avg_entry_rate_whole", "avg_log_gdp", "sector_2", "log_emp_cohort",
+                    depend_var]].dropna()
     
-    mod1 = PanelOLS.from_formula(formula = f'death_rate ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
-                                            + avg_log_restriction_2_0 + avg_entry_rate_whole + avg_log_gdp \
+    mod1 = PanelOLS.from_formula(formula = f'{depend_var} ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
+                                            + avg_log_restriction_2_0 + avg_entry_rate_whole + avg_log_gdp + log_emp_cohort \
                                             + EntityEffects + TimeEffects', data = data1, drop_absorbed=True)
-    res1 = mod1.fit(cov_type = 'heteroskedastic')
+    res1 = mod1.fit(cov_type='clustered', clusters=data1["sector_2"])
 
     # results
     results = res1.summary
 
-    file_path = Path.cwd()/results_tables_path/f"results_average_all_age_{age}.csv"
+    file_path = Path.cwd()/results_tables_path/f"results_average_all_age_{age}_{depend_var}.csv"
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(results.as_csv())
         
@@ -456,19 +466,20 @@ def model_average_age(config):
     data2 = data.loc[data.age_grp_dummy == age, ["L_0_log_restriction_2_0", "L_0_entry_rate_whole", "L_0_log_gdp",
                     "cohort_log_restriction_2_0",
                     "cohort_entry_rate_whole",
-                    "cohort_log_gdp",
-                    'death_rate']].dropna()
-    mod2 = PanelOLS.from_formula(formula = f'death_rate ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
+                    "cohort_log_gdp", "sector_2", "log_emp_cohort",
+                    depend_var]].dropna()
+    mod2 = PanelOLS.from_formula(formula = f'{depend_var} ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
                                             + cohort_log_restriction_2_0 \
                                             + cohort_entry_rate_whole \
                                             + cohort_log_gdp \
+                                            + log_emp_cohort \
                                             + EntityEffects + TimeEffects', data = data2, drop_absorbed=True)
-    res2 = mod2.fit(cov_type = 'heteroskedastic')
+    res2 = mod2.fit(cov_type='clustered', clusters=data2["sector_2"])
 
     # results
     results = res2.summary
 
-    file_path = Path.cwd()/results_tables_path/f"results_average_cohort_inc_age_{age}.csv"
+    file_path = Path.cwd()/results_tables_path/f"results_average_cohort_inc_age_{age}_{depend_var}.csv"
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(results.as_csv())
         
@@ -491,18 +502,18 @@ def model_average_age(config):
     for age in range(2, 6):
         # regression
         data1 = data.loc[data.age_grp_dummy == age, ["L_0_log_restriction_2_0", "L_0_entry_rate_whole", "L_0_log_gdp",
-                        "avg_log_restriction_2_0", "avg_entry_rate_whole", "avg_log_gdp",
-                        'death_rate']].dropna()
+                        "avg_log_restriction_2_0", "avg_entry_rate_whole", "avg_log_gdp", "sector_2", "log_emp_cohort",
+                        depend_var]].dropna()
         
-        mod1 = PanelOLS.from_formula(formula = f'death_rate ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
-                                                + avg_log_restriction_2_0 + avg_entry_rate_whole + avg_log_gdp \
+        mod1 = PanelOLS.from_formula(formula = f'{depend_var} ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
+                                                + avg_log_restriction_2_0 + avg_entry_rate_whole + avg_log_gdp + log_emp_cohort\
                                                 + EntityEffects + TimeEffects', data = data1, drop_absorbed=True)
-        res1 = mod1.fit(cov_type = 'heteroskedastic')
+        res1 = mod1.fit(cov_type='clustered', clusters=data1["sector_2"])
 
         # results
         results = res1.summary
 
-        file_path = Path.cwd()/results_tables_path/f"results_average_all_age_{age}.csv"
+        file_path = Path.cwd()/results_tables_path/f"results_average_all_age_{age}_{depend_var}.csv"
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(results.as_csv())
             
@@ -510,19 +521,19 @@ def model_average_age(config):
         data2 = data.loc[data.age_grp_dummy == age, ["L_0_log_restriction_2_0", "L_0_entry_rate_whole", "L_0_log_gdp",
                         "inc_avg_log_restriction_2_0", "cohort_log_restriction_2_0",
                         "inc_avg_entry_rate_whole", "cohort_entry_rate_whole",
-                        "inc_avg_log_gdp", "cohort_log_gdp",
-                        'death_rate']].dropna()
-        mod2 = PanelOLS.from_formula(formula = f'death_rate ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
+                        "inc_avg_log_gdp", "cohort_log_gdp", "sector_2", "log_emp_cohort",
+                        depend_var]].dropna()
+        mod2 = PanelOLS.from_formula(formula = f'{depend_var} ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
                                                 + cohort_log_restriction_2_0 + inc_avg_log_restriction_2_0 \
                                                 + inc_avg_entry_rate_whole + cohort_entry_rate_whole \
-                                                + inc_avg_log_gdp + cohort_log_gdp \
+                                                + inc_avg_log_gdp + cohort_log_gdp + log_emp_cohort \
                                                 + EntityEffects + TimeEffects', data = data2, drop_absorbed=True)
-        res2 = mod2.fit(cov_type = 'heteroskedastic')
+        res2 = mod2.fit(cov_type='clustered', clusters=data2["sector_2"])
 
         # results
         results = res2.summary
 
-        file_path = Path.cwd()/results_tables_path/f"results_average_cohort_inc_age_{age}.csv"
+        file_path = Path.cwd()/results_tables_path/f"results_average_cohort_inc_age_{age}_{depend_var}.csv"
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(results.as_csv())
         
@@ -549,10 +560,10 @@ def model_average_age(config):
         coefs_age_2.append(dict2)
         
     df_coefs_age = pd.DataFrame(coefs_age)
-    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"results_average_cohort_inc_age_LP.csv")
+    df_coefs_age.to_csv(Path.cwd()/results_tables_path/f"results_average_cohort_inc_age_LP_{depend_var}.csv")
         
     df_coefs_age_2 = pd.DataFrame(coefs_age_2)
-    df_coefs_age_2.to_csv(Path.cwd()/results_tables_path/"results_average_cohort_inc_age_LP_2.csv")
+    df_coefs_age_2.to_csv(Path.cwd()/results_tables_path/f"results_average_cohort_inc_age_LP_2_{depend_var}.csv")
         
         
         
@@ -571,18 +582,19 @@ def model_output(config_file):
     # Load data and config file
     ####################
     config = parse_config(config_file)
-    
+    variable_list = ["death_rate", "net_job_creation_rate", "job_creation_continuers", "job_destruction_rate"]
     
     ####################
     # Output
     ####################
-    model_cohort_robust(config)
-    model_life_path(config)
-     
-    model_life_path_hetero(config)
-    model_average(config)
-    model_average_hetero(config)
-    model_average_age(config)
+    for variable in variable_list:
+        model_cohort_robust(config, variable)
+        model_life_path(config, variable)
+        model_life_path_hetero(config, variable)
+        model_average(config, variable)
+        model_average_hetero(config, variable)
+        model_average_age(config, variable)
+
     
 if __name__ == "__main__":
     model_output()

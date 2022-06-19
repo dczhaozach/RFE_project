@@ -1,0 +1,32 @@
+                     PanelOLS Estimation Summary                      
+Dep. Variable:   ,job_creation_rate,  R-squared:           ,0.0169    
+Estimator:       ,PanelOLS         ,  R-squared (Between): ,-0.2763   
+No. Observations:,7100             ,  R-squared (Within):  ,0.0338    
+Date:            ,Sun, Jun 19 2022 ,  R-squared (Overall): ,-0.2232   
+Time:            ,14:38:12         ,  Log-likelihood       ,-2.551e+04
+Cov. Estimator:  ,Clustered        ,                       ,          
+                 ,                 ,  F-statistic:         ,19.710    
+Entities:        ,262              ,  P-value              ,0.0000    
+Avg Obs:         ,27.099           ,  Distribution:        ,F(6,6892) 
+Min Obs:         ,0.0000           ,                       ,          
+Max Obs:         ,44.000           ,  F-statistic (robust):,18.307    
+                 ,                 ,  P-value              ,0.0000    
+Time periods:    ,38               ,  Distribution:        ,F(6,6892) 
+Avg Obs:         ,186.84           ,                       ,          
+Min Obs:         ,159.00           ,                       ,          
+Max Obs:         ,324.00           ,                       ,          
+                 ,                 ,                       ,          
+                             Parameter Estimates                             
+                       ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
+L_0_entry_rate_whole   ,25.313   ,11.398   ,2.2208 ,0.0264 ,2.9689  ,47.656  
+L_0_log_gdp            ,13.220   ,2.0579   ,6.4240 ,0.0000 ,9.1856  ,17.254  
+L_0_log_restriction_2_0,2.3824   ,2.1740   ,1.0959 ,0.2732 ,-1.8794 ,6.6442  
+avg_entry_rate_whole   ,2.8092   ,7.8694   ,0.3570 ,0.7211 ,-12.617 ,18.236  
+avg_log_gdp            ,-13.428  ,1.8008   ,-7.4566,0.0000 ,-16.958 ,-9.8977 
+avg_log_restriction_2_0,-2.8130  ,2.2279   ,-1.2627,0.2068 ,-7.1803 ,1.5542  
+
+F-test for Poolability: 5.0926
+P-value: 0.0000
+Distribution: F(201,6892)
+
+Included effects: Entity, Time

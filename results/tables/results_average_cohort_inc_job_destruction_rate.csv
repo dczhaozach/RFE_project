@@ -1,0 +1,40 @@
+                       PanelOLS Estimation Summary                        
+Dep. Variable:   ,job_destruction_rate,  R-squared:           ,0.0387     
+Estimator:       ,PanelOLS            ,  R-squared (Between): ,0.2621     
+No. Observations:,25716               ,  R-squared (Within):  ,0.0175     
+Date:            ,Sun, Jun 19 2022    ,  R-squared (Overall): ,0.0503     
+Time:            ,15:36:41            ,  Log-likelihood       ,-1.009e+05 
+Cov. Estimator:  ,Clustered           ,                       ,           
+                 ,                    ,  F-statistic:         ,78.978     
+Entities:        ,262                 ,  P-value              ,0.0000     
+Avg Obs:         ,98.153              ,  Distribution:        ,F(13,25503)
+Min Obs:         ,0.0000              ,                       ,           
+Max Obs:         ,161.00              ,  F-statistic (robust):,2486.1     
+                 ,                    ,  P-value              ,0.0000     
+Time periods:    ,36                  ,  Distribution:        ,F(13,25503)
+Avg Obs:         ,714.33              ,                       ,           
+Min Obs:         ,160.00              ,                       ,           
+Max Obs:         ,1288.0              ,                       ,           
+                 ,                    ,                       ,           
+                               Parameter Estimates                               
+                           ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
+C(age_grp_dummy)[T.2.0]    ,11.697   ,18.450   ,0.6340 ,0.5261 ,-24.467 ,47.861  
+C(age_grp_dummy)[T.3.0]    ,9.3345   ,18.430   ,0.5065 ,0.6125 ,-26.789 ,45.458  
+C(age_grp_dummy)[T.4.0]    ,8.0766   ,18.577   ,0.4348 ,0.6637 ,-28.336 ,44.489  
+C(age_grp_dummy)[T.5.0]    ,6.9306   ,18.603   ,0.3726 ,0.7095 ,-29.532 ,43.394  
+L_0_entry_rate_whole       ,17.367   ,8.9528   ,1.9399 ,0.0524 ,-0.1805 ,34.915  
+L_0_log_gdp                ,-6.2304  ,4.0084   ,-1.5544,0.1201 ,-14.087 ,1.6262  
+L_0_log_restriction_2_0    ,1.9876   ,2.1103   ,0.9419 ,0.3463 ,-2.1486 ,6.1239  
+cohort_entry_rate_whole    ,5.3176   ,4.4635   ,1.1913 ,0.2335 ,-3.4312 ,14.066  
+cohort_log_gdp             ,6.1509   ,2.0531   ,2.9959 ,0.0027 ,2.1267  ,10.175  
+cohort_log_restriction_2_0 ,1.8781   ,1.8738   ,1.0023 ,0.3162 ,-1.7946 ,5.5508  
+inc_avg_entry_rate_whole   ,3.1569   ,10.474   ,0.3014 ,0.7631 ,-17.372 ,23.686  
+inc_avg_log_gdp            ,1.1313   ,3.9272   ,0.2881 ,0.7733 ,-6.5662 ,8.8287  
+inc_avg_log_restriction_2_0,-2.5777  ,2.5190   ,-1.0233,0.3062 ,-7.5151 ,2.3596  
+log_emp_cohort             ,-0.9554  ,0.5449   ,-1.7532,0.0796 ,-2.0234 ,0.1127  
+
+F-test for Poolability: 15.906
+P-value: 0.0000
+Distribution: F(199,25503)
+
+Included effects: Entity, Time
