@@ -12,62 +12,10 @@ import statsmodels.api as sm
 from pathlib import Path
 from linearmodels.panel import PanelOLS
 
-from src.utility import parse_config
+from Src.utility import parse_config
 
 # options of pandas
 pd.options.mode.use_inf_as_na = True
-
-
-def model_cohort_robust(config, depend_var):
-    """
-    model_cohort function load the clean data and run the regression
-    to study the effects of regulation on firm exit rates
-    Args:
-        config [str]: config file
-    Returns:
-        Final data
-    """
-
-    ####################
-    # Load data
-    ####################
-    
-    # load data paths
-    cleaned_data_path = Path(config["model"]["cohort_robust_path"])
-    results_tables_path = Path(config["model"]["results_tables_path"])
-
-    df = pd.read_csv(Path.cwd()/cleaned_data_path)
-
-    ####################
-    # Regression
-    ####################
-
-    for naics_curr in range(2, 5):
-        # load data
-        data = df
-        # sample restriction
-        data = data[data.year > 1981]
-        data = data[data.age_grp_dummy <= 5]
-        
-        # regression
-        data = data.set_index(['sector', 'cohort'])
-        X_array = ['entry_rate_whole', 'entry_rate_whole_cohort', 'age_grp_dummy', 'year', 'log_gdp', 'log_gdp_cohort',
-                            f'log_restriction_2_{naics_curr}', f'log_restriction_2_{naics_curr}_cohort', 'sector_2', "log_emp_cohort"]
-        y_array = [depend_var]
-        all_array = y_array + X_array
-        
-        data = data.loc[:, all_array].dropna()
-        mod = PanelOLS.from_formula(formula = f'{depend_var} ~ log_restriction_2_{naics_curr} + log_restriction_2_{naics_curr}_cohort \
-                                                + entry_rate_whole + entry_rate_whole_cohort + log_emp_cohort \
-                                                + C(age_grp_dummy) + EntityEffects + TimeEffects', data = data, drop_absorbed=True)
-        res = mod.fit(cov_type='clustered', clusters= data["sector_2"])
-
-        # results
-        results = res.summary
-
-        file_path = Path.cwd()/results_tables_path/f"results_reg_naics_{naics_curr}_{depend_var}.csv"
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(results.as_csv())
             
             
 def model_life_path(config, depend_var):
@@ -129,7 +77,7 @@ def model_life_path(config, depend_var):
         
         # saving results
         # table
-        file_path = Path.cwd()/results_tables_path/f"results_cohort_age_{age}_{depend_var}.csv"
+        file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_cohort_age_{age}.csv"
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(results.as_csv())  
             
@@ -146,7 +94,7 @@ def model_life_path(config, depend_var):
         coefs_cohort.append(dict1)
 
     df_coefs_cohort = pd.DataFrame(coefs_cohort)
-    df_coefs_cohort.to_csv(Path.cwd()/results_tables_path/f"results_cohort_age_LP_{depend_var}.csv") 
+    df_coefs_cohort.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_cohort_age_LP.csv") 
 
     ####################
     # Regression including all controls in life path by each age
@@ -186,7 +134,7 @@ def model_life_path(config, depend_var):
         
         # saving results
         # table
-        file_path = Path.cwd()/results_tables_path/f"results_path_age_{age}_{depend_var}.csv"
+        file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_path_age_{age}.csv"
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(results.as_csv())
 
@@ -203,7 +151,8 @@ def model_life_path(config, depend_var):
         coefs_age.append(dict1)
 
     df_coefs_age = pd.DataFrame(coefs_age)
-    df_coefs_age.to_csv(Path.cwd()/results_tables_path/f"results_path_age_LP_{depend_var}.csv")
+    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_path_age_LP.csv")
+    
     
 def model_life_path_hetero(config, depend_var):
     """
@@ -265,7 +214,7 @@ def model_life_path_hetero(config, depend_var):
         
         # saving results
         # table
-        file_path = Path.cwd()/results_tables_path/f"results_cohort_age_{age}_hetero_{depend_var}.csv"
+        file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_cohort_age_{age}_hetero.csv"
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(results.as_csv())  
 
@@ -307,7 +256,7 @@ def model_life_path_hetero(config, depend_var):
         
         # saving results
         # table
-        file_path = Path.cwd()/results_tables_path/f"results_path_age_{age}_hetero.csv"
+        file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_path_age_{age}_hetero.csv"
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(results.as_csv())
         
@@ -349,7 +298,7 @@ def model_average(config, depend_var):
     # results
     results = res1.summary
 
-    file_path = Path.cwd()/results_tables_path/f"results_average_all_{depend_var}.csv"
+    file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_average_all.csv"
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(results.as_csv())
         
@@ -369,7 +318,7 @@ def model_average(config, depend_var):
     # results
     results = res2.summary
 
-    file_path = Path.cwd()/results_tables_path/f"results_average_cohort_inc_{depend_var}.csv"
+    file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_average_cohort_inc.csv"
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(results.as_csv())
         
@@ -412,7 +361,7 @@ def model_average_hetero(config, depend_var):
     # results
     results = res.summary
 
-    file_path = Path.cwd()/results_tables_path/f"results_average_all_hetero_{depend_var}.csv"
+    file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_average_all_hetero.csv"
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(results.as_csv())  
 
@@ -458,7 +407,7 @@ def model_average_age(config, depend_var):
     # results
     results = res1.summary
 
-    file_path = Path.cwd()/results_tables_path/f"results_average_all_age_{age}_{depend_var}.csv"
+    file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_average_all_age_{age}.csv"
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(results.as_csv())
         
@@ -479,7 +428,7 @@ def model_average_age(config, depend_var):
     # results
     results = res2.summary
 
-    file_path = Path.cwd()/results_tables_path/f"results_average_cohort_inc_age_{age}_{depend_var}.csv"
+    file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_average_cohort_inc_age_{age}.csv"
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(results.as_csv())
         
@@ -513,7 +462,7 @@ def model_average_age(config, depend_var):
         # results
         results = res1.summary
 
-        file_path = Path.cwd()/results_tables_path/f"results_average_all_age_{age}_{depend_var}.csv"
+        file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_average_all_age_{age}.csv"
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(results.as_csv())
             
@@ -533,7 +482,7 @@ def model_average_age(config, depend_var):
         # results
         results = res2.summary
 
-        file_path = Path.cwd()/results_tables_path/f"results_average_cohort_inc_age_{age}_{depend_var}.csv"
+        file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_average_cohort_inc_age_{age}.csv"
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(results.as_csv())
         
@@ -560,12 +509,63 @@ def model_average_age(config, depend_var):
         coefs_age_2.append(dict2)
         
     df_coefs_age = pd.DataFrame(coefs_age)
-    df_coefs_age.to_csv(Path.cwd()/results_tables_path/f"results_average_cohort_inc_age_LP_{depend_var}.csv")
+    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_average_cohort_inc_age_LP.csv")
         
     df_coefs_age_2 = pd.DataFrame(coefs_age_2)
-    df_coefs_age_2.to_csv(Path.cwd()/results_tables_path/f"results_average_cohort_inc_age_LP_2_{depend_var}.csv")
+    df_coefs_age_2.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_average_cohort_inc_age_LP_2.csv")
         
+
+def model_cohort_robust(config, depend_var):
+    """
+    model_cohort function load the clean data and run the regression
+    to study the effects of regulation on firm exit rates
+    Args:
+        config [str]: config file
+    Returns:
+        Final data
+    """
+
+    ####################
+    # Load data
+    ####################
+    
+    # load data paths
+    cleaned_data_path = Path(config["model"]["cohort_robust_path"])
+    results_tables_path = Path(config["model"]["results_tables_path"])
+
+    df = pd.read_csv(Path.cwd()/cleaned_data_path)
+
+    ####################
+    # Regression
+    ####################
+
+    for naics_curr in range(2, 5):
+        # load data
+        data = df
+        # sample restriction
+        data = data[data.year > 1981]
+        data = data[data.age_grp_dummy <= 5]
         
+        # regression
+        data = data.set_index(['sector', 'cohort'])
+        X_array = ['entry_rate_whole', 'entry_rate_whole_cohort', 'age_grp_dummy', 'year', 'log_gdp', 'log_gdp_cohort',
+                            f'log_restriction_2_{naics_curr}', f'log_restriction_2_{naics_curr}_cohort', 'sector_2', "log_emp_cohort"]
+        y_array = [depend_var]
+        all_array = y_array + X_array
+        
+        data = data.loc[:, all_array].dropna()
+        mod = PanelOLS.from_formula(formula = f'{depend_var} ~ log_restriction_2_{naics_curr} + log_restriction_2_{naics_curr}_cohort \
+                                                + entry_rate_whole + entry_rate_whole_cohort + log_emp_cohort \
+                                                + C(age_grp_dummy) + EntityEffects + TimeEffects', data = data, drop_absorbed=True)
+        res = mod.fit(cov_type='clustered', clusters= data["sector_2"])
+
+        # results
+        results = res.summary
+
+        file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_reg_naics_{naics_curr}.csv"
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(results.as_csv())
+                    
         
 @click.command()
 @click.argument("config_file", type=str, default="src/config.yaml") 
@@ -581,20 +581,33 @@ def model_output(config_file):
     ####################
     # Load data and config file
     ####################
+    print("loading config file")
     config = parse_config(config_file)
-    variable_list = ["death_rate", "net_job_creation_rate", "job_creation_continuers", "job_destruction_rate"]
+    variable_list = config["make_data"]["dep_var"]
     
     ####################
     # Output
     ####################
+    print("running models for each variables")
     for variable in variable_list:
-        model_cohort_robust(config, variable)
+        print(f"- for {variable}:")
+        print(f"  - life path")
         model_life_path(config, variable)
+        
+        print(f"  - life path hetero")
         model_life_path_hetero(config, variable)
+        
+        print(f"  - average")
         model_average(config, variable)
+        
+        print(f"  - average hetero")
         model_average_hetero(config, variable)
+        
+        print(f"  - average by age")
         model_average_age(config, variable)
-
+        
+        print(f"  - robust")
+        model_cohort_robust(config, variable)
     
 if __name__ == "__main__":
     model_output()

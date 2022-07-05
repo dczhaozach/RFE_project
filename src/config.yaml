@@ -5,6 +5,7 @@ make_data:
   bds_sector_size: "bds2019_sector_size_age.csv"
   gdp_path: "BEA/gdp.csv"
   cleaned_data_path: "data/cleaned"
+  dep_var: ["job_creation_rate", "net_job_creation_rate", "job_destruction_rate", "estabs_exit", "estabs_exit_rate", "net_job_creation", "estabs_entry_rate", "reallocation_rate"]
   
 
 model:

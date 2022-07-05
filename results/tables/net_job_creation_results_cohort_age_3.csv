@@ -1,0 +1,34 @@
+                     PanelOLS Estimation Summary                     
+Dep. Variable:   ,net_job_creation,  R-squared:           ,0.0052    
+Estimator:       ,PanelOLS        ,  R-squared (Between): ,0.0479    
+No. Observations:,5609            ,  R-squared (Within):  ,0.0079    
+Date:            ,Tue, Jul 05 2022,  R-squared (Overall): ,0.0120    
+Time:            ,16:28:20        ,  Log-likelihood       ,-5.006e+04
+Cov. Estimator:  ,Clustered       ,                       ,          
+                 ,                ,  F-statistic:         ,4.0576    
+Entities:        ,262             ,  P-value              ,0.0002    
+Avg Obs:         ,21.408          ,  Distribution:        ,F(7,5403) 
+Min Obs:         ,0.0000          ,                       ,          
+Max Obs:         ,35.000          ,  F-statistic (robust):,8.5911    
+                 ,                ,  P-value              ,0.0000    
+Time periods:    ,35              ,  Distribution:        ,F(7,5403) 
+Avg Obs:         ,160.26          ,                       ,          
+Min Obs:         ,157.00          ,                       ,          
+Max Obs:         ,163.00          ,                       ,          
+                 ,                ,                       ,          
+                             Parameter Estimates                             
+                       ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
+const                  ,1267.7   ,3640.2   ,0.3482 ,0.7277 ,-5868.6 ,8403.9  
+L_0_entry_rate_whole   ,-1733.3  ,2614.2   ,-0.6630,0.5073 ,-6858.1 ,3391.5  
+L_0_log_gdp            ,963.48   ,458.08   ,2.1033 ,0.0355 ,65.460  ,1861.5  
+L_0_log_restriction_2_0,171.18   ,280.23   ,0.6109 ,0.5413 ,-378.18 ,720.54  
+L_3_entry_rate_whole   ,213.49   ,926.57   ,0.2304 ,0.8178 ,-1603.0 ,2029.9  
+L_3_log_gdp            ,-922.24  ,315.03   ,-2.9275,0.0034 ,-1539.8 ,-304.66 
+L_3_log_restriction_2_0,-223.60  ,174.17   ,-1.2838,0.1993 ,-565.05 ,117.84  
+log_emp_cohort         ,-143.99  ,207.02   ,-0.6955,0.4867 ,-549.83 ,261.85  
+
+F-test for Poolability: 3.3411
+P-value: 0.0000
+Distribution: F(198,5403)
+
+Included effects: Entity, Time

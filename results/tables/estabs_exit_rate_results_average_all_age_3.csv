@@ -1,0 +1,33 @@
+                     PanelOLS Estimation Summary                     
+Dep. Variable:   ,estabs_exit_rate,  R-squared:           ,0.0246    
+Estimator:       ,PanelOLS        ,  R-squared (Between): ,-0.1889   
+No. Observations:,5317            ,  R-squared (Within):  ,0.0049    
+Date:            ,Tue, Jul 05 2022,  R-squared (Overall): ,-0.1953   
+Time:            ,16:27:59        ,  Log-likelihood       ,-1.698e+04
+Cov. Estimator:  ,Clustered       ,                       ,          
+                 ,                ,  F-statistic:         ,18.385    
+Entities:        ,262             ,  P-value              ,0.0000    
+Avg Obs:         ,20.294          ,  Distribution:        ,F(7,5111) 
+Min Obs:         ,0.0000          ,                       ,          
+Max Obs:         ,35.000          ,  F-statistic (robust):,6.8046    
+                 ,                ,  P-value              ,0.0000    
+Time periods:    ,35              ,  Distribution:        ,F(7,5111) 
+Avg Obs:         ,151.91          ,                       ,          
+Min Obs:         ,147.00          ,                       ,          
+Max Obs:         ,156.00          ,                       ,          
+                 ,                ,                       ,          
+                             Parameter Estimates                             
+                       ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
+L_0_entry_rate_whole   ,0.5972   ,6.6993   ,0.0891 ,0.9290 ,-12.536 ,13.731  
+L_0_log_gdp            ,-7.1887  ,2.2693   ,-3.1678,0.0015 ,-11.637 ,-2.7399 
+L_0_log_restriction_2_0,3.5589   ,1.6190   ,2.1981 ,0.0280 ,0.3849  ,6.7329  
+avg_entry_rate_whole   ,2.5300   ,7.9148   ,0.3197 ,0.7492 ,-12.986 ,18.046  
+avg_log_gdp            ,7.2881   ,2.3265   ,3.1326 ,0.0017 ,2.7271  ,11.849  
+avg_log_restriction_2_0,-2.8023  ,1.6725   ,-1.6755,0.0939 ,-6.0811 ,0.4766  
+log_emp_cohort         ,-1.3496  ,0.2644   ,-5.1051,0.0000 ,-1.8679 ,-0.8313 
+
+F-test for Poolability: 6.0966
+P-value: 0.0000
+Distribution: F(198,5111)
+
+Included effects: Entity, Time
