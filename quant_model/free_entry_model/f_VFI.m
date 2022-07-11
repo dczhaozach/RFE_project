@@ -12,13 +12,14 @@ function output = f_VFI(xval, config, w, output_mode)
 %% Loading parameters______________________________________________________
 %% Internally calibrated parameters
 c_f = xval.c_f;
-
+c_reg = xval.c_reg;
 delta = xval.delta;                                        % exogensous exit rate
 rho = xval.rho;                                          % productivity shocks persistence
 sig_epsi = xval.sig_epsi;                                     % ... std of productivity shocks
 log_s0_mean = xval.log_s0_mean;                                  % distribution of inital productivity
 sig_s0 = xval.sig_s0;
 sig_z = xval.sig_z;                                       % distribution of permanent productivity
+c_time = xval.c_time;
 
 %% Parameters
 interp_type = config.interp_type;                        
@@ -75,7 +76,6 @@ profit = exp_z(ZIND(:),1) .* exp_s(SIND(:),1) .* (l_demand.^beta) ...
 while dif_VFI > dif_tol_VFI && num_itr < max_itr
     %% iteration block
     num_itr = num_itr + 1;
-      
     V_next = profit + sigma .* (1 - delta) .* max(0, EV);
           
     
@@ -95,26 +95,45 @@ while dif_VFI > dif_tol_VFI && num_itr < max_itr
 
 end
 
+%%
+V_cell = cell(c_time,1);
+EV_cell = cell(c_time,1);
+I_nq_cell = cell(c_time,1);
+
+%%
+V_cell{c_time} = V(:);
+EV_cell{c_time} = EV;
+I_nq_cell{c_time} = EV_cell{c_time} > 0;
+
+for t_itr = 1:c_time - 1
+    k_itr = c_time - t_itr;
+    V_cell{k_itr} =  profit - c_reg + sigma .* (1 - delta) .* max(0, EV_cell{k_itr+1});
+    V_temp = reshape(V_cell{k_itr},n_z,n_s);
+    V_intra_temp = griddedInterpolant(exp_z(ZIND),exp_s(SIND),V_temp,interp_type,extrap_type);
+    EV_cell{k_itr} = sum(P(SIND(:),:) .* ...
+          V_intra_temp(repmat(exp_z(ZIND(:)),1,n_s),repmat(exp_s',n_z*n_s,1)),2);
+    I_nq_cell{k_itr} = EV_cell{k_itr} > 0;
+
+end
+
 %% entry distribution
 % Entry Distribution
 en_p_z = disc_npdf(z,log_z_val,sig_z);                      % Initial(and thereafter) z type distribution
 en_p_s = disc_npdf(s,log_s0_mean,sig_s0);                   % initial distribution of s: normal
 dist_en = sparse(en_p_z(ZIND(:)) .* en_p_s(SIND(:)));
 
-EV_en = dist_en' * V(:);
+EV_en = dist_en' * V_cell{1};
 
 %% Output
 switch output_mode
     case "EV"
         output = EV_en;
         
-    case "Equilibrium"
-        I_nq = EV > 0;
-        
+    case "Equilibrium"        
+        output.I_nq_cell = I_nq_cell;
         output.EV_en = EV_en;
-        output.EV = EV;
-        output.V = V;
-        output.I_nq = I_nq;
+        output.EV_cell = EV_cell;
+        output.V_cell = V_cell;
         output.l_policy = l_demand;
         output.dist_en = dist_en;
 end

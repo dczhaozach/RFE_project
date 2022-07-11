@@ -1,7 +1,7 @@
 %% Internally calibrated parameters
 load config_file.mat
 
-xval.c_reg = 0.0;                                        % fixed costs of e firms
+xval.c_reg = 0.1;                                        % fixed costs of e firms
 xval.c_f = 2.2;
 c_e = 8.5;                                         % entry costs
 xval.c_one = 0;
@@ -13,13 +13,24 @@ xval.sig_epsi = 0.032;                                     % ... std of producti
 xval.log_s0_mean = 0.142;                                  % distribution of inital productivity
 xval.sig_s0 = 0.138;
 xval.sig_z = 0.078;                                       % distribution of permanent productivity
+xval.c_time = 2;
 
 %%
-output = f_dist(xval, config, c_e);
-display(output.exit_rate)
-display(output.exit_rate_1)
-display(output.entry_rate)
-display(output.L_demand_total)
+c_reg_seq = (0: 0.5: 10);
+c_time_max = 21;
+exit_rate_seq = zeros(length(c_reg_seq), c_time_max);
+
+for c_time_itr = 1:c_time_max
+    for c_reg_itr = 1:length(c_reg_seq)
+        xval.c_reg = c_reg_seq(c_reg_itr);                                        % fixed costs of e firms
+        xval.c_time = c_time_itr;
+        output = f_dist(xval, config, c_e);
+        exit_rate_seq(c_reg_itr, c_time_itr) = output.exit_rate;
+        % display(output.exit_rate_1)
+        % display(output.entry_rate)
+        % display(output.L_demand_total)
+    end
+end
 
 %%
 T = 100;

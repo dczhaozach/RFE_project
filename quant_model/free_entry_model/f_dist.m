@@ -5,6 +5,7 @@ function output = f_dist(xval, config, c_e)
 %% Internally calibrated parameters
 c_reg = xval.c_reg;                                        % fixed costs of e firms
 c_f = xval.c_f;
+c_time = xval.c_time;
 
 delta = xval.delta;                                        % exogensous exit rate
 rho = xval.rho;                                          % productivity shocks persistence
@@ -51,8 +52,10 @@ en_p_s = disc_npdf(s,log_s0_mean,sig_s0);                   % initial distributi
 
 %% output
 output = f_equ(xval, config, c_e);
+
 l_policy = output.l_policy;
-I_nq = output.I_nq;
+
+I_nq_cell = output.I_nq_cell;
 dist_en = output.dist_en;
 
 %% Transition matrix of s
@@ -61,7 +64,7 @@ Q_s = sparse(kron(P, eye(n_z)));
 %% Equilibriunm distribution
 % ms: incumbents at start of time t
 % ms_op: all firms operating at time t
-ms = zeros(n_z*n_s,1)./(n_z*n_s);                   % incumbents
+ms_old = zeros(n_z*n_s,1)./(n_z*n_s);                   % incumbents
 ms_err_tol = 1e-14;
 ms_err  = 10;
 num_itr_ms = 0;
@@ -69,32 +72,60 @@ m_en_guess = 1;
 
 itr_ms_tol = 3000;
 
+ms_cell = cell(c_time,1);
+ms_cell{1} = m_en_guess .* dist_en;
+ms = ms_cell{1};
+
+for t = 2:c_time
+
+ms_cell{t} = ((ms_cell{t-1}' .* ((1 - delta)/(1 + eta)) .* I_nq_cell{t-1}')* Q_s)';
+ms = ms + ms_cell{t}; 
+end
+
 while ms_err > ms_err_tol && num_itr_ms < itr_ms_tol
     num_itr_ms = num_itr_ms + 1;
-    new_ms= ( (ms' .* ((1 - delta)/(1 + eta)) .* I_nq')* Q_s ...  % incumbents
-        + (m_en_guess .* dist_en') )';
-    ms_err = max(abs(new_ms - ms),[],'all');
-    ms = new_ms;
+    new_ms_old= ( (ms_old' .* ((1 - delta)/(1 + eta)) .* I_nq_cell{c_time}')* Q_s ...  % incumbents
+        + ms_cell{c_time}' )';
+    ms_err = max(abs(new_ms_old - ms_old),[],'all');
+    ms_old = new_ms_old;
 end
 
 % calculate distribution
+
+ms = ms + ms_old;
 L_demand_total = ms' * l_policy;
 m_en = m_en_guess * L_supply / L_demand_total;
 
+%% repeat
+ms_old = zeros(n_z*n_s,1)./(n_z*n_s);                   % incumbents
 ms_err  = 10;
 num_itr_ms = 0;
-while ms_err > ms_err_tol && num_itr_ms < itr_ms_tol
-    num_itr_ms = num_itr_ms + 1;
-    new_ms= ( (ms' .* ((1 - delta)/(1 + eta)) .* I_nq')* Q_s ...  % incumbents
-        + (m_en .* dist_en') )';
-    ms_err = max(abs(new_ms - ms),[],'all');
-    ms = new_ms;
+
+ms_cell{1} = m_en .* dist_en;
+ms = ms_cell{1};
+ms_quit = cell(c_time, 1);
+ms_quit_all = 0;
+for t = 2:c_time
+ms_cell{t} = ((ms_cell{t-1}' .* ((1 - delta)/(1 + eta)) .* I_nq_cell{t-1}')* Q_s)';
+ms_quit{t-1} = (ms_cell{t-1}' * (1 - ((1 - delta)) .* I_nq_cell{t-1}))./(1 + eta);
+ms_quit_all = ms_quit_all + ms_quit{t-1};
+ms = ms + ms_cell{t}; 
 end
 
-m_all = sum(ms);
-m_ex = (m_all - (ms'  * I_nq) .* (1 - delta))./(1 + eta);
+while ms_err > ms_err_tol && num_itr_ms < itr_ms_tol
+    num_itr_ms = num_itr_ms + 1;
+    new_ms_old = ( (ms_old' .* ((1 - delta)/(1 + eta)) .* I_nq_cell{c_time}')* Q_s ...  % incumbents
+        + ms_cell{c_time}' )';
+    ms_err = max(abs(new_ms_old - ms_old),[],'all');
+    ms_old = new_ms_old;
+end
 
-m_ex_1 = m_en - m_en .* (dist_en' * I_nq);
+ms = ms + ms_old;
+
+m_all = sum(ms);
+m_ex = ms_quit_all + (ms_old' * (1 - I_nq_cell{c_time} .* (1 - delta)) )./(1 + eta);
+
+m_ex_1 = m_en - m_en .* (dist_en' * I_nq_cell{1});
 
 exit_rate = m_ex ./ m_all;
 exit_rate_1 = m_ex_1 ./ m_en;
