@@ -2,8 +2,8 @@
 Dep. Variable:   ,reallocation_rate,  R-squared:           ,0.2012    
 Estimator:       ,PanelOLS         ,  R-squared (Between): ,-0.7336   
 No. Observations:,2961             ,  R-squared (Within):  ,0.0782    
-Date:            ,Tue, Jul 05 2022 ,  R-squared (Overall): ,-0.0070   
-Time:            ,16:29:27         ,  Log-likelihood       ,-1.116e+04
+Date:            ,Wed, Jul 13 2022 ,  R-squared (Overall): ,-0.0070   
+Time:            ,09:40:27         ,  Log-likelihood       ,-1.116e+04
 Cov. Estimator:  ,Robust           ,                       ,          
                  ,                 ,  F-statistic:         ,40.522    
 Entities:        ,17               ,  P-value              ,0.0000    
@@ -11,9 +11,9 @@ Avg Obs:         ,174.18           ,  Distribution:        ,F(18,2896)
 Min Obs:         ,0.0000           ,                       ,          
 Max Obs:         ,265.00           ,  F-statistic (robust):,23.575    
                  ,                 ,  P-value              ,0.0000    
-Time periods:    ,34               ,  Distribution:        ,F(18,2896)
-Avg Obs:         ,87.088           ,                       ,          
-Min Obs:         ,78.000           ,                       ,          
+Time periods:    ,37               ,  Distribution:        ,F(18,2896)
+Avg Obs:         ,80.027           ,                       ,          
+Min Obs:         ,0.0000           ,                       ,          
 Max Obs:         ,96.000           ,                       ,          
                  ,                 ,                       ,          
                              Parameter Estimates                             

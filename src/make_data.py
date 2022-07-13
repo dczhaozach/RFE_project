@@ -92,6 +92,7 @@ def data_clean(df, id_var, sector_dig, config):
     for var in var_lst:
         df[var] = pd.to_numeric(df[var], errors="coerce", downcast=None)
 
+    df.loc[df.firms <= 0, 'firms'] = np.nan
     
     df["death"] = df["firmdeath_firms"]
     df["log_emp"] = np.log(df["emp"])
@@ -108,9 +109,20 @@ def data_clean(df, id_var, sector_dig, config):
         df[sector_name] = df["sector"].astype(str).str.slice(0,naics)
         df[sector_name] = pd.to_numeric(df[sector_name], errors="coerce", downcast=None)
 
+    # recoding sectors
+    df.loc[df.sector_2 == 32, "sector_2"] = 31
+    df.loc[df.sector_2 == 33, "sector_2"] = 31
+    df.loc[df.sector_2 == 45, "sector_2"] = 44
+    df.loc[df.sector_2 == 49, "sector_2"] = 48   
+    
+        
     # lag var
     for age in range(1, 6):
         df = lag_variable(df, ["year"], id_var, ["emp"], age)
+        df = lag_variable(df, ["year"], id_var, ["firms"], age)
+    
+    df["L_0_emp"] = df["emp"]
+    df["L_0_firms"] = df["firms"]
     
    # create size dummy
     if "fsize" in id_var:
@@ -195,6 +207,7 @@ def data_life_path(df_input):
     df_age_new = df_age_new[["year_entry", "sector", "entry_whole", "incumbents_whole"]]
     
     # merge by ages
+    
     for age in range(0, 6):
         
         # create lag year data
@@ -232,13 +245,14 @@ def data_life_path(df_input):
             df[f"L_{age}_log_restriction_2_0"] = np.log(df[f"L_{age}_industry_restrictions_2_0"])
             
             df[f"L_{age}_log_gdp"] = np.log(df[f"L_{age}_gdp"])
-            
+            df[f"L_{age}_log_emp"] = np.log(df[f"L_{age}_emp"])
             df[f"L_{age}_entry_rate_whole"] = df[f"L_{age}_entry_whole"]/df[f"L_{age}_incumbents_whole"]
             
     # create emp changes
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         for age in range(1, 6):
+            df.loc[df["age_grp_dummy"] == age, "firms_cohort"] = df.loc[df["age_grp_dummy"] == age, f"L_{age}_firms"]
             df.loc[df["age_grp_dummy"] == age, "log_emp_cohort"] = np.log(df.loc[df["age_grp_dummy"] == age, f"L_{age}_emp"])
             df.loc[df["age_grp_dummy"] == age, "log_emp_chg"] = np.log(df.loc[df["age_grp_dummy"] == age, "emp"]) - \
                 np.log(df.loc[df["age_grp_dummy"] == age, f"L_{age}_emp"])

@@ -1,0 +1,36 @@
+                    PanelOLS Estimation Summary                     
+Dep. Variable:   ,log_emp         ,  R-squared:           ,0.7186   
+Estimator:       ,PanelOLS        ,  R-squared (Between): ,0.9221   
+No. Observations:,2977            ,  R-squared (Within):  ,0.6783   
+Date:            ,Wed, Jul 13 2022,  R-squared (Overall): ,0.8372   
+Time:            ,10:36:39        ,  Log-likelihood       ,-1816.8  
+Cov. Estimator:  ,Robust          ,                       ,         
+                 ,                ,  F-statistic:         ,828.64   
+Entities:        ,17              ,  P-value              ,0.0000   
+Avg Obs:         ,175.12          ,  Distribution:        ,F(9,2920)
+Min Obs:         ,0.0000          ,                       ,         
+Max Obs:         ,265.00          ,  F-statistic (robust):,341.99   
+                 ,                ,  P-value              ,0.0000   
+Time periods:    ,35              ,  Distribution:        ,F(9,2920)
+Avg Obs:         ,85.057          ,                       ,         
+Min Obs:         ,76.000          ,                       ,         
+Max Obs:         ,97.000          ,                       ,         
+                 ,                ,                       ,         
+                             Parameter Estimates                             
+                       ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
+const                  ,1.4309   ,0.9986   ,1.4328 ,0.1520 ,-0.5272 ,3.3890  
+L_0_entry_rate_whole   ,-3.7445  ,0.7864   ,-4.7613,0.0000 ,-5.2865 ,-2.2024 
+L_0_log_gdp            ,0.1321   ,0.0953   ,1.3860 ,0.1659 ,-0.0548 ,0.3189  
+L_0_log_restriction_2_0,-0.0756  ,0.1079   ,-0.7006,0.4836 ,-0.2871 ,0.1359  
+L_3_entry_rate_whole   ,5.1015   ,0.6456   ,7.9019 ,0.0000 ,3.8356  ,6.3674  
+L_3_log_gdp            ,0.2398   ,0.0795   ,3.0173 ,0.0026 ,0.0840  ,0.3957  
+L_3_log_restriction_2_0,0.0151   ,0.1118   ,0.1351 ,0.8926 ,-0.2041 ,0.2343  
+cross                  ,0.1125   ,0.0341   ,3.2963 ,0.0010 ,0.0456  ,0.1795  
+large_firm             ,-1.7393  ,0.3744   ,-4.6460,0.0000 ,-2.4733 ,-1.0052 
+log_emp_cohort         ,0.6719   ,0.0294   ,22.831 ,0.0000 ,0.6142  ,0.7296  
+
+F-test for Poolability: 11.758
+P-value: 0.0000
+Distribution: F(47,2920)
+
+Included effects: Entity, Time

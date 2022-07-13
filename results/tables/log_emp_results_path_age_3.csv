@@ -1,0 +1,35 @@
+                    PanelOLS Estimation Summary                     
+Dep. Variable:   ,log_emp         ,  R-squared:           ,0.1887   
+Estimator:       ,PanelOLS        ,  R-squared (Between): ,-0.4502  
+No. Observations:,8285            ,  R-squared (Within):  ,-2.9568  
+Date:            ,Wed, Jul 13 2022,  R-squared (Overall): ,-0.7400  
+Time:            ,10:36:36        ,  Log-likelihood       ,-1771.5  
+Cov. Estimator:  ,Robust          ,                       ,         
+                 ,                ,  F-statistic:         ,5.132e+05
+Entities:        ,262             ,  P-value              ,0.0000   
+Avg Obs:         ,31.622          ,  Distribution:        ,F(8,8000)
+Min Obs:         ,0.0000          ,                       ,         
+Max Obs:         ,35.000          ,  F-statistic (robust):,78.646   
+                 ,                ,  P-value              ,0.0000   
+Time periods:    ,35              ,  Distribution:        ,F(8,8000)
+Avg Obs:         ,236.71          ,                       ,         
+Min Obs:         ,232.00          ,                       ,         
+Max Obs:         ,239.00          ,                       ,         
+                 ,                ,                       ,         
+                             Parameter Estimates                             
+                       ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
+const                  ,2.7665   ,0.7758   ,3.5660 ,0.0004 ,1.2457  ,4.2872  
+L_0_log_gdp            ,0.6894   ,0.1686   ,4.0901 ,0.0000 ,0.3590  ,1.0198  
+L_0_log_restriction_2_0,0.1532   ,0.1476   ,1.0379 ,0.2994 ,-0.1362 ,0.4426  
+L_1_log_gdp            ,0.1367   ,0.2422   ,0.5646 ,0.5724 ,-0.3380 ,0.6115  
+L_1_log_restriction_2_0,0.0151   ,0.1992   ,0.0756 ,0.9398 ,-0.3755 ,0.4056  
+L_2_log_gdp            ,0.1562   ,0.2324   ,0.6724 ,0.5014 ,-0.2993 ,0.6118  
+L_2_log_restriction_2_0,-0.0901  ,0.1899   ,-0.4748,0.6350 ,-0.4623 ,0.2820  
+L_3_log_gdp            ,0.0853   ,0.1583   ,0.5384 ,0.5903 ,-0.2251 ,0.3956  
+L_3_log_restriction_2_0,-0.0527  ,0.1343   ,-0.3925,0.6947 ,-0.3159 ,0.2105  
+
+F-test for Poolability: 291.59
+P-value: 0.0000
+Distribution: F(276,8000)
+
+Included effects: Entity, Time

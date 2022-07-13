@@ -1,33 +1,33 @@
-                     PanelOLS Estimation Summary                     
-Dep. Variable:   ,net_job_creation,  R-squared:           ,0.0062    
-Estimator:       ,PanelOLS        ,  R-squared (Between): ,-64.353   
-No. Observations:,5253            ,  R-squared (Within):  ,-0.0387   
-Date:            ,Tue, Jul 05 2022,  R-squared (Overall): ,-5.1808   
-Time:            ,16:28:29        ,  Log-likelihood       ,-4.612e+04
-Cov. Estimator:  ,Clustered       ,                       ,          
-                 ,                ,  F-statistic:         ,4.5363    
-Entities:        ,262             ,  P-value              ,0.0000    
-Avg Obs:         ,20.050          ,  Distribution:        ,F(7,5050) 
-Min Obs:         ,0.0000          ,                       ,          
-Max Obs:         ,33.000          ,  F-statistic (robust):,6.3885    
-                 ,                ,  P-value              ,0.0000    
-Time periods:    ,33              ,  Distribution:        ,F(7,5050) 
-Avg Obs:         ,159.18          ,                       ,          
-Min Obs:         ,157.00          ,                       ,          
-Max Obs:         ,162.00          ,                       ,          
-                 ,                ,                       ,          
-                             Parameter Estimates                             
-                       ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
-L_0_entry_rate_whole   ,587.22   ,544.80   ,1.0779 ,0.2811 ,-480.83 ,1655.3  
-L_0_log_gdp            ,986.21   ,470.29   ,2.0970 ,0.0360 ,64.229  ,1908.2  
-L_0_log_restriction_2_0,-355.06  ,315.02   ,-1.1271,0.2598 ,-972.64 ,262.52  
-avg_entry_rate_whole   ,889.32   ,844.51   ,1.0531 ,0.2924 ,-766.29 ,2544.9  
-avg_log_gdp            ,-1500.0  ,497.13   ,-3.0173,0.0026 ,-2474.6 ,-525.42 
-avg_log_restriction_2_0,246.49   ,327.91   ,0.7517 ,0.4523 ,-396.36 ,889.34  
-log_emp_cohort         ,5.0585   ,25.307   ,0.1999 ,0.8416 ,-44.553 ,54.670  
+                    PanelOLS Estimation Summary                     
+Dep. Variable:   ,net_job_creation,  R-squared:           ,0.0188   
+Estimator:       ,PanelOLS        ,  R-squared (Between): ,-55.317  
+No. Observations:,7781            ,  R-squared (Within):  ,-0.0728  
+Date:            ,Wed, Jul 13 2022,  R-squared (Overall): ,-5.4680  
+Time:            ,09:51:50        ,  Log-likelihood       ,-7.08e+04
+Cov. Estimator:  ,Robust          ,                       ,         
+                 ,                ,  F-statistic:         ,20.518   
+Entities:        ,262             ,  P-value              ,0.0000   
+Avg Obs:         ,29.698          ,  Distribution:        ,F(7,7500)
+Min Obs:         ,0.0000          ,                       ,         
+Max Obs:         ,33.000          ,  F-statistic (robust):,5.4875   
+                 ,                ,  P-value              ,0.0000   
+Time periods:    ,37              ,  Distribution:        ,F(7,7500)
+Avg Obs:         ,210.30          ,                       ,         
+Min Obs:         ,0.0000          ,                       ,         
+Max Obs:         ,240.00          ,                       ,         
+                 ,                ,                       ,         
+                              Parameter Estimates                               
+                       ,Parameter,Std. Err., T-stat,P-value, Lower CI , Upper CI
+L_0_entry_rate_whole   ,8257.2   ,3397.0   ,2.4308 ,0.0151 ,1598.3    ,1.492e+04
+L_0_log_gdp            ,1395.8   ,784.61   ,1.7790 ,0.0753 ,-142.27   ,2933.9   
+L_0_log_restriction_2_0,-1327.9  ,606.39   ,-2.1899,0.0286 ,-2516.6   ,-139.21  
+avg_entry_rate_whole   ,-6486.7  ,2910.5   ,-2.2287,0.0259 ,-1.219e+04,-781.26  
+avg_log_gdp            ,-2597.8  ,738.79   ,-3.5163,0.0004 ,-4046.0   ,-1149.6  
+avg_log_restriction_2_0,1324.7   ,1061.9   ,1.2475 ,0.2123 ,-756.95   ,3406.4   
+log_emp_cohort         ,132.83   ,173.31   ,0.7664 ,0.4434 ,-206.90   ,472.56   
 
-F-test for Poolability: 2.2991
+F-test for Poolability: 3.4382
 P-value: 0.0000
-Distribution: F(195,5050)
+Distribution: F(273,7500)
 
 Included effects: Entity, Time

@@ -2,8 +2,8 @@
 Dep. Variable:   ,estabs_entry_rate,  R-squared:           ,0.0582   
 Estimator:       ,PanelOLS         ,  R-squared (Between): ,0.0685   
 No. Observations:,2437             ,  R-squared (Within):  ,0.0605   
-Date:            ,Tue, Jul 05 2022 ,  R-squared (Overall): ,0.0555   
-Time:            ,16:28:55         ,  Log-likelihood       ,-8919.3  
+Date:            ,Wed, Jul 13 2022 ,  R-squared (Overall): ,0.0555   
+Time:            ,09:52:36         ,  Log-likelihood       ,-8919.3  
 Cov. Estimator:  ,Robust           ,                       ,         
                  ,                 ,  F-statistic:         ,16.334   
 Entities:        ,17               ,  P-value              ,0.0000   
@@ -11,9 +11,9 @@ Avg Obs:         ,143.35           ,  Distribution:        ,F(9,2381)
 Min Obs:         ,0.0000           ,                       ,         
 Max Obs:         ,225.00           ,  F-statistic (robust):,4.0595   
                  ,                 ,  P-value              ,0.0000   
-Time periods:    ,34               ,  Distribution:        ,F(9,2381)
-Avg Obs:         ,71.676           ,                       ,         
-Min Obs:         ,62.000           ,                       ,         
+Time periods:    ,38               ,  Distribution:        ,F(9,2381)
+Avg Obs:         ,64.132           ,                       ,         
+Min Obs:         ,0.0000           ,                       ,         
 Max Obs:         ,83.000           ,                       ,         
                  ,                 ,                       ,         
                              Parameter Estimates                             

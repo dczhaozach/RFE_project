@@ -1,34 +1,34 @@
                      PanelOLS Estimation Summary                     
-Dep. Variable:   ,net_job_creation,  R-squared:           ,0.0040    
-Estimator:       ,PanelOLS        ,  R-squared (Between): ,-0.1594   
-No. Observations:,5957            ,  R-squared (Within):  ,-0.0070   
-Date:            ,Tue, Jul 05 2022,  R-squared (Overall): ,-0.0703   
-Time:            ,16:28:20        ,  Log-likelihood       ,-5.522e+04
-Cov. Estimator:  ,Clustered       ,                       ,          
-                 ,                ,  F-statistic:         ,3.2914    
-Entities:        ,262             ,  P-value              ,0.0017    
-Avg Obs:         ,22.737          ,  Distribution:        ,F(7,5749) 
+Dep. Variable:   ,net_job_creation,  R-squared:           ,0.0471    
+Estimator:       ,PanelOLS        ,  R-squared (Between): ,-0.2698   
+No. Observations:,9526            ,  R-squared (Within):  ,0.0189    
+Date:            ,Wed, Jul 13 2022,  R-squared (Overall): ,-0.1412   
+Time:            ,09:51:36        ,  Log-likelihood       ,-8.798e+04
+Cov. Estimator:  ,Robust          ,                       ,          
+                 ,                ,  F-statistic:         ,65.861    
+Entities:        ,262             ,  P-value              ,0.0000    
+Avg Obs:         ,36.359          ,  Distribution:        ,F(7,9237) 
 Min Obs:         ,0.0000          ,                       ,          
-Max Obs:         ,37.000          ,  F-statistic (robust):,27.089    
+Max Obs:         ,40.000          ,  F-statistic (robust):,11.713    
                  ,                ,  P-value              ,0.0000    
-Time periods:    ,37              ,  Distribution:        ,F(7,5749) 
-Avg Obs:         ,161.00          ,                       ,          
-Min Obs:         ,159.00          ,                       ,          
-Max Obs:         ,163.00          ,                       ,          
+Time periods:    ,41              ,  Distribution:        ,F(7,9237) 
+Avg Obs:         ,232.34          ,                       ,          
+Min Obs:         ,0.0000          ,                       ,          
+Max Obs:         ,240.00          ,                       ,          
                  ,                ,                       ,          
-                              Parameter Estimates                              
-                       ,Parameter,Std. Err., T-stat,P-value, Lower CI ,Upper CI
-const                  ,-7610.5  ,6092.7   ,-1.2491,0.2117 ,-1.955e+04,4333.5  
-L_0_entry_rate_whole   ,664.49   ,2625.7   ,0.2531 ,0.8002 ,-4482.8   ,5811.8  
-L_0_log_gdp            ,2900.5   ,1564.9   ,1.8535 ,0.0639 ,-167.25   ,5968.3  
-L_0_log_restriction_2_0,1182.6   ,1040.4   ,1.1366 ,0.2557 ,-857.02   ,3222.1  
-L_1_entry_rate_whole   ,-715.01  ,1002.1   ,-0.7135,0.4755 ,-2679.5   ,1249.4  
-L_1_log_gdp            ,-2024.1  ,1074.9   ,-1.8830,0.0598 ,-4131.3   ,83.183  
-L_1_log_restriction_2_0,-958.70  ,1135.7   ,-0.8441,0.3986 ,-3185.2   ,1267.8  
-log_emp_cohort         ,-5.1492  ,297.16   ,-0.0173,0.9862 ,-587.70   ,577.40  
+                               Parameter Estimates                                
+                       ,Parameter ,Std. Err., T-stat,P-value, Lower CI , Upper CI 
+const                  ,-2.241e+04,5385.4   ,-4.1614,0.0000 ,-3.297e+04,-1.185e+04
+L_0_entry_rate_whole   ,7530.2    ,4130.4   ,1.8231 ,0.0683 ,-566.23   ,1.563e+04 
+L_0_log_gdp            ,4101.9    ,1651.8   ,2.4833 ,0.0130 ,863.99    ,7339.7    
+L_0_log_restriction_2_0,518.04    ,896.85   ,0.5776 ,0.5635 ,-1240.0   ,2276.1    
+L_1_entry_rate_whole   ,218.07    ,3285.1   ,0.0664 ,0.9471 ,-6221.4   ,6657.5    
+L_1_log_gdp            ,-4394.0   ,1650.8   ,-2.6617,0.0078 ,-7630.0   ,-1158.1   
+L_1_log_restriction_2_0,445.71    ,993.55   ,0.4486 ,0.6537 ,-1501.9   ,2393.3    
+log_emp_cohort         ,1322.7    ,209.47   ,6.3146 ,0.0000 ,912.11    ,1733.3    
 
-F-test for Poolability: 21.323
+F-test for Poolability: 50.241
 P-value: 0.0000
-Distribution: F(200,5749)
+Distribution: F(281,9237)
 
 Included effects: Entity, Time

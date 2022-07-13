@@ -1,36 +1,36 @@
                      PanelOLS Estimation Summary                      
-Dep. Variable:   ,death_rate      ,  R-squared:           ,0.2344     
-Estimator:       ,PanelOLS        ,  R-squared (Between): ,0.2204     
-No. Observations:,285099          ,  R-squared (Within):  ,0.2410     
-Date:            ,Tue, Jul 05 2022,  R-squared (Overall): ,0.2495     
-Time:            ,15:47:22        ,  Log-likelihood       ,2.641e+05  
-Cov. Estimator:  ,Clustered       ,                       ,           
-                 ,                ,  F-statistic:         ,9691.3     
+Dep. Variable:   ,death_rate      ,  R-squared:           ,0.6151     
+Estimator:       ,PanelOLS        ,  R-squared (Between): ,0.1476     
+No. Observations:,413507          ,  R-squared (Within):  ,0.5990     
+Date:            ,Wed, Jul 13 2022,  R-squared (Overall): ,0.4674     
+Time:            ,10:38:27        ,  Log-likelihood       ,7.519e+05  
+Cov. Estimator:  ,Robust          ,                       ,           
+                 ,                ,  F-statistic:         ,4.575e+05  
 Entities:        ,262             ,  P-value              ,0.0000     
-Avg Obs:         ,1088.2          ,  Distribution:        ,F(9,284885)
+Avg Obs:         ,1578.3          ,  Distribution:        ,F(9,413215)
 Min Obs:         ,0.0000          ,                       ,           
-Max Obs:         ,1893.0          ,  F-statistic (robust):,174.99     
+Max Obs:         ,1893.0          ,  F-statistic (robust):,2.572e+04  
                  ,                ,  P-value              ,0.0000     
-Time periods:    ,42              ,  Distribution:        ,F(9,284885)
-Avg Obs:         ,6788.1          ,                       ,           
+Time periods:    ,42              ,  Distribution:        ,F(9,413215)
+Avg Obs:         ,9845.4          ,                       ,           
 Min Obs:         ,0.0000          ,                       ,           
-Max Obs:         ,9124.0          ,                       ,           
+Max Obs:         ,1.318e+04       ,                       ,           
                  ,                ,                       ,           
                               Parameter Estimates                               
                           ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
-C(age_grp_dummy)[T.1.0]   ,0.2243   ,0.1091   ,2.0560 ,0.0398 ,0.0105  ,0.4381  
-C(age_grp_dummy)[T.2.0]   ,0.1394   ,0.1071   ,1.3018 ,0.1930 ,-0.0705 ,0.3492  
-C(age_grp_dummy)[T.3.0]   ,0.1077   ,0.1072   ,1.0050 ,0.3149 ,-0.1023 ,0.3177  
-C(age_grp_dummy)[T.4.0]   ,0.0880   ,0.1075   ,0.8186 ,0.4130 ,-0.1227 ,0.2988  
-C(age_grp_dummy)[T.5.0]   ,0.0733   ,0.1089   ,0.6735 ,0.5006 ,-0.1401 ,0.2867  
-entry_rate_whole          ,0.0312   ,0.0922   ,0.3383 ,0.7351 ,-0.1496 ,0.2120  
-entry_rate_whole_cohort   ,0.2158   ,0.1109   ,1.9462 ,0.0516 ,-0.0015 ,0.4332  
-log_emp_cohort            ,-0.0002  ,0.0004   ,-0.4135,0.6793 ,-0.0009 ,0.0006  
-log_restriction_2_2       ,0.0379   ,0.0114   ,3.3369 ,0.0008 ,0.0157  ,0.0602  
-log_restriction_2_2_cohort,-0.0371  ,0.0126   ,-2.9468,0.0032 ,-0.0618 ,-0.0124 
+C(age_grp_dummy)[T.1.0]   ,0.1506   ,0.0093   ,16.280 ,0.0000 ,0.1325  ,0.1687  
+C(age_grp_dummy)[T.2.0]   ,0.0710   ,0.0093   ,7.6411 ,0.0000 ,0.0528  ,0.0892  
+C(age_grp_dummy)[T.3.0]   ,0.0431   ,0.0093   ,4.6295 ,0.0000 ,0.0248  ,0.0613  
+C(age_grp_dummy)[T.4.0]   ,0.0247   ,0.0093   ,2.6503 ,0.0080 ,0.0064  ,0.0429  
+C(age_grp_dummy)[T.5.0]   ,0.0132   ,0.0093   ,1.4126 ,0.1578 ,-0.0051 ,0.0314  
+entry_rate_whole          ,-0.1377  ,0.0088   ,-15.687,0.0000 ,-0.1548 ,-0.1205 
+entry_rate_whole_cohort   ,0.1546   ,0.0083   ,18.546 ,0.0000 ,0.1383  ,0.1710  
+log_emp_cohort            ,0.0008   ,9.221e-05,8.9440 ,0.0000 ,0.0006  ,0.0010  
+log_restriction_2_2       ,0.0296   ,0.0012   ,24.470 ,0.0000 ,0.0272  ,0.0319  
+log_restriction_2_2_cohort,-0.0223  ,0.0013   ,-16.900,0.0000 ,-0.0249 ,-0.0197 
 
-F-test for Poolability: 171.21
+F-test for Poolability: 873.95
 P-value: 0.0000
-Distribution: F(204,284885)
+Distribution: F(282,413215)
 
 Included effects: Entity, Time

@@ -15,3 +15,5 @@ model:
   life_path_sec_sz_ag_path: "data/cleaned/life_path_sec_sz_ag.csv"
   average_sec_sz_ag_path: "data/cleaned/average_sec_sz_ag.csv"
   results_tables_path: "results/tables"
+  dep_var: ["death_rate", "log_emp", "job_creation_rate", "net_job_creation_rate", "job_destruction_rate", "estabs_exit", "estabs_exit_rate", "net_job_creation", "estabs_entry_rate", "reallocation_rate"]
+  error_type: "heteroskedastic"
