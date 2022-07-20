@@ -13,6 +13,7 @@ from pathlib import Path
 from linearmodels.panel import PanelOLS
 
 from Src.utility import parse_config
+from Src.utility import coef_dict
 
 # options of pandas
 pd.options.mode.use_inf_as_na = True
@@ -62,7 +63,7 @@ def model_life_path(config, depend_var):
             exo_vars.append(f"L_{lags}_log_gdp")
         
         exo_vars.append(f"full_chg_restriction_2_0")
-        exo_vars.append(f"L_{age + 1}_log_restriction_2_0")
+        exo_vars.append(f"pre_cohort_log_restriction_2_0")
         exo_vars.append(f"L_{age + 1}_entry_rate_whole")
         exo_vars.append(f"L_{age + 1}_log_gdp")
         
@@ -99,17 +100,11 @@ def model_life_path(config, depend_var):
         
         # get input row in dictionary format
         # key = col_name
-        dict1 = {}
-        v_names = [f"L_{age + 1}_log_restriction_2_0", f"full_chg_restriction_2_0"]
-        for v_name in v_names:
-            coefs_value = res.params[v_name]
-            lower_ci = res.conf_int().loc[v_name, "lower"]
-            upper_ci = res.conf_int().loc[v_name, "upper"]
-            dict1.update({"name": v_name, "age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
-            coefs_cohort.append(dict1)
+        v_names = [f"pre_cohort_log_restriction_2_0", f"full_chg_restriction_2_0"]
+        coefs_cohort = coef_dict(v_names, res, coefs_cohort, age)
 
     df_coefs_cohort = pd.DataFrame(coefs_cohort)
-    df_coefs_age = df_coefs_age.sort_values(by=['name'])
+    df_coefs_cohort = df_coefs_cohort.sort_values(by=['name', 'age'])
     df_coefs_cohort.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_cohort_age_LP.csv") 
 
     ####################
@@ -136,7 +131,7 @@ def model_life_path(config, depend_var):
             exo_vars.append(f"L_{lags}_log_gdp")
         
         pre_entry_age = age + 1
-        exo_vars.append(f"L_{pre_entry_age}_log_restriction_2_0")
+        exo_vars.append(f"pre_cohort_log_restriction_2_0")
         exo_vars.append(f"L_{pre_entry_age}_entry_rate_whole")
         exo_vars.append(f"L_{pre_entry_age}_log_gdp")
         #exo_var_list.append(f"log_emp_cohort")
@@ -172,13 +167,8 @@ def model_life_path(config, depend_var):
         
         # get input row in dictionary format
         # key = col_name
-        dict1 = {}
-        v_name = f"L_{pre_entry_age}_log_restriction_2_0"
-        coefs_value = res.params[v_name]
-        lower_ci = res.conf_int().loc[v_name, "lower"]
-        upper_ci = res.conf_int().loc[v_name, "upper"]
-        dict1.update({"age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
-        coefs_age.append(dict1)
+        v_names = [f"pre_cohort_log_restriction_2_0"]
+        coefs_age = coef_dict(v_names, res, coefs_age, age)
 
     df_coefs_age = pd.DataFrame(coefs_age)
     df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_path_age_LP.csv")
@@ -218,7 +208,7 @@ def model_life_path_hetero(config, depend_var):
         # regression
         data = data.set_index(['sector', 'year'])
         pre_entry_age = age + 1
-        data["cross"] = data[f"L_{pre_entry_age}_log_restriction_2_0"] * data["large_firm"]
+        data["cross"] = data[f"pre_cohort_log_restriction_2_0"] * data["large_firm"]
         
         # create exogenous variable (list)
         exo_vars = []
@@ -227,7 +217,7 @@ def model_life_path_hetero(config, depend_var):
             exo_vars.append(f"L_{lags}_log_gdp")
         
         exo_vars.append(f"full_chg_restriction_2_0")
-        exo_vars.append(f"L_{pre_entry_age}_log_restriction_2_0")
+        exo_vars.append(f"pre_cohort_log_restriction_2_0")
         exo_vars.append(f"L_{pre_entry_age}_entry_rate_whole")
         exo_vars.append(f"L_{pre_entry_age}_log_gdp")
         exo_vars.append("large_firm")    
@@ -260,15 +250,10 @@ def model_life_path_hetero(config, depend_var):
         # key = col_name
         dict1 = {}
         v_names = ["cross", f"L_{pre_entry_age}_log_restriction_2_0", "large_firm"]
-        for v_name in v_names:
-            coefs_value = res.params[v_name]
-            lower_ci = res.conf_int().loc[v_name, "lower"]
-            upper_ci = res.conf_int().loc[v_name, "upper"]
-            dict1.update({"name":v_name, "age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
-            coefs_age.append(dict1)
+        coefs_age = coef_dict(v_names, res, coefs_age, age)
     
     df_coefs_age = pd.DataFrame(coefs_age)
-    df_coefs_age = df_coefs_age.sort_values(by=['name'])
+    df_coefs_age = df_coefs_age.sort_values(by=['name', 'age'])
     df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_cohort_age_h_LP.csv")
       
 
@@ -287,7 +272,7 @@ def model_life_path_hetero(config, depend_var):
         # regression
         pre_entry_age = age + 1
         data = data.set_index(['sector', 'year'])
-        data["cross"] = data[f"L_{pre_entry_age}_log_restriction_2_0"] * data["large_firm"]
+        data["cross"] = data[f"pre_cohort_log_restriction_2_0"] * data["large_firm"]
         
         # create exogenous variable (list)
         exo_vars = []
@@ -296,7 +281,7 @@ def model_life_path_hetero(config, depend_var):
             exo_vars.append(f"L_{lags}_entry_rate_whole")
             exo_vars.append(f"L_{lags}_log_gdp")
         
-        exo_vars.append(f"L_{pre_entry_age}_log_restriction_2_0")
+        exo_vars.append(f"pre_cohort_log_restriction_2_0")
         exo_vars.append(f"L_{pre_entry_age}_entry_rate_whole")
         exo_vars.append(f"L_{pre_entry_age}_log_gdp")
         exo_vars.append("large_firm")    
@@ -329,17 +314,12 @@ def model_life_path_hetero(config, depend_var):
         # get input row in dictionary format
         # key = col_name
         dict1 = {}
-        v_names = ["cross", f"L_{pre_entry_age}_log_restriction_2_0", "large_firm"]
-        for v_name in v_names:
-            coefs_value = res.params[v_name]
-            lower_ci = res.conf_int().loc[v_name, "lower"]
-            upper_ci = res.conf_int().loc[v_name, "upper"]
-            dict1.update({"name":v_name, "age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
-            coefs_age.append(dict1) 
+        v_names = ["cross", f"pre_cohort_log_restriction_2_0", "large_firm"]
+        coefs_age = coef_dict(v_names, res, coefs_age, age)
             
     df_coefs_age = pd.DataFrame(coefs_age)
-    df_coefs_age = df_coefs_age.sort_values(by=['name'])
-    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_life_age_h_LP.csv")
+    df_coefs_age = df_coefs_age.sort_values(by=['name', 'age'])
+    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_path_age_h_LP.csv")
        
             
         
@@ -385,7 +365,7 @@ def model_average(config, depend_var):
         exo_vars.append(f"L_{lags}_entry_rate_whole")
         exo_vars.append(f"L_{lags}_log_gdp")
     
-    exo_vars.append(f"L_{pre_entry_age}_log_restriction_2_0")
+    exo_vars.append(f"pre_cohort_log_restriction_2_0")
     exo_vars.append(f"L_{pre_entry_age}_entry_rate_whole")
     exo_vars.append(f"L_{pre_entry_age}_log_gdp")
     
@@ -420,13 +400,8 @@ def model_average(config, depend_var):
     # key = col_name
     dict1 = {}
     v_names = ["curr_chg_restriction_2_0",
-            "enter_chg_restriction_2_0", f"L_{pre_entry_age}_log_restriction_2_0"]
-    for v_name in v_names:
-        coefs_value = res.params[v_name]
-        lower_ci = res.conf_int().loc[v_name, "lower"]
-        upper_ci = res.conf_int().loc[v_name, "upper"]
-        dict1.update({"name":v_name, "age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
-        coefs_age.append(dict1)
+            "enter_chg_restriction_2_0", f"pre_cohort_log_restriction_2_0"]
+    coefs_age = coef_dict(v_names, res, coefs_age, age)
     
     # age = 2:5
     for age in range(2, 6):
@@ -448,7 +423,7 @@ def model_average(config, depend_var):
             exo_vars.append(f"L_{lags}_entry_rate_whole")
             exo_vars.append(f"L_{lags}_log_gdp")
         
-        exo_vars.append(f"L_{pre_entry_age}_log_restriction_2_0")
+        exo_vars.append(f"pre_cohort_log_restriction_2_0")
         exo_vars.append(f"L_{pre_entry_age}_entry_rate_whole")
         exo_vars.append(f"L_{pre_entry_age}_log_gdp")
         
@@ -481,18 +456,12 @@ def model_average(config, depend_var):
     
         # get input row in dictionary format
         # key = col_name
-        dict1 = {}
         v_names = ["curr_chg_restriction_2_0", "life_chg_restriction_2_0",
-                   "enter_chg_restriction_2_0", f"L_{pre_entry_age}_log_restriction_2_0"]
-        for v_name in v_names:
-            coefs_value = res.params[v_name]
-            lower_ci = res.conf_int().loc[v_name, "lower"]
-            upper_ci = res.conf_int().loc[v_name, "upper"]
-            dict1.update({"name":v_name, "age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
-            coefs_age.append(dict1) 
+                   "enter_chg_restriction_2_0", f"pre_cohort_log_restriction_2_0"]
+        coefs_age = coef_dict(v_names, res, coefs_age, age)
             
     df_coefs_age = pd.DataFrame(coefs_age)
-    df_coefs_age = df_coefs_age.sort_values(by=['name'])
+    df_coefs_age = df_coefs_age.sort_values(by=['name', 'age', 'age'])
     df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_average_age_LP.csv")
        
        
@@ -530,7 +499,7 @@ def model_average_hetero(config, depend_var):
     data = data.set_index(['sector', 'year'])
     
     pre_entry_age = age + 1
-    data["cross"] = data[f"L_{pre_entry_age}_log_restriction_2_0"] * data["large_firm"]
+    data["cross"] = data[f"pre_cohort_log_restriction_2_0"] * data["large_firm"]
     
     exo_vars = ["curr_chg_restriction_2_0", "enter_chg_restriction_2_0"]
     
@@ -538,7 +507,7 @@ def model_average_hetero(config, depend_var):
         exo_vars.append(f"L_{lags}_entry_rate_whole")
         exo_vars.append(f"L_{lags}_log_gdp")
     
-    exo_vars.append(f"L_{pre_entry_age}_log_restriction_2_0")
+    exo_vars.append(f"pre_cohort_log_restriction_2_0")
     exo_vars.append(f"L_{pre_entry_age}_entry_rate_whole")
     exo_vars.append(f"L_{pre_entry_age}_log_gdp")
     exo_vars.append("large_firm")    
@@ -569,13 +538,8 @@ def model_average_hetero(config, depend_var):
     # get input row in dictionary format
     # key = col_name
     dict1 = {}
-    v_names = ["cross", f"L_{pre_entry_age}_log_restriction_2_0", "large_firm"]
-    for v_name in v_names:
-        coefs_value = res.params[v_name]
-        lower_ci = res.conf_int().loc[v_name, "lower"]
-        upper_ci = res.conf_int().loc[v_name, "upper"]
-        dict1.update({"name":v_name, "age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
-        coefs_age.append(dict1) 
+    v_names = ["cross", f"pre_cohort_log_restriction_2_0", "large_firm"]
+    coefs_age = coef_dict(v_names, res, coefs_age, age)
     
     # age = 2:5
     for age in range(2, 6):
@@ -590,7 +554,7 @@ def model_average_hetero(config, depend_var):
         data = data.set_index(['sector', 'year'])
         
         pre_entry_age = age + 1
-        data["cross"] = data[f"L_{pre_entry_age}_log_restriction_2_0"] * data["large_firm"]
+        data["cross"] = data[f"pre_cohort_log_restriction_2_0"] * data["large_firm"]
         
         exo_vars = ["curr_chg_restriction_2_0", "life_chg_restriction_2_0", "enter_chg_restriction_2_0"]
         
@@ -598,7 +562,7 @@ def model_average_hetero(config, depend_var):
             exo_vars.append(f"L_{lags}_entry_rate_whole")
             exo_vars.append(f"L_{lags}_log_gdp")
         
-        exo_vars.append(f"L_{pre_entry_age}_log_restriction_2_0")
+        exo_vars.append(f"pre_cohort_log_restriction_2_0")
         exo_vars.append(f"L_{pre_entry_age}_entry_rate_whole")
         exo_vars.append(f"L_{pre_entry_age}_log_gdp")
         exo_vars.append("large_firm")    
@@ -629,16 +593,11 @@ def model_average_hetero(config, depend_var):
         # get input row in dictionary format
         # key = col_name
         dict1 = {}
-        v_names = ["cross", f"L_{pre_entry_age}_log_restriction_2_0", "large_firm"]
-        for v_name in v_names:
-            coefs_value = res.params[v_name]
-            lower_ci = res.conf_int().loc[v_name, "lower"]
-            upper_ci = res.conf_int().loc[v_name, "upper"]
-            dict1.update({"name":v_name, "age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
-            coefs_age.append(dict1) 
+        v_names = ["cross", f"pre_cohort_log_restriction_2_0", "large_firm"]
+        coefs_age = coef_dict(v_names, res, coefs_age, age)
             
     df_coefs_age = pd.DataFrame(coefs_age)
-    df_coefs_age = df_coefs_age.sort_values(by=['name'])
+    df_coefs_age = df_coefs_age.sort_values(by=['name', 'age', 'age'])
     df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_life_age_h_LP.csv")
 
 
@@ -677,8 +636,7 @@ def panel_reg(config, depend_var):
 
     # regression
     data1 = data.loc[:, ["L_0_log_restriction_2_0", "L_0_entry_rate_whole", "L_0_log_gdp",
-                    "avg_log_restriction_2_0", "avg_entry_rate_whole", "avg_log_gdp", 'sector_2', "log_emp_cohort", 
-                    depend_var, 'age_grp_dummy', 'firms']].dropna()
+                     'sector_2', depend_var, 'age_grp_dummy', 'firms']].dropna()
     mod1 = PanelOLS.from_formula(formula = f'{depend_var} ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
                                             + C(age_grp_dummy) + EntityEffects + TimeEffects',
                                             weights=data1['firms'], data = data1, drop_absorbed=True)
@@ -731,13 +689,13 @@ def model_cohort_robust(config, depend_var):
         # regression
         data = data.set_index(['sector', 'pre_cohort'])
         X_array = ['entry_rate_whole', 'entry_rate_whole_pre_cohort', 'age_grp_dummy', 'year', 'log_gdp', 'log_gdp_pre_cohort',
-                            'chg_restriction_2_0_{naics_curr}', f'log_restriction_2_{naics_curr}_pre_cohort',
+                            f'chg_restriction_2_0_{naics_curr}', f'log_restriction_2_{naics_curr}_pre_cohort',
                             'firms', 'sector_2', "log_emp_pre_cohort"]
         y_array = [depend_var]
         all_array = y_array + X_array
         
         data = data.loc[:, all_array].dropna()
-        mod = PanelOLS.from_formula(formula = f'{depend_var} ~ "chg_restriction_2_0_{naics_curr}" + log_restriction_2_{naics_curr}_pre_cohort \
+        mod = PanelOLS.from_formula(formula = f'{depend_var} ~ chg_restriction_2_0_{naics_curr} + log_restriction_2_{naics_curr}_pre_cohort \
                                                 + entry_rate_whole + entry_rate_whole_pre_cohort + log_emp_pre_cohort \
                                                 + C(age_grp_dummy) + EntityEffects + TimeEffects',
                                                 weights=data['firms'], data = data, drop_absorbed=True)

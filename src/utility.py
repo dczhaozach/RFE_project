@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 import pandas as pd
 import yaml
-
+import copy
 
 
 def parse_config(config_file):
@@ -53,3 +53,28 @@ def lag_variable(df, time_var, id_var, var, lags):
     df = df.reset_index()
     
     return df
+
+def coef_dict(v_names, res, ceof_dict, age):
+    """
+    coef_dict create dictionary of estimates and C.I. for selected parameters 
+    Args:
+        v_name [list]: list of parameters
+        res []: regression results
+        ceof_dict [dict]: dictionary to append 
+        
+    Return:
+        new dictionary
+    """
+    temp_dict = copy.deepcopy(ceof_dict)
+    for v_name in v_names:
+        dict1 = {}
+        coefs_value = res.params[v_name]
+        lower_ci = res.conf_int().loc[v_name, "lower"]
+        upper_ci = res.conf_int().loc[v_name, "upper"]
+        sign = (lower_ci * upper_ci > 0)
+        dict1.update({"name": v_name, "age": age, "Coef": coefs_value,
+                      "lower_ci": lower_ci, "upper_ci": upper_ci,
+                      "significance": sign}) 
+        temp_dict.append(dict1)
+    
+    return temp_dict

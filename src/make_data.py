@@ -266,7 +266,9 @@ def data_life_path(df_input):
             df.loc[df["age_grp_dummy"] == age, f"full_chg_restriction_2_0"] = \
                 (df.loc[df["age_grp_dummy"] == age, f"L_{0}_log_restriction_2_0"] - 
                  df.loc[df["age_grp_dummy"] == age, f"L_{age_pre}_log_restriction_2_0"])
-                        
+            df.loc[df["age_grp_dummy"] == age, f"pre_cohort_log_restriction_2_0"] = \
+                 df.loc[df["age_grp_dummy"] == age, f"L_{age_pre}_log_restriction_2_0"]
+                            
             df.loc[df["age_grp_dummy"] == age, "firms_cohort"] = df.loc[df["age_grp_dummy"] == age, f"L_{age}_firms"]
             df.loc[df["age_grp_dummy"] == age, "log_emp_cohort"] = np.log(df.loc[df["age_grp_dummy"] == age, f"L_{age}_emp"])
             df.loc[df["age_grp_dummy"] == age, "log_emp_chg"] = np.log(df.loc[df["age_grp_dummy"] == age, "emp"]) - \
@@ -435,7 +437,7 @@ def data_cohort_robust(df_input):
         df[f"log_restriction_2_{naics}_pre_cohort"] = np.log(df[f"industry_restrictions_2_0_{naics}_pre_cohort"])
 
         # changes in log regulation
-        df["chg_restriction_2_0_{naics}"] = df[f"log_restriction_2_{naics}"] - df[f"log_restriction_2_{naics}_pre_cohort"]
+        df[f"chg_restriction_2_0_{naics}"] = df[f"log_restriction_2_{naics}"] - df[f"log_restriction_2_{naics}_pre_cohort"]
     
     # controls
     gdp = gdp.rename(columns={"year": "pre_cohort", 
