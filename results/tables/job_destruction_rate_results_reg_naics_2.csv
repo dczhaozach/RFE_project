@@ -1,36 +1,36 @@
                        PanelOLS Estimation Summary                        
-Dep. Variable:   ,job_destruction_rate,  R-squared:           ,0.2914     
-Estimator:       ,PanelOLS            ,  R-squared (Between): ,0.0703     
-No. Observations:,454072              ,  R-squared (Within):  ,0.2309     
-Date:            ,Wed, Jul 13 2022    ,  R-squared (Overall): ,0.1888     
-Time:            ,10:12:25            ,  Log-likelihood       ,-1.456e+06 
+Dep. Variable:   ,job_destruction_rate,  R-squared:           ,0.2883     
+Estimator:       ,PanelOLS            ,  R-squared (Between): ,0.0619     
+No. Observations:,448810              ,  R-squared (Within):  ,0.2254     
+Date:            ,Tue, Jul 19 2022    ,  R-squared (Overall): ,0.1821     
+Time:            ,12:27:54            ,  Log-likelihood       ,-1.437e+06 
 Cov. Estimator:  ,Robust              ,                       ,           
-                 ,                    ,  F-statistic:         ,4.456e+05  
+                 ,                    ,  F-statistic:         ,4.402e+05  
 Entities:        ,262                 ,  P-value              ,0.0000     
-Avg Obs:         ,1733.1              ,  Distribution:        ,F(9,453780)
+Avg Obs:         ,1713.0              ,  Distribution:        ,F(9,448518)
 Min Obs:         ,0.0000              ,                       ,           
-Max Obs:         ,1915.0              ,  F-statistic (robust):,1.501e+04  
+Max Obs:         ,1893.0              ,  F-statistic (robust):,1.523e+04  
                  ,                    ,  P-value              ,0.0000     
-Time periods:    ,46                  ,  Distribution:        ,F(9,453780)
-Avg Obs:         ,9871.1              ,                       ,           
+Time periods:    ,42                  ,  Distribution:        ,F(9,448518)
+Avg Obs:         ,1.069e+04           ,                       ,           
 Min Obs:         ,0.0000              ,                       ,           
 Max Obs:         ,1.432e+04           ,                       ,           
                  ,                    ,                       ,           
                               Parameter Estimates                               
                           ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
-C(age_grp_dummy)[T.1.0]   ,14.030   ,1.3343   ,10.515 ,0.0000 ,11.415  ,16.645  
-C(age_grp_dummy)[T.2.0]   ,9.3357   ,1.3375   ,6.9798 ,0.0000 ,6.7142  ,11.957  
-C(age_grp_dummy)[T.3.0]   ,6.5919   ,1.3390   ,4.9231 ,0.0000 ,3.9676  ,9.2163  
-C(age_grp_dummy)[T.4.0]   ,4.5419   ,1.3424   ,3.3834 ,0.0007 ,1.9108  ,7.1729  
-C(age_grp_dummy)[T.5.0]   ,3.2676   ,1.3409   ,2.4369 ,0.0148 ,0.6395  ,5.8957  
-entry_rate_whole          ,-21.243  ,1.0459   ,-20.310,0.0000 ,-23.293 ,-19.193 
-entry_rate_whole_cohort   ,19.162   ,1.0187   ,18.809 ,0.0000 ,17.165  ,21.158  
-log_emp_cohort            ,0.0013   ,0.0131   ,0.1014 ,0.9192 ,-0.0244 ,0.0270  
-log_restriction_2_2       ,1.1514   ,0.1776   ,6.4840 ,0.0000 ,0.8033  ,1.4994  
-log_restriction_2_2_cohort,0.3173   ,0.1952   ,1.6260 ,0.1040 ,-0.0652 ,0.6998  
+C(age_grp_dummy)[T.1.0]   ,14.013   ,1.2672   ,11.058 ,0.0000 ,11.530  ,16.497  
+C(age_grp_dummy)[T.2.0]   ,9.3382   ,1.2698   ,7.3539 ,0.0000 ,6.8494  ,11.827  
+C(age_grp_dummy)[T.3.0]   ,6.6085   ,1.2709   ,5.2000 ,0.0000 ,4.1177  ,9.0994  
+C(age_grp_dummy)[T.4.0]   ,4.5515   ,1.2745   ,3.5713 ,0.0004 ,2.0536  ,7.0494  
+C(age_grp_dummy)[T.5.0]   ,3.2759   ,1.2728   ,2.5738 ,0.0101 ,0.7813  ,5.7705  
+entry_rate_whole          ,-21.024  ,1.0442   ,-20.134,0.0000 ,-23.071 ,-18.978 
+entry_rate_whole_cohort   ,18.233   ,1.0067   ,18.112 ,0.0000 ,16.260  ,20.206  
+log_emp_cohort            ,0.0078   ,0.0131   ,0.5953 ,0.5516 ,-0.0179 ,0.0335  
+log_restriction_2_2       ,1.2469   ,0.1782   ,6.9978 ,0.0000 ,0.8976  ,1.5961  
+log_restriction_2_2_cohort,0.2176   ,0.1898   ,1.1465 ,0.2516 ,-0.1544 ,0.5896  
 
-F-test for Poolability: 662.13
+F-test for Poolability: 656.67
 P-value: 0.0000
-Distribution: F(282,453780)
+Distribution: F(282,448518)
 
 Included effects: Entity, Time

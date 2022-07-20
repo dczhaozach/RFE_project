@@ -1,36 +1,36 @@
                        PanelOLS Estimation Summary                       
-Dep. Variable:   ,job_destruction_rate,  R-squared:           ,0.0160    
-Estimator:       ,PanelOLS            ,  R-squared (Between): ,0.0585    
-No. Observations:,3186                ,  R-squared (Within):  ,-0.0404   
-Date:            ,Wed, Jul 13 2022    ,  R-squared (Overall): ,-0.0336   
-Time:            ,10:11:53            ,  Log-likelihood       ,-1.301e+04
+Dep. Variable:   ,job_destruction_rate,  R-squared:           ,0.0177    
+Estimator:       ,PanelOLS            ,  R-squared (Between): ,-0.1371   
+No. Observations:,3030                ,  R-squared (Within):  ,-0.0437   
+Date:            ,Tue, Jul 19 2022    ,  R-squared (Overall): ,-0.0500   
+Time:            ,12:27:25            ,  Log-likelihood       ,-1.238e+04
 Cov. Estimator:  ,Robust              ,                       ,          
-                 ,                    ,  F-statistic:         ,5.6521    
+                 ,                    ,  F-statistic:         ,5.9454    
 Entities:        ,17                  ,  P-value              ,0.0000    
-Avg Obs:         ,187.41              ,  Distribution:        ,F(9,3126) 
+Avg Obs:         ,178.24              ,  Distribution:        ,F(9,2972) 
 Min Obs:         ,0.0000              ,                       ,          
-Max Obs:         ,277.00              ,  F-statistic (robust):,4.2060    
+Max Obs:         ,266.00              ,  F-statistic (robust):,4.6407    
                  ,                    ,  P-value              ,0.0000    
-Time periods:    ,40                  ,  Distribution:        ,F(9,3126) 
-Avg Obs:         ,79.650              ,                       ,          
-Min Obs:         ,0.0000              ,                       ,          
+Time periods:    ,36                  ,  Distribution:        ,F(9,2972) 
+Avg Obs:         ,84.167              ,                       ,          
+Min Obs:         ,74.000              ,                       ,          
 Max Obs:         ,99.000              ,                       ,          
                  ,                    ,                       ,          
                              Parameter Estimates                             
                        ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
-const                  ,3.1819   ,24.603   ,0.1293 ,0.8971 ,-45.058 ,51.422  
-L_0_entry_rate_whole   ,-48.689  ,25.153   ,-1.9357,0.0530 ,-98.006 ,0.6290  
-L_0_log_gdp            ,-8.2374  ,3.0539   ,-2.6973,0.0070 ,-14.225 ,-2.2495 
-L_0_log_restriction_2_0,1.6854   ,3.5524   ,0.4744 ,0.6352 ,-5.2799 ,8.6508  
-L_2_entry_rate_whole   ,56.859   ,24.061   ,2.3631 ,0.0182 ,9.6818  ,104.04  
-L_2_log_gdp            ,10.054   ,3.0888   ,3.2550 ,0.0011 ,3.9977  ,16.110  
-L_2_log_restriction_2_0,0.5518   ,3.8051   ,0.1450 ,0.8847 ,-6.9089 ,8.0125  
-cross                  ,0.4597   ,0.9709   ,0.4735 ,0.6359 ,-1.4439 ,2.3633  
-large_firm             ,-9.7332  ,10.714   ,-0.9084,0.3637 ,-30.741 ,11.274  
-log_emp_cohort         ,-1.0732  ,0.7621   ,-1.4082,0.1592 ,-2.5675 ,0.4210  
+const                  ,-7.0145  ,27.731   ,-0.2530,0.8003 ,-61.388 ,47.359  
+L_0_entry_rate_whole   ,-60.006  ,27.226   ,-2.2040,0.0276 ,-113.39 ,-6.6227 
+L_0_log_gdp            ,-9.5969  ,3.2578   ,-2.9458,0.0032 ,-15.985 ,-3.2090 
+L_0_log_restriction_2_0,1.9156   ,3.8816   ,0.4935 ,0.6217 ,-5.6953 ,9.5266  
+L_2_entry_rate_whole   ,61.893   ,25.333   ,2.4432 ,0.0146 ,12.222  ,111.56  
+L_2_log_gdp            ,11.019   ,3.1827   ,3.4622 ,0.0005 ,4.7785  ,17.259  
+L_2_log_restriction_2_0,1.6649   ,4.2810   ,0.3889 ,0.6974 ,-6.7291 ,10.059  
+cross                  ,0.3621   ,1.0050   ,0.3603 ,0.7187 ,-1.6084 ,2.3326  
+large_firm             ,-8.8578  ,11.141   ,-0.7951,0.4266 ,-30.703 ,12.987  
+log_emp_cohort         ,-1.2081  ,0.7946   ,-1.5204,0.1285 ,-2.7662 ,0.3499  
 
-F-test for Poolability: 4.4634
+F-test for Poolability: 4.4599
 P-value: 0.0000
-Distribution: F(50,3126)
+Distribution: F(48,2972)
 
 Included effects: Entity, Time

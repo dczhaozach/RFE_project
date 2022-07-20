@@ -1,36 +1,36 @@
                        PanelOLS Estimation Summary                        
-Dep. Variable:   ,net_job_creation_rate,  R-squared:           ,0.0520    
-Estimator:       ,PanelOLS             ,  R-squared (Between): ,-3.0073   
-No. Observations:,3060                 ,  R-squared (Within):  ,-0.0366   
-Date:            ,Wed, Jul 13 2022     ,  R-squared (Overall): ,-0.1182   
-Time:            ,10:10:55             ,  Log-likelihood       ,-1.297e+04
+Dep. Variable:   ,net_job_creation_rate,  R-squared:           ,0.0554    
+Estimator:       ,PanelOLS             ,  R-squared (Between): ,-4.0843   
+No. Observations:,2978                 ,  R-squared (Within):  ,-0.0736   
+Date:            ,Tue, Jul 19 2022     ,  R-squared (Overall): ,-0.2006   
+Time:            ,12:26:34             ,  Log-likelihood       ,-1.259e+04
 Cov. Estimator:  ,Robust               ,                       ,          
-                 ,                     ,  F-statistic:         ,18.295    
+                 ,                     ,  F-statistic:         ,19.021    
 Entities:        ,17                   ,  P-value              ,0.0000    
-Avg Obs:         ,180.00               ,  Distribution:        ,F(9,3002) 
+Avg Obs:         ,175.18               ,  Distribution:        ,F(9,2921) 
 Min Obs:         ,0.0000               ,                       ,          
-Max Obs:         ,272.00               ,  F-statistic (robust):,11.183    
+Max Obs:         ,265.00               ,  F-statistic (robust):,11.610    
                  ,                     ,  P-value              ,0.0000    
-Time periods:    ,39                   ,  Distribution:        ,F(9,3002) 
-Avg Obs:         ,78.462               ,                       ,          
-Min Obs:         ,0.0000               ,                       ,          
+Time periods:    ,35                   ,  Distribution:        ,F(9,2921) 
+Avg Obs:         ,85.086               ,                       ,          
+Min Obs:         ,76.000               ,                       ,          
 Max Obs:         ,97.000               ,                       ,          
                  ,                     ,                       ,          
                              Parameter Estimates                             
                        ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
-const                  ,28.332   ,38.392   ,0.7380 ,0.4606 ,-46.945 ,103.61  
-L_0_entry_rate_whole   ,78.309   ,29.608   ,2.6449 ,0.0082 ,20.255  ,136.36  
-L_0_log_gdp            ,10.867   ,3.6214   ,3.0007 ,0.0027 ,3.7662  ,17.968  
-L_0_log_restriction_2_0,-1.3905  ,3.7557   ,-0.3702,0.7112 ,-8.7544 ,5.9734  
-L_3_entry_rate_whole   ,-62.575  ,26.667   ,-2.3466,0.0190 ,-114.86 ,-10.288 
-L_3_log_gdp            ,-15.431  ,3.4906   ,-4.4207,0.0000 ,-22.275 ,-8.5868 
-L_3_log_restriction_2_0,-2.5626  ,4.3428   ,-0.5901,0.5552 ,-11.078 ,5.9525  
-cross                  ,1.2916   ,1.0553   ,1.2240 ,0.2211 ,-0.7775 ,3.3608  
-large_firm             ,-2.1560  ,11.441   ,-0.1884,0.8505 ,-24.589 ,20.277  
-log_emp_cohort         ,3.3404   ,0.9105   ,3.6687 ,0.0002 ,1.5551  ,5.1257  
+const                  ,46.126   ,39.683   ,1.1624 ,0.2452 ,-31.683 ,123.93  
+L_0_entry_rate_whole   ,88.244   ,30.556   ,2.8880 ,0.0039 ,28.331  ,148.16  
+L_0_log_gdp            ,9.2434   ,3.7168   ,2.4869 ,0.0129 ,1.9556  ,16.531  
+L_0_log_restriction_2_0,-0.6398  ,3.8255   ,-0.1672,0.8672 ,-8.1407 ,6.8611  
+L_3_entry_rate_whole   ,-58.601  ,27.207   ,-2.1539,0.0313 ,-111.95 ,-5.2532 
+L_3_log_gdp            ,-15.122  ,3.5249   ,-4.2902,0.0000 ,-22.034 ,-8.2109 
+L_3_log_restriction_2_0,-4.2428  ,4.5243   ,-0.9378,0.3484 ,-13.114 ,4.6284  
+cross                  ,1.2527   ,1.0524   ,1.1903 ,0.2340 ,-0.8109 ,3.3163  
+large_firm             ,-1.3964  ,11.450   ,-0.1220,0.9029 ,-23.848 ,21.055  
+log_emp_cohort         ,3.1418   ,0.9229   ,3.4044 ,0.0007 ,1.3323  ,4.9513  
 
-F-test for Poolability: 4.1854
+F-test for Poolability: 4.3716
 P-value: 0.0000
-Distribution: F(48,3002)
+Distribution: F(47,2921)
 
 Included effects: Entity, Time

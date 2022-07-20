@@ -44,7 +44,6 @@ def model_life_path(config, depend_var):
     # Regression including controls at entry by each age
     ####################
     coefs_cohort = []
-    
     for age in range(1, 6):
         # load data
         data = df
@@ -57,27 +56,33 @@ def model_life_path(config, depend_var):
         data = data.set_index(['sector', 'year'])
         
         # create exogenous variable (list)
-        exo_var_list = []
-        exo_var_list.append(f"L_0_log_restriction_2_0")
-        exo_var_list.append(f"L_0_entry_rate_whole")
-        exo_var_list.append(f"L_0_log_gdp")
-        exo_var_list.append(f"L_{age}_log_restriction_2_0")
-        exo_var_list.append(f"L_{age}_entry_rate_whole")
-        exo_var_list.append(f"L_{age}_log_gdp")
-        exo_var_list.append(f"L_{age}_log_emp")
+        exo_vars = []
+        for lags in range(0, age+1):
+            exo_vars.append(f"L_{lags}_entry_rate_whole")
+            exo_vars.append(f"L_{lags}_log_gdp")
         
-        #exo_var_list.append(f"log_emp_cohort")
+        exo_vars.append(f"full_chg_restriction_2_0")
+        exo_vars.append(f"L_{age + 1}_log_restriction_2_0")
+        exo_vars.append(f"L_{age + 1}_entry_rate_whole")
+        exo_vars.append(f"L_{age + 1}_log_gdp")
         
-        exo_var_list.sort()
-        sample_data = data.loc[:, [depend_var, 'sector_2', 'firms_cohort'] + exo_var_list].dropna()
-        exo_vars = sm.add_constant(sample_data[exo_var_list])
+        #exo_vars.append(f"log_emp_cohort")
+        exo_vars.sort()
+        
+        wgt_var = ["firms_cohort"]
+        cluster_vars = ["sector_2"]
+        
+        var_lst = [depend_var] + exo_vars + wgt_var + cluster_vars
+        sample_data = data.loc[:, var_lst].dropna()
+        exo_vars_lst = sm.add_constant(sample_data[exo_vars])
         
         # regression
-        mod = PanelOLS(sample_data[depend_var], exo_vars, weights=sample_data['firms_cohort'], entity_effects=True, time_effects=True)
+        mod = PanelOLS(sample_data[depend_var], exo_vars_lst, weights=sample_data[wgt_var], 
+                       entity_effects=True, time_effects=True)
         
         match error_type:
             case "clustered":
-                res = mod.fit(cov_type='clustered', clusters=sample_data.sector_2)
+                res = mod.fit(cov_type='clustered', clusters=sample_data[cluster_vars])
             case "heteroskedastic":
                 res = mod.fit(cov_type='heteroskedastic')
                 
@@ -95,14 +100,16 @@ def model_life_path(config, depend_var):
         # get input row in dictionary format
         # key = col_name
         dict1 = {}
-        v_name = f"L_{age}_log_restriction_2_0"
-        coefs_value = res.params[v_name]
-        lower_ci = res.conf_int().loc[v_name, "lower"]
-        upper_ci = res.conf_int().loc[v_name, "upper"]
-        dict1.update({"age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
-        coefs_cohort.append(dict1)
+        v_names = [f"L_{age + 1}_log_restriction_2_0", f"full_chg_restriction_2_0"]
+        for v_name in v_names:
+            coefs_value = res.params[v_name]
+            lower_ci = res.conf_int().loc[v_name, "lower"]
+            upper_ci = res.conf_int().loc[v_name, "upper"]
+            dict1.update({"name": v_name, "age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
+            coefs_cohort.append(dict1)
 
     df_coefs_cohort = pd.DataFrame(coefs_cohort)
+    df_coefs_age = df_coefs_age.sort_values(by=['name'])
     df_coefs_cohort.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_cohort_age_LP.csv") 
 
     ####################
@@ -122,27 +129,33 @@ def model_life_path(config, depend_var):
         data = data.set_index(['sector', 'year'])
         
         # create exogenous variable (list)
-        exo_var_list = []
-        for lags in range(0, age + 1):
-            exo_var_list.append(f"L_{lags}_log_restriction_2_0")
-            exo_var_list.append(f"L_{lags}_entry_rate_whole")
-            exo_var_list.append(f"L_{lags}_log_gdp")
-            #exo_var_list.append(f"L_{lags}_log_emp")
-
+        exo_vars = []
+        for lags in range(0, age+1):
+            exo_vars.append(f"L_{lags}_chg_restriction_2_0")
+            exo_vars.append(f"L_{lags}_entry_rate_whole")
+            exo_vars.append(f"L_{lags}_log_gdp")
         
+        pre_entry_age = age + 1
+        exo_vars.append(f"L_{pre_entry_age}_log_restriction_2_0")
+        exo_vars.append(f"L_{pre_entry_age}_entry_rate_whole")
+        exo_vars.append(f"L_{pre_entry_age}_log_gdp")
         #exo_var_list.append(f"log_emp_cohort")
         
-        exo_var_list.sort()
-        sample_data = data.loc[:, [depend_var, 'sector_2', 'firms_cohort'] + exo_var_list].dropna()
-        exo_vars = sm.add_constant(sample_data[exo_var_list])
+        exo_vars.sort()
+        wgt_var = ["firms_cohort"]
+        cluster_vars = ["sector_2"]
+        
+        var_lst = [depend_var] + exo_vars + wgt_var + cluster_vars
+        sample_data = data.loc[:, var_lst].dropna()
+        exo_vars_lst = sm.add_constant(sample_data[exo_vars])
         
         # regression
-        mod = PanelOLS(sample_data[depend_var], exo_vars, weights=sample_data['firms_cohort'],
+        mod = PanelOLS(sample_data[depend_var], exo_vars_lst, weights=sample_data[wgt_var],
                        entity_effects=True, time_effects=True)
         
         match error_type:
             case "clustered":
-                res = mod.fit(cov_type='clustered', clusters=sample_data.sector_2)
+                res = mod.fit(cov_type='clustered', clusters=sample_data[cluster_vars])
             case "heteroskedastic":
                 res = mod.fit(cov_type='heteroskedastic')
 
@@ -160,7 +173,7 @@ def model_life_path(config, depend_var):
         # get input row in dictionary format
         # key = col_name
         dict1 = {}
-        v_name = f"L_{age}_log_restriction_2_0"
+        v_name = f"L_{pre_entry_age}_log_restriction_2_0"
         coefs_value = res.params[v_name]
         lower_ci = res.conf_int().loc[v_name, "lower"]
         upper_ci = res.conf_int().loc[v_name, "upper"]
@@ -193,7 +206,7 @@ def model_life_path_hetero(config, depend_var):
     ####################
     # Regression including controls at entry by each age
     ####################
-    
+    coefs_age = []
     for age in range(1, 6):
         # load data
         data = df
@@ -204,26 +217,34 @@ def model_life_path_hetero(config, depend_var):
         
         # regression
         data = data.set_index(['sector', 'year'])
-        data["cross"] = data[f"L_{age}_log_restriction_2_0"] * data["large_firm"]
+        pre_entry_age = age + 1
+        data["cross"] = data[f"L_{pre_entry_age}_log_restriction_2_0"] * data["large_firm"]
         
         # create exogenous variable (list)
-        exo_var_list = []
-        exo_var_list.append(f"L_0_log_restriction_2_0")
-        exo_var_list.append(f"L_0_entry_rate_whole")
-        exo_var_list.append(f"L_0_log_gdp")
-        exo_var_list.append(f"L_{age}_log_restriction_2_0")
-        exo_var_list.append(f"L_{age}_entry_rate_whole")
-        exo_var_list.append(f"L_{age}_log_gdp")
+        exo_vars = []
+        for lags in range(0, age+1):
+            exo_vars.append(f"L_{lags}_entry_rate_whole")
+            exo_vars.append(f"L_{lags}_log_gdp")
         
-        exo_var_list.append(f"log_emp_cohort")
-        exo_var_list.append("large_firm")    
-        exo_var_list.append("cross")
-        exo_var_list.sort()
-        sample_data = data.loc[:, [depend_var] + exo_var_list].dropna()
-        exo_vars = sm.add_constant(sample_data[exo_var_list])
+        exo_vars.append(f"full_chg_restriction_2_0")
+        exo_vars.append(f"L_{pre_entry_age}_log_restriction_2_0")
+        exo_vars.append(f"L_{pre_entry_age}_entry_rate_whole")
+        exo_vars.append(f"L_{pre_entry_age}_log_gdp")
+        exo_vars.append("large_firm")    
+        exo_vars.append("cross")
+                
+        #exo_var_list.append(f"log_emp_cohort")
+        exo_vars.sort()
+        wgt_var = ["firms_cohort"]
+        cluster_vars = ["sector_2"]
+        
+        var_lst = [depend_var] + exo_vars + wgt_var + cluster_vars
+        sample_data = data.loc[:, var_lst].dropna()
+        exo_vars_lst = sm.add_constant(sample_data[exo_vars])
         
         # regression
-        mod = PanelOLS(sample_data[depend_var], exo_vars, entity_effects=True, time_effects=True)
+        mod = PanelOLS(sample_data[depend_var], exo_vars_lst, weights=sample_data[wgt_var],
+                       entity_effects=True, time_effects=True)
         res = mod.fit(cov_type = 'heteroskedastic')
 
         # results
@@ -233,12 +254,28 @@ def model_life_path_hetero(config, depend_var):
         # table
         file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_cohort_age_{age}_hetero.csv"
         with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(results.as_csv())  
+            f.write(results.as_csv())
+            
+        # get input row in dictionary format
+        # key = col_name
+        dict1 = {}
+        v_names = ["cross", f"L_{pre_entry_age}_log_restriction_2_0", "large_firm"]
+        for v_name in v_names:
+            coefs_value = res.params[v_name]
+            lower_ci = res.conf_int().loc[v_name, "lower"]
+            upper_ci = res.conf_int().loc[v_name, "upper"]
+            dict1.update({"name":v_name, "age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
+            coefs_age.append(dict1)
+    
+    df_coefs_age = pd.DataFrame(coefs_age)
+    df_coefs_age = df_coefs_age.sort_values(by=['name'])
+    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_cohort_age_h_LP.csv")
+      
 
     ####################
     # Regression including all controls in life path by each age
     ####################
-        
+    coefs_age = []    
     for age in range(1, 6):
         # load data
         data = df
@@ -248,24 +285,36 @@ def model_life_path_hetero(config, depend_var):
         data = data[data.age_grp_dummy == age]
         
         # regression
+        pre_entry_age = age + 1
         data = data.set_index(['sector', 'year'])
-        data["cross"] = data[f"L_{age}_log_restriction_2_0"] * data["large_firm"]
-        # create exogenous variable (list)
-        exo_var_list = []
-        for lags in range(0, age + 1):
-            exo_var_list.append(f"L_{lags}_log_restriction_2_0")
-            exo_var_list.append(f"L_{lags}_entry_rate_whole")
-            exo_var_list.append(f"L_{lags}_log_gdp")
+        data["cross"] = data[f"L_{pre_entry_age}_log_restriction_2_0"] * data["large_firm"]
         
-        exo_var_list.append(f"log_emp_cohort")
-        exo_var_list.append("large_firm")    
-        exo_var_list.append("cross")
-        exo_var_list.sort()
-        sample_data = data.loc[:, [depend_var] + exo_var_list].dropna()
-        exo_vars = sm.add_constant(sample_data[exo_var_list])
+        # create exogenous variable (list)
+        exo_vars = []
+        for lags in range(0, age + 1):
+            exo_vars.append(f"L_{lags}_chg_restriction_2_0")
+            exo_vars.append(f"L_{lags}_entry_rate_whole")
+            exo_vars.append(f"L_{lags}_log_gdp")
+        
+        exo_vars.append(f"L_{pre_entry_age}_log_restriction_2_0")
+        exo_vars.append(f"L_{pre_entry_age}_entry_rate_whole")
+        exo_vars.append(f"L_{pre_entry_age}_log_gdp")
+        exo_vars.append("large_firm")    
+        exo_vars.append("cross")
+                
+        #exo_var.append(f"log_emp_cohort")
+
+        exo_vars.sort()
+        wgt_var = ["firms_cohort"]
+        cluster_vars = ["sector_2"]
+        
+        var_lst = [depend_var] + exo_vars + wgt_var + cluster_vars
+        sample_data = data.loc[:, var_lst].dropna()
+        exo_vars_lst = sm.add_constant(sample_data[exo_vars])
         
         # regression
-        mod = PanelOLS(sample_data[depend_var], exo_vars, entity_effects=True, time_effects=True)
+        mod = PanelOLS(sample_data[depend_var], exo_vars_lst, weights=sample_data[wgt_var],
+                       entity_effects=True, time_effects=True)
         res = mod.fit(cov_type = 'heteroskedastic')
 
         # results
@@ -276,7 +325,22 @@ def model_life_path_hetero(config, depend_var):
         file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_path_age_{age}_hetero.csv"
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(results.as_csv())
-        
+            
+        # get input row in dictionary format
+        # key = col_name
+        dict1 = {}
+        v_names = ["cross", f"L_{pre_entry_age}_log_restriction_2_0", "large_firm"]
+        for v_name in v_names:
+            coefs_value = res.params[v_name]
+            lower_ci = res.conf_int().loc[v_name, "lower"]
+            upper_ci = res.conf_int().loc[v_name, "upper"]
+            dict1.update({"name":v_name, "age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
+            coefs_age.append(dict1) 
+            
+    df_coefs_age = pd.DataFrame(coefs_age)
+    df_coefs_age = df_coefs_age.sort_values(by=['name'])
+    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_life_age_h_LP.csv")
+       
             
         
 def model_average(config, depend_var):
@@ -297,67 +361,141 @@ def model_average(config, depend_var):
 
     df = pd.read_csv(Path.cwd()/cleaned_data_path)
     
+    # regression by age
+    coefs_age = [] 
+    
+    # age = 1
+    age = 1
+    
     # load data
     data = df
-    
+
     # sample restriction
     data = data[data.year > 1981]
+    data = data[data.age_grp_dummy == age]
     
     # regression
     data = data.set_index(['sector', 'year'])
-
-    # regression
-    data1 = data.loc[:, ["L_0_log_restriction_2_0", "L_0_entry_rate_whole", "L_0_log_gdp",
-                    "avg_log_restriction_2_0", "avg_entry_rate_whole", "avg_log_gdp", 'sector_2', "log_emp_cohort", 
-                    depend_var, 'age_grp_dummy', 'firms_cohort']].dropna()
-    #data1 = data1[data1['firms'] > 0]
-    mod1 = PanelOLS.from_formula(formula = f'{depend_var} ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
-                                            + avg_log_restriction_2_0 + avg_entry_rate_whole + avg_log_gdp + log_emp_cohort \
-                                            + C(age_grp_dummy) + EntityEffects + TimeEffects', 
-                                            weights=data1['firms_cohort'], data = data1, drop_absorbed=True)
     
+    # regression
+    pre_entry_age = age + 1
+    exo_vars = ["curr_chg_restriction_2_0", "enter_chg_restriction_2_0"]
+    
+    for lags in range(0, age + 1):
+        exo_vars.append(f"L_{lags}_entry_rate_whole")
+        exo_vars.append(f"L_{lags}_log_gdp")
+    
+    exo_vars.append(f"L_{pre_entry_age}_log_restriction_2_0")
+    exo_vars.append(f"L_{pre_entry_age}_entry_rate_whole")
+    exo_vars.append(f"L_{pre_entry_age}_log_gdp")
+    
+    exo_vars.sort()
+    wgt_var = ["firms_cohort"]
+
+    cluster_vars = ["sector_2"]
+    
+    var_lst = [depend_var] + exo_vars + wgt_var + cluster_vars
+    sample_data = data.loc[:, var_lst].dropna()
+    
+    exo_vars_lst = sm.add_constant(sample_data[exo_vars])
+    
+    # regression
+    mod = PanelOLS(sample_data[depend_var], exo_vars_lst, weights=sample_data[wgt_var],
+                entity_effects=True, time_effects=True)
+
     match error_type:
         case "clustered":
-            res1 = mod1.fit(cov_type='clustered', clusters=data1.sector_2)
+            res = mod.fit(cov_type='clustered', clusters=sample_data[cluster_vars])
         case "heteroskedastic":
-            res1 = mod1.fit(cov_type='heteroskedastic')
-    
+            res = mod.fit(cov_type='heteroskedastic')
 
     # results
-    results = res1.summary
+    results = res.summary
 
-    file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_average_all.csv"
+    file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_average_age_{age}.csv"
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(results.as_csv())
-        
-    # regression
-    data2 = data.loc[:, ["L_0_log_restriction_2_0", "L_0_entry_rate_whole", "L_0_log_gdp",
-                    "inc_avg_log_restriction_2_0", "cohort_log_restriction_2_0",
-                    "inc_avg_entry_rate_whole", "cohort_entry_rate_whole", 'sector_2', "log_emp_cohort",
-                    "inc_avg_log_gdp", "cohort_log_gdp",
-                    depend_var, 'age_grp_dummy', 'firms_cohort']].dropna()
-    mod2 = PanelOLS.from_formula(formula = f'{depend_var} ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
-                                            + cohort_log_restriction_2_0 + inc_avg_log_restriction_2_0 \
-                                            + inc_avg_entry_rate_whole + cohort_entry_rate_whole \
-                                            + inc_avg_log_gdp + cohort_log_gdp + log_emp_cohort \
-                                            + C(age_grp_dummy) + EntityEffects + TimeEffects',
-                                            weights=data2['firms_cohort'], data = data2, drop_absorbed=True)
 
-    match error_type:
-        case "clustered":
-            res2 = mod2.fit(cov_type='clustered', clusters=data2.sector_2)
-        case "heteroskedastic":
-            res2 = mod2.fit(cov_type='heteroskedastic')
+    # get input row in dictionary format
+    # key = col_name
+    dict1 = {}
+    v_names = ["curr_chg_restriction_2_0",
+            "enter_chg_restriction_2_0", f"L_{pre_entry_age}_log_restriction_2_0"]
+    for v_name in v_names:
+        coefs_value = res.params[v_name]
+        lower_ci = res.conf_int().loc[v_name, "lower"]
+        upper_ci = res.conf_int().loc[v_name, "upper"]
+        dict1.update({"name":v_name, "age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
+        coefs_age.append(dict1)
+    
+    # age = 2:5
+    for age in range(2, 6):
+        # load data
+        data = df
+    
+        # sample restriction
+        data = data[data.year > 1981]
+        data = data[data.age_grp_dummy == age]
+        
+        # regression
+        data = data.set_index(['sector', 'year'])
+        
+        # regression
+        pre_entry_age = age + 1
+        exo_vars = ["curr_chg_restriction_2_0", "life_chg_restriction_2_0", "enter_chg_restriction_2_0"]
+        
+        for lags in range(0, age + 1):
+            exo_vars.append(f"L_{lags}_entry_rate_whole")
+            exo_vars.append(f"L_{lags}_log_gdp")
+        
+        exo_vars.append(f"L_{pre_entry_age}_log_restriction_2_0")
+        exo_vars.append(f"L_{pre_entry_age}_entry_rate_whole")
+        exo_vars.append(f"L_{pre_entry_age}_log_gdp")
+        
+        exo_vars.sort()
+        wgt_var = ["firms_cohort"]
+
+        cluster_vars = ["sector_2"]
+        
+        var_lst = [depend_var] + exo_vars + wgt_var + cluster_vars
+        sample_data = data.loc[:, var_lst].dropna()
+        
+        exo_vars_lst = sm.add_constant(sample_data[exo_vars])
+        
+        # regression
+        mod = PanelOLS(sample_data[depend_var], exo_vars_lst, weights=sample_data[wgt_var],
+                       entity_effects=True, time_effects=True)
+    
+        match error_type:
+            case "clustered":
+                res = mod.fit(cov_type='clustered', clusters=sample_data[cluster_vars])
+            case "heteroskedastic":
+                res = mod.fit(cov_type='heteroskedastic')
+
+        # results
+        results = res.summary
+
+        file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_average_age_{age}.csv"
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(results.as_csv())
+    
+        # get input row in dictionary format
+        # key = col_name
+        dict1 = {}
+        v_names = ["curr_chg_restriction_2_0", "life_chg_restriction_2_0",
+                   "enter_chg_restriction_2_0", f"L_{pre_entry_age}_log_restriction_2_0"]
+        for v_name in v_names:
+            coefs_value = res.params[v_name]
+            lower_ci = res.conf_int().loc[v_name, "lower"]
+            upper_ci = res.conf_int().loc[v_name, "upper"]
+            dict1.update({"name":v_name, "age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
+            coefs_age.append(dict1) 
             
-    # results
-    results = res2.summary
-
-    file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_average_cohort_inc.csv"
-    with open(file_path, 'w', encoding='utf-8') as f:
-        f.write(results.as_csv())
-        
-        
-        
+    df_coefs_age = pd.DataFrame(coefs_age)
+    df_coefs_age = df_coefs_age.sort_values(by=['name'])
+    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_average_age_LP.csv")
+       
+       
 def model_average_hetero(config, depend_var):
     """
     model_average function load the clean data and run the regression
@@ -376,201 +514,132 @@ def model_average_hetero(config, depend_var):
     # load data
     data = df
     
+    # regression by age
+    coefs_age = [] 
+    
+    # age = 1
+    age = 1
+    # load data
+    data = df
+
     # sample restriction
     data = data[data.year > 1981]
+    data = data[data.age_grp_dummy == age]
     
     # regression
     data = data.set_index(['sector', 'year'])
     
+    pre_entry_age = age + 1
+    data["cross"] = data[f"L_{pre_entry_age}_log_restriction_2_0"] * data["large_firm"]
+    
+    exo_vars = ["curr_chg_restriction_2_0", "enter_chg_restriction_2_0"]
+    
+    for lags in range(0, age + 1):
+        exo_vars.append(f"L_{lags}_entry_rate_whole")
+        exo_vars.append(f"L_{lags}_log_gdp")
+    
+    exo_vars.append(f"L_{pre_entry_age}_log_restriction_2_0")
+    exo_vars.append(f"L_{pre_entry_age}_entry_rate_whole")
+    exo_vars.append(f"L_{pre_entry_age}_log_gdp")
+    exo_vars.append("large_firm")    
+    exo_vars.append("cross")
+    
+    exo_vars.sort()
+    wgt_var = ["firms_cohort"]
+    cluster_vars = ["sector_2"]
+    
+    var_lst = [depend_var] + exo_vars + wgt_var + cluster_vars
+    sample_data = data.loc[:, var_lst].dropna()
+    exo_vars_lst = sm.add_constant(sample_data[exo_vars])
+    
     # regression
-    data = data.loc[:, ["L_0_log_restriction_2_0", "L_0_entry_rate_whole", "L_0_log_gdp",
-                    "avg_log_restriction_2_0", "avg_entry_rate_whole", "avg_log_gdp", "log_emp_cohort",
-                    depend_var, 'age_grp_dummy', "large_firm", 'firms_cohort']].dropna()
-    mod = PanelOLS.from_formula(formula = f'{depend_var} ~ L_0_log_restriction_2_0  \
-        + L_0_entry_rate_whole + L_0_log_gdp + avg_entry_rate_whole + avg_log_gdp \
-        + avg_log_restriction_2_0 + large_firm + large_firm * avg_log_restriction_2_0 + log_emp_cohort \
-        + C(age_grp_dummy) + EntityEffects + TimeEffects',
-        weights=data['firms_cohort'], data = data, drop_absorbed=True)
+    mod = PanelOLS(sample_data[depend_var], exo_vars_lst, weights=sample_data[wgt_var],
+                    entity_effects=True, time_effects=True)
+
     res = mod.fit(cov_type = 'heteroskedastic')
 
     # results
     results = res.summary
-
-    file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_average_all_hetero.csv"
+    
+    file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_average_age_{age}_hetero.csv"
+    
     with open(file_path, 'w', encoding='utf-8') as f:
-        f.write(results.as_csv())  
-
-
-def model_average_age(config, depend_var):
-    """
-    model_average function load the clean data and run the regression
-    to study the effects of regulation on firm exit rates
-    Args:
-        config [str]: config file
-    Returns:
-        Final data
-    """    
-    error_type = config["model"]["error_type"]
+        f.write(results.as_csv()) 
     
-    # load data paths
-    cleaned_data_path = Path(config["model"]["average_sec_ag_path"])
-    results_tables_path = Path(config["model"]["results_tables_path"])
-
-    df = pd.read_csv(Path.cwd()/cleaned_data_path)
-    
-    # load data
-    data = df
-    
-    # sample restriction
-    data = data[data.year > 1981]
-    
-    # regression
-    data = data.set_index(['sector', 'year'])
-    
-    # age = 1
-    # regression
-    coefs_age = []
-    
-    age = 1
-    data1 = data.loc[data.age_grp_dummy == age, ["L_0_log_restriction_2_0", "L_0_entry_rate_whole", "L_0_log_gdp",
-                    "avg_log_restriction_2_0", "avg_entry_rate_whole", "avg_log_gdp", "sector_2", "log_emp_cohort",
-                    depend_var, 'firms_cohort']].dropna()
-
-    mod1 = PanelOLS.from_formula(formula = f'{depend_var} ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
-                                            + avg_log_restriction_2_0 + avg_entry_rate_whole + avg_log_gdp + log_emp_cohort \
-                                            + EntityEffects + TimeEffects',
-                                            weights=data1['firms_cohort'], data=data1, drop_absorbed=True)
-
-    match error_type:
-        case "clustered":
-            res1 = mod1.fit(cov_type='clustered', clusters=data1.sector_2)
-        case "heteroskedastic":
-            res1 = mod1.fit(cov_type='heteroskedastic')
-        
-    # results
-    results = res1.summary
-
-    file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_average_all_age_{age}.csv"
-    with open(file_path, 'w', encoding='utf-8') as f:
-        f.write(results.as_csv())
-        
-    # regression
-    data2 = data.loc[data.age_grp_dummy == age, ["L_0_log_restriction_2_0", "L_0_entry_rate_whole", "L_0_log_gdp",
-                    "cohort_log_restriction_2_0",
-                    "cohort_entry_rate_whole",
-                    "cohort_log_gdp", "sector_2", "log_emp_cohort", 'firms_cohort',
-                    depend_var]].dropna()
-    mod2 = PanelOLS.from_formula(formula = f'{depend_var} ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
-                                            + cohort_log_restriction_2_0 \
-                                            + cohort_entry_rate_whole \
-                                            + cohort_log_gdp \
-                                            + log_emp_cohort \
-                                            + EntityEffects + TimeEffects', 
-                                            weights=data2['firms_cohort'], data = data2, drop_absorbed=True)
-    match error_type:
-        case "clustered":
-            res2 = mod2.fit(cov_type='clustered', clusters=data2.sector_2)
-        case "heteroskedastic":
-            res2 = mod2.fit(cov_type='heteroskedastic')
-
-    # results
-    results = res2.summary
-
-    file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_average_cohort_inc_age_{age}.csv"
-    with open(file_path, 'w', encoding='utf-8') as f:
-        f.write(results.as_csv())
-        
-        
-    # coefs
-        
     # get input row in dictionary format
     # key = col_name
     dict1 = {}
+    v_names = ["cross", f"L_{pre_entry_age}_log_restriction_2_0", "large_firm"]
+    for v_name in v_names:
+        coefs_value = res.params[v_name]
+        lower_ci = res.conf_int().loc[v_name, "lower"]
+        upper_ci = res.conf_int().loc[v_name, "upper"]
+        dict1.update({"name":v_name, "age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
+        coefs_age.append(dict1) 
     
-    v_name = f"cohort_log_restriction_2_0"
-    coefs_value = res2.params[v_name]
-    lower_ci = res2.conf_int().loc[v_name, "lower"]
-    upper_ci = res2.conf_int().loc[v_name, "upper"]
-    dict1.update({"age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
-    coefs_age.append(dict1)
-    
-
-    coefs_age_2 = []
+    # age = 2:5
     for age in range(2, 6):
+        # load data
+        data = df
+    
+        # sample restriction
+        data = data[data.year > 1981]
+        data = data[data.age_grp_dummy == age]
+        
         # regression
-        data1 = data.loc[data.age_grp_dummy == age, ["L_0_log_restriction_2_0", "L_0_entry_rate_whole", "L_0_log_gdp",
-                        "avg_log_restriction_2_0", "avg_entry_rate_whole", "avg_log_gdp", "sector_2", "log_emp_cohort",
-                        depend_var, 'firms_cohort']].dropna()
+        data = data.set_index(['sector', 'year'])
         
-        mod1 = PanelOLS.from_formula(formula = f'{depend_var} ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
-                                                + avg_log_restriction_2_0 + avg_entry_rate_whole + avg_log_gdp + log_emp_cohort\
-                                                + EntityEffects + TimeEffects',
-                                                weights=data1['firms_cohort'], data = data1, drop_absorbed=True)
-        match error_type:
-            case "clustered":
-                res1 = mod1.fit(cov_type='clustered', clusters=data1.sector_2)
-            case "heteroskedastic":
-                res1 = mod1.fit(cov_type='heteroskedastic')
+        pre_entry_age = age + 1
+        data["cross"] = data[f"L_{pre_entry_age}_log_restriction_2_0"] * data["large_firm"]
         
-        # results
-        results = res1.summary
-
-        file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_average_all_age_{age}.csv"
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(results.as_csv())
-            
+        exo_vars = ["curr_chg_restriction_2_0", "life_chg_restriction_2_0", "enter_chg_restriction_2_0"]
+        
+        for lags in range(0, age + 1):
+            exo_vars.append(f"L_{lags}_entry_rate_whole")
+            exo_vars.append(f"L_{lags}_log_gdp")
+        
+        exo_vars.append(f"L_{pre_entry_age}_log_restriction_2_0")
+        exo_vars.append(f"L_{pre_entry_age}_entry_rate_whole")
+        exo_vars.append(f"L_{pre_entry_age}_log_gdp")
+        exo_vars.append("large_firm")    
+        exo_vars.append("cross")
+        
+        exo_vars.sort()
+        wgt_var = ["firms_cohort"]
+        cluster_vars = ["sector_2"]
+        
+        var_lst = [depend_var] + exo_vars + wgt_var + cluster_vars
+        sample_data = data.loc[:, var_lst].dropna()
+        exo_vars_lst = sm.add_constant(sample_data[exo_vars])
+        
         # regression
-        data2 = data.loc[data.age_grp_dummy == age, ["L_0_log_restriction_2_0", "L_0_entry_rate_whole", "L_0_log_gdp",
-                        "inc_avg_log_restriction_2_0", "cohort_log_restriction_2_0",
-                        "inc_avg_entry_rate_whole", "cohort_entry_rate_whole",
-                        "inc_avg_log_gdp", "cohort_log_gdp", "sector_2", "log_emp_cohort",
-                        depend_var, 'firms_cohort']].dropna()
-        mod2 = PanelOLS.from_formula(formula = f'{depend_var} ~ L_0_log_restriction_2_0 + L_0_entry_rate_whole + L_0_log_gdp \
-                                                + cohort_log_restriction_2_0 + inc_avg_log_restriction_2_0 \
-                                                + inc_avg_entry_rate_whole + cohort_entry_rate_whole \
-                                                + inc_avg_log_gdp + cohort_log_gdp + log_emp_cohort \
-                                                + EntityEffects + TimeEffects',
-                                                weights=data2['firms_cohort'], data = data2, drop_absorbed=True)
-        match error_type:
-            case "clustered":
-                res2 = mod2.fit(cov_type='clustered', clusters=data2.sector_2)
-            case "heteroskedastic":
-                res2 = mod2.fit(cov_type='heteroskedastic')
+        mod = PanelOLS(sample_data[depend_var], exo_vars_lst, weights=sample_data[wgt_var],
+                       entity_effects=True, time_effects=True)
+    
+        res = mod.fit(cov_type = 'heteroskedastic')
 
         # results
-        results = res2.summary
-
-        file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_average_cohort_inc_age_{age}.csv"
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(results.as_csv())
+        results = res.summary
         
-            # coefs
+        file_path = Path.cwd()/results_tables_path/f"{depend_var}_results_average_age_{age}_hetero.csv"
+        
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(results.as_csv()) 
         
         # get input row in dictionary format
         # key = col_name
         dict1 = {}
-        v_name = f"cohort_log_restriction_2_0"
-        coefs_value = res2.params[v_name]
-        lower_ci = res2.conf_int().loc[v_name, "lower"]
-        upper_ci = res2.conf_int().loc[v_name, "upper"]
-        dict1.update({"age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
-        coefs_age.append(dict1)
-        
-        # get input row in dictionary format
-        # key = col_name
-        dict2 = {}
-        v_name = f"inc_avg_log_restriction_2_0"
-        coefs_value = res2.params[v_name]
-        lower_ci = res2.conf_int().loc[v_name, "lower"]
-        upper_ci = res2.conf_int().loc[v_name, "upper"]
-        dict2.update({"age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
-        coefs_age_2.append(dict2)
-        
+        v_names = ["cross", f"L_{pre_entry_age}_log_restriction_2_0", "large_firm"]
+        for v_name in v_names:
+            coefs_value = res.params[v_name]
+            lower_ci = res.conf_int().loc[v_name, "lower"]
+            upper_ci = res.conf_int().loc[v_name, "upper"]
+            dict1.update({"name":v_name, "age": age, "Coef": coefs_value, "lower_ci": lower_ci, "upper_ci": upper_ci}) 
+            coefs_age.append(dict1) 
+            
     df_coefs_age = pd.DataFrame(coefs_age)
-    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_average_cohort_inc_age_LP.csv")
-        
-    df_coefs_age_2 = pd.DataFrame(coefs_age_2)
-    df_coefs_age_2.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_average_cohort_inc_age_LP_2.csv")
+    df_coefs_age = df_coefs_age.sort_values(by=['name'])
+    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_life_age_h_LP.csv")
 
 
 def panel_reg(config, depend_var):
@@ -627,7 +696,6 @@ def panel_reg(config, depend_var):
         f.write(results.as_csv())
         
         
-
 def model_cohort_robust(config, depend_var):
     """
     model_cohort function load the clean data and run the regression
@@ -661,16 +729,16 @@ def model_cohort_robust(config, depend_var):
         data = data[data.age_grp_dummy <= 5]
         
         # regression
-        data = data.set_index(['sector', 'cohort'])
-        X_array = ['entry_rate_whole', 'entry_rate_whole_cohort', 'age_grp_dummy', 'year', 'log_gdp', 'log_gdp_cohort',
-                            f'log_restriction_2_{naics_curr}', f'log_restriction_2_{naics_curr}_cohort',
-                            'firms', 'sector_2', "log_emp_cohort"]
+        data = data.set_index(['sector', 'pre_cohort'])
+        X_array = ['entry_rate_whole', 'entry_rate_whole_pre_cohort', 'age_grp_dummy', 'year', 'log_gdp', 'log_gdp_pre_cohort',
+                            'chg_restriction_2_0_{naics_curr}', f'log_restriction_2_{naics_curr}_pre_cohort',
+                            'firms', 'sector_2', "log_emp_pre_cohort"]
         y_array = [depend_var]
         all_array = y_array + X_array
         
         data = data.loc[:, all_array].dropna()
-        mod = PanelOLS.from_formula(formula = f'{depend_var} ~ log_restriction_2_{naics_curr} + log_restriction_2_{naics_curr}_cohort \
-                                                + entry_rate_whole + entry_rate_whole_cohort + log_emp_cohort \
+        mod = PanelOLS.from_formula(formula = f'{depend_var} ~ "chg_restriction_2_0_{naics_curr}" + log_restriction_2_{naics_curr}_pre_cohort \
+                                                + entry_rate_whole + entry_rate_whole_pre_cohort + log_emp_pre_cohort \
                                                 + C(age_grp_dummy) + EntityEffects + TimeEffects',
                                                 weights=data['firms'], data = data, drop_absorbed=True)
         match error_type:
@@ -709,6 +777,7 @@ def model_output(config_file):
     # Output
     ####################
     print("running models for each variables")
+
     for variable in variable_list:
         print(f"- for {variable}:")
         print(f"  - life path")
@@ -722,9 +791,6 @@ def model_output(config_file):
         
         print(f"  - average hetero")
         model_average_hetero(config, variable)
-        
-        print(f"  - average by age")
-        model_average_age(config, variable)
         
         print(f"  - panel regression")
         panel_reg(config, variable)

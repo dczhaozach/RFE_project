@@ -2,8 +2,8 @@
 Dep. Variable:   ,death_rate      ,  R-squared:           ,0.0170   
 Estimator:       ,PanelOLS        ,  R-squared (Between): ,-1.4872  
 No. Observations:,7287            ,  R-squared (Within):  ,0.0002   
-Date:            ,Wed, Jul 13 2022,  R-squared (Overall): ,-1.2829  
-Time:            ,10:38:07        ,  Log-likelihood       ,1.194e+04
+Date:            ,Tue, Jul 19 2022,  R-squared (Overall): ,-1.2829  
+Time:            ,12:24:17        ,  Log-likelihood       ,1.194e+04
 Cov. Estimator:  ,Robust          ,                       ,         
                  ,                ,  F-statistic:         ,17.314   
 Entities:        ,262             ,  P-value              ,0.0000   

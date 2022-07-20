@@ -2,8 +2,8 @@
 Dep. Variable:   ,job_destruction_rate,  R-squared:           ,0.1005    
 Estimator:       ,PanelOLS            ,  R-squared (Between): ,-6.0581   
 No. Observations:,2829                ,  R-squared (Within):  ,-0.1170   
-Date:            ,Wed, Jul 13 2022    ,  R-squared (Overall): ,-0.3915   
-Time:            ,10:11:53            ,  Log-likelihood       ,-1.141e+04
+Date:            ,Tue, Jul 19 2022    ,  R-squared (Overall): ,-0.3915   
+Time:            ,12:27:26            ,  Log-likelihood       ,-1.141e+04
 Cov. Estimator:  ,Robust              ,                       ,          
                  ,                    ,  F-statistic:         ,34.463    
 Entities:        ,17                  ,  P-value              ,0.0000    
@@ -11,8 +11,8 @@ Avg Obs:         ,166.41              ,  Distribution:        ,F(9,2775)
 Min Obs:         ,0.0000              ,                       ,          
 Max Obs:         ,254.00              ,  F-statistic (robust):,17.975    
                  ,                    ,  P-value              ,0.0000    
-Time periods:    ,37                  ,  Distribution:        ,F(9,2775) 
-Avg Obs:         ,76.459              ,                       ,          
+Time periods:    ,33                  ,  Distribution:        ,F(9,2775) 
+Avg Obs:         ,85.727              ,                       ,          
 Min Obs:         ,0.0000              ,                       ,          
 Max Obs:         ,98.000              ,                       ,          
                  ,                    ,                       ,          

@@ -2,8 +2,8 @@
 Dep. Variable:   ,estabs_exit_rate,  R-squared:           ,0.0296    
 Estimator:       ,PanelOLS        ,  R-squared (Between): ,-0.1414   
 No. Observations:,6835            ,  R-squared (Within):  ,-0.3472   
-Date:            ,Wed, Jul 13 2022,  R-squared (Overall): ,-0.2233   
-Time:            ,09:50:48        ,  Log-likelihood       ,-1.517e+04
+Date:            ,Tue, Jul 19 2022,  R-squared (Overall): ,-0.2233   
+Time:            ,12:28:55        ,  Log-likelihood       ,-1.517e+04
 Cov. Estimator:  ,Robust          ,                       ,          
                  ,                ,  F-statistic:         ,1.301e+04 
 Entities:        ,262             ,  P-value              ,0.0000    
@@ -11,8 +11,8 @@ Avg Obs:         ,26.088          ,  Distribution:        ,F(7,6558)
 Min Obs:         ,0.0000          ,                       ,          
 Max Obs:         ,32.000          ,  F-statistic (robust):,14.172    
                  ,                ,  P-value              ,0.0000    
-Time periods:    ,37              ,  Distribution:        ,F(7,6558) 
-Avg Obs:         ,184.73          ,                       ,          
+Time periods:    ,33              ,  Distribution:        ,F(7,6558) 
+Avg Obs:         ,207.12          ,                       ,          
 Min Obs:         ,0.0000          ,                       ,          
 Max Obs:         ,226.00          ,                       ,          
                  ,                ,                       ,          
@@ -23,9 +23,9 @@ L_0_entry_rate_whole   ,-3.4350  ,2.3750   ,-1.4463,0.1481 ,-8.0908 ,1.2207
 L_0_log_gdp            ,-3.0128  ,0.6210   ,-4.8516,0.0000 ,-4.2302 ,-1.7955 
 L_0_log_restriction_2_0,2.4253   ,0.4427   ,5.4782 ,0.0000 ,1.5574  ,3.2932  
 L_5_entry_rate_whole   ,3.4758   ,1.7881   ,1.9439 ,0.0520 ,-0.0294 ,6.9810  
+L_5_log_emp            ,-0.3864  ,0.1407   ,-2.7466,0.0060 ,-0.6622 ,-0.1106 
 L_5_log_gdp            ,4.2579   ,0.5310   ,8.0181 ,0.0000 ,3.2169  ,5.2989  
 L_5_log_restriction_2_0,-1.0088  ,0.4329   ,-2.3303,0.0198 ,-1.8574 ,-0.1602 
-log_emp_cohort         ,-0.3864  ,0.1407   ,-2.7466,0.0060 ,-0.6622 ,-0.1106 
 
 F-test for Poolability: 20.772
 P-value: 0.0000

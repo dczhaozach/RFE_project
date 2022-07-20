@@ -2,8 +2,8 @@
 Dep. Variable:   ,log_emp         ,  R-squared:           ,0.9292     
 Estimator:       ,PanelOLS        ,  R-squared (Between): ,0.9938     
 No. Observations:,14921           ,  R-squared (Within):  ,0.8882     
-Date:            ,Wed, Jul 13 2022,  R-squared (Overall): ,0.9731     
-Time:            ,10:36:46        ,  Log-likelihood       ,1.417e+04  
+Date:            ,Tue, Jul 19 2022,  R-squared (Overall): ,0.9731     
+Time:            ,12:24:59        ,  Log-likelihood       ,1.417e+04  
 Cov. Estimator:  ,Robust          ,                       ,           
                  ,                ,  F-statistic:         ,9.286e+06  
 Entities:        ,17              ,  P-value              ,0.0000     

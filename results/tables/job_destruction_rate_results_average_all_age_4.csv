@@ -1,33 +1,33 @@
-                       PanelOLS Estimation Summary                       
-Dep. Variable:   ,job_destruction_rate,  R-squared:           ,0.0159    
-Estimator:       ,PanelOLS            ,  R-squared (Between): ,-2.0056   
-No. Observations:,8277                ,  R-squared (Within):  ,-0.0310   
-Date:            ,Wed, Jul 13 2022    ,  R-squared (Overall): ,-1.8717   
-Time:            ,10:12:03            ,  Log-likelihood       ,-2.554e+04
-Cov. Estimator:  ,Robust              ,                       ,          
-                 ,                    ,  F-statistic:         ,18.403    
-Entities:        ,262                 ,  P-value              ,0.0000    
-Avg Obs:         ,31.592              ,  Distribution:        ,F(7,7994) 
-Min Obs:         ,0.0000              ,                       ,          
-Max Obs:         ,35.000              ,  F-statistic (robust):,9.5384    
-                 ,                    ,  P-value              ,0.0000    
-Time periods:    ,38                  ,  Distribution:        ,F(7,7994) 
-Avg Obs:         ,217.82              ,                       ,          
-Min Obs:         ,0.0000              ,                       ,          
-Max Obs:         ,239.00              ,                       ,          
-                 ,                    ,                       ,          
+                      PanelOLS Estimation Summary                       
+Dep. Variable:   ,job_destruction_rate,  R-squared:           ,0.0157   
+Estimator:       ,PanelOLS            ,  R-squared (Between): ,-1.7389  
+No. Observations:,8039                ,  R-squared (Within):  ,-0.0218  
+Date:            ,Tue, Jul 19 2022    ,  R-squared (Overall): ,-1.6221  
+Time:            ,12:27:35            ,  Log-likelihood       ,-2.48e+04
+Cov. Estimator:  ,Robust              ,                       ,         
+                 ,                    ,  F-statistic:         ,17.671   
+Entities:        ,262                 ,  P-value              ,0.0000   
+Avg Obs:         ,30.683              ,  Distribution:        ,F(7,7757)
+Min Obs:         ,0.0000              ,                       ,         
+Max Obs:         ,34.000              ,  F-statistic (robust):,8.8514   
+                 ,                    ,  P-value              ,0.0000   
+Time periods:    ,34                  ,  Distribution:        ,F(7,7757)
+Avg Obs:         ,236.44              ,                       ,         
+Min Obs:         ,234.00              ,                       ,         
+Max Obs:         ,239.00              ,                       ,         
+                 ,                    ,                       ,         
                              Parameter Estimates                             
                        ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
-L_0_entry_rate_whole   ,2.0576   ,5.7867   ,0.3556 ,0.7222 ,-9.2858 ,13.401  
-L_0_log_gdp            ,-12.747  ,2.0774   ,-6.1361,0.0000 ,-16.819 ,-8.6748 
-L_0_log_restriction_2_0,2.6791   ,1.7977   ,1.4903 ,0.1362 ,-0.8448 ,6.2030  
-avg_entry_rate_whole   ,-14.033  ,5.5822   ,-2.5139,0.0120 ,-24.976 ,-3.0903 
-avg_log_gdp            ,12.799   ,1.8919   ,6.7650 ,0.0000 ,9.0900  ,16.507  
-avg_log_restriction_2_0,-3.0344  ,2.0562   ,-1.4757,0.1401 ,-7.0651 ,0.9963  
-log_emp_cohort         ,-1.1078  ,0.2593   ,-4.2720,0.0000 ,-1.6161 ,-0.5995 
+L_0_entry_rate_whole   ,2.8428   ,5.9195   ,0.4802 ,0.6311 ,-8.7610 ,14.446  
+L_0_log_gdp            ,-12.998  ,2.2128   ,-5.8740,0.0000 ,-17.336 ,-8.6603 
+L_0_log_restriction_2_0,2.5952   ,1.9116   ,1.3576 ,0.1746 ,-1.1521 ,6.3425  
+avg_entry_rate_whole   ,-14.858  ,5.6072   ,-2.6498,0.0081 ,-25.850 ,-3.8663 
+avg_log_gdp            ,12.763   ,2.0085   ,6.3542 ,0.0000 ,8.8253  ,16.700  
+avg_log_restriction_2_0,-2.5934  ,2.2118   ,-1.1725,0.2410 ,-6.9292 ,1.7424  
+log_emp_cohort         ,-1.1460  ,0.2679   ,-4.2770,0.0000 ,-1.6712 ,-0.6207 
 
-F-test for Poolability: 11.583
+F-test for Poolability: 11.355
 P-value: 0.0000
-Distribution: F(275,7994)
+Distribution: F(274,7757)
 
 Included effects: Entity, Time

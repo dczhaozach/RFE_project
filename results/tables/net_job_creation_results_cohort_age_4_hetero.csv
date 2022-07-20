@@ -2,8 +2,8 @@
 Dep. Variable:   ,net_job_creation,  R-squared:           ,0.0511   
 Estimator:       ,PanelOLS        ,  R-squared (Between): ,-1.0667  
 No. Observations:,3004            ,  R-squared (Within):  ,0.0417   
-Date:            ,Wed, Jul 13 2022,  R-squared (Overall): ,-0.0018  
-Time:            ,09:51:40        ,  Log-likelihood       ,-2.72e+04
+Date:            ,Tue, Jul 19 2022,  R-squared (Overall): ,-0.0018  
+Time:            ,12:29:44        ,  Log-likelihood       ,-2.72e+04
 Cov. Estimator:  ,Robust          ,                       ,         
                  ,                ,  F-statistic:         ,17.623   
 Entities:        ,17              ,  P-value              ,0.0000   
@@ -11,9 +11,9 @@ Avg Obs:         ,176.71          ,  Distribution:        ,F(9,2948)
 Min Obs:         ,0.0000          ,                       ,         
 Max Obs:         ,270.00          ,  F-statistic (robust):,18.446   
                  ,                ,  P-value              ,0.0000   
-Time periods:    ,38              ,  Distribution:        ,F(9,2948)
-Avg Obs:         ,79.053          ,                       ,         
-Min Obs:         ,0.0000          ,                       ,         
+Time periods:    ,34              ,  Distribution:        ,F(9,2948)
+Avg Obs:         ,88.353          ,                       ,         
+Min Obs:         ,79.000          ,                       ,         
 Max Obs:         ,97.000          ,                       ,         
                  ,                ,                       ,         
                               Parameter Estimates                               

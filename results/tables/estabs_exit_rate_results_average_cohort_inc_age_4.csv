@@ -2,8 +2,8 @@
 Dep. Variable:   ,estabs_exit_rate,  R-squared:           ,0.0331    
 Estimator:       ,PanelOLS        ,  R-squared (Between): ,0.6474    
 No. Observations:,7410            ,  R-squared (Within):  ,-0.1574   
-Date:            ,Wed, Jul 13 2022,  R-squared (Overall): ,0.6141    
-Time:            ,09:51:02        ,  Log-likelihood       ,-1.791e+04
+Date:            ,Tue, Jul 19 2022,  R-squared (Overall): ,0.6141    
+Time:            ,12:29:08        ,  Log-likelihood       ,-1.791e+04
 Cov. Estimator:  ,Robust          ,                       ,          
                  ,                ,  F-statistic:         ,24.359    
 Entities:        ,262             ,  P-value              ,0.0000    
@@ -11,9 +11,9 @@ Avg Obs:         ,28.282          ,  Distribution:        ,F(10,7126)
 Min Obs:         ,0.0000          ,                       ,          
 Max Obs:         ,34.000          ,  F-statistic (robust):,15.269    
                  ,                ,  P-value              ,0.0000    
-Time periods:    ,38              ,  Distribution:        ,F(10,7126)
-Avg Obs:         ,195.00          ,                       ,          
-Min Obs:         ,0.0000          ,                       ,          
+Time periods:    ,34              ,  Distribution:        ,F(10,7126)
+Avg Obs:         ,217.94          ,                       ,          
+Min Obs:         ,206.00          ,                       ,          
 Max Obs:         ,227.00          ,                       ,          
                  ,                ,                       ,          
                                Parameter Estimates                               
