@@ -14,6 +14,7 @@ from linearmodels.panel import PanelOLS
 
 from Src.utility import parse_config
 from Src.utility import coef_dict
+from Src.utility import plot_lp
 
 # options of pandas
 pd.options.mode.use_inf_as_na = True
@@ -37,10 +38,14 @@ def model_life_path(config, depend_var):
     
     # load data paths
     cleaned_data_path = Path(config["model"]["life_path_sec_ag_path"])
+    
     results_tables_path = Path(config["model"]["results_tables_path"])
+    results_figs_path = Path(config["model"]["results_figs_path"])
+    fig_path = Path.cwd()/results_figs_path
     
     df = pd.read_csv(Path.cwd()/cleaned_data_path) 
-    
+    std = df["L_0_log_restriction_2_0"].std()
+
     ####################
     # Regression including controls at entry by each age
     ####################
@@ -103,10 +108,16 @@ def model_life_path(config, depend_var):
         v_names = [f"pre_cohort_log_restriction_2_0", f"full_chg_restriction_2_0"]
         coefs_cohort = coef_dict(v_names, res, coefs_cohort, age)
 
+    # save results and figs
+    model_name = f"{depend_var}_results_cohort_age_LP"
+    v_names = [f"pre_cohort_log_restriction_2_0", f"full_chg_restriction_2_0"]
+    var_names = ["Before Entering", "Avg. after Entering"]
+
     df_coefs_cohort = pd.DataFrame(coefs_cohort)
     df_coefs_cohort = df_coefs_cohort.sort_values(by=['name', 'age'])
-    df_coefs_cohort.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_cohort_age_LP.csv") 
-
+    df_coefs_cohort.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{model_name}.csv") 
+    plot_lp(v_names, df_coefs_cohort, depend_var, model_name, fig_path, var_names, std)
+    
     ####################
     # Regression including all controls in life path by each age
     ####################
@@ -170,9 +181,16 @@ def model_life_path(config, depend_var):
         v_names = [f"pre_cohort_log_restriction_2_0"]
         coefs_age = coef_dict(v_names, res, coefs_age, age)
 
-    df_coefs_age = pd.DataFrame(coefs_age)
-    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_path_age_LP.csv")
+    # save results and figs
+    model_name = f"{depend_var}_results_path_age_LP"
+    v_names = [f"pre_cohort_log_restriction_2_0"]
+    var_names = ["Before Entering"]
     
+    df_coefs_age = pd.DataFrame(coefs_age)
+    df_coefs_age = df_coefs_age.sort_values(by=['name', 'age'])
+    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{model_name}.csv") 
+    plot_lp(v_names, df_coefs_age, depend_var, model_name, fig_path, var_names, std)
+
     
 def model_life_path_hetero(config, depend_var):
     """
@@ -190,8 +208,11 @@ def model_life_path_hetero(config, depend_var):
     # load data paths
     cleaned_data_path = Path(config["model"]["life_path_sec_sz_ag_path"])
     results_tables_path = Path(config["model"]["results_tables_path"])
+    results_figs_path = Path(config["model"]["results_figs_path"])
+    fig_path = Path.cwd()/results_figs_path
 
     df = pd.read_csv(Path.cwd()/cleaned_data_path) 
+    std = df["L_0_log_restriction_2_0"].std()
     
     ####################
     # Regression including controls at entry by each age
@@ -249,13 +270,19 @@ def model_life_path_hetero(config, depend_var):
         # get input row in dictionary format
         # key = col_name
         dict1 = {}
-        v_names = ["cross", f"L_{pre_entry_age}_log_restriction_2_0", "large_firm"]
+        v_names = ["cross", f"pre_cohort_log_restriction_2_0", "large_firm"]
         coefs_age = coef_dict(v_names, res, coefs_age, age)
     
+    # save results and figs
+    model_name = f"{depend_var}_results_cohort_age_h_LP"
+    v_names = ["cross", f"pre_cohort_log_restriction_2_0", "large_firm"]
+    var_names = ["Cross", "Before Entering", "Large"]
+
     df_coefs_age = pd.DataFrame(coefs_age)
     df_coefs_age = df_coefs_age.sort_values(by=['name', 'age'])
-    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_cohort_age_h_LP.csv")
-      
+    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{model_name}.csv") 
+    plot_lp(v_names, df_coefs_age, depend_var, model_name, fig_path, var_names, std)
+    
 
     ####################
     # Regression including all controls in life path by each age
@@ -316,11 +343,17 @@ def model_life_path_hetero(config, depend_var):
         dict1 = {}
         v_names = ["cross", f"pre_cohort_log_restriction_2_0", "large_firm"]
         coefs_age = coef_dict(v_names, res, coefs_age, age)
-            
+    
+    # save results and figs
+    model_name = f"{depend_var}_results_path_age_h_LP"
+    v_names = ["cross", f"pre_cohort_log_restriction_2_0", "large_firm"]
+    var_names = ["Cross", "Before Entering", "Large"]
+
     df_coefs_age = pd.DataFrame(coefs_age)
     df_coefs_age = df_coefs_age.sort_values(by=['name', 'age'])
-    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_path_age_h_LP.csv")
-       
+    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{model_name}.csv") 
+    plot_lp(v_names, df_coefs_age, depend_var, model_name, fig_path, var_names, std)
+
             
         
 def model_average(config, depend_var):
@@ -338,9 +371,12 @@ def model_average(config, depend_var):
     # load data paths
     cleaned_data_path = Path(config["model"]["average_sec_ag_path"])
     results_tables_path = Path(config["model"]["results_tables_path"])
+    results_figs_path = Path(config["model"]["results_figs_path"])
+    fig_path = Path.cwd()/results_figs_path
 
     df = pd.read_csv(Path.cwd()/cleaned_data_path)
-    
+    std = df["L_0_log_restriction_2_0"].std()
+
     # regression by age
     coefs_age = [] 
     
@@ -459,11 +495,18 @@ def model_average(config, depend_var):
         v_names = ["curr_chg_restriction_2_0", "life_chg_restriction_2_0",
                    "enter_chg_restriction_2_0", f"pre_cohort_log_restriction_2_0"]
         coefs_age = coef_dict(v_names, res, coefs_age, age)
-            
+
+    # save results and figs
+    model_name = f"{depend_var}_results_average_age_LP"
+    v_names = ["curr_chg_restriction_2_0", "life_chg_restriction_2_0",
+                   "enter_chg_restriction_2_0", f"pre_cohort_log_restriction_2_0"]
+    var_names = ["Current Change", "After Entering", "When Entering", "Before Entering"]
+
     df_coefs_age = pd.DataFrame(coefs_age)
-    df_coefs_age = df_coefs_age.sort_values(by=['name', 'age', 'age'])
-    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_average_age_LP.csv")
-       
+    df_coefs_age = df_coefs_age.sort_values(by=['name', 'age'])
+    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{model_name}.csv") 
+    plot_lp(v_names, df_coefs_age, depend_var, model_name, fig_path, var_names, std)
+
        
 def model_average_hetero(config, depend_var):
     """
@@ -477,8 +520,11 @@ def model_average_hetero(config, depend_var):
     # load data paths
     cleaned_data_path = Path(config["model"]["average_sec_sz_ag_path"])
     results_tables_path = Path(config["model"]["results_tables_path"])
+    results_figs_path = Path(config["model"]["results_figs_path"])
+    fig_path = Path.cwd()/results_figs_path
 
     df = pd.read_csv(Path.cwd()/cleaned_data_path)
+    std = df["L_0_log_restriction_2_0"].std()
     
     # load data
     data = df
@@ -595,10 +641,17 @@ def model_average_hetero(config, depend_var):
         dict1 = {}
         v_names = ["cross", f"pre_cohort_log_restriction_2_0", "large_firm"]
         coefs_age = coef_dict(v_names, res, coefs_age, age)
-            
+
+    # save results and figs
+    model_name = f"{depend_var}_results_life_age_h_LP"
+    v_names = ["cross", f"pre_cohort_log_restriction_2_0", "large_firm"]
+    var_names = ["Cross", "Before Entering", "Large"]
+
     df_coefs_age = pd.DataFrame(coefs_age)
-    df_coefs_age = df_coefs_age.sort_values(by=['name', 'age', 'age'])
-    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{depend_var}_results_life_age_h_LP.csv")
+    df_coefs_age = df_coefs_age.sort_values(by=['name', 'age'])
+    df_coefs_age.to_csv(Path.cwd()/results_tables_path/"key_results"/f"{model_name}.csv") 
+    plot_lp(v_names, df_coefs_age, depend_var, model_name, fig_path, var_names, std)
+                
 
 
 def panel_reg(config, depend_var):
@@ -730,6 +783,7 @@ def model_output(config_file):
     print("loading config file")
     config = parse_config(config_file)
     variable_list = config["model"]["dep_var"]
+    variable_list.sort()
     
     ####################
     # Output
@@ -753,8 +807,8 @@ def model_output(config_file):
         print(f"  - panel regression")
         panel_reg(config, variable)
         
-        print(f"  - robust")
-        model_cohort_robust(config, variable)
+        #print(f"  - robust")
+        #model_cohort_robust(config, variable)
     
 if __name__ == "__main__":
     model_output()

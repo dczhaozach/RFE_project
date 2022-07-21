@@ -1,6 +1,10 @@
 import logging
 from pathlib import Path
+import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
+from matplotlib import gridspec
 import yaml
 import copy
 
@@ -78,3 +82,57 @@ def coef_dict(v_names, res, ceof_dict, age):
         temp_dict.append(dict1)
     
     return temp_dict
+
+
+def plot_lp(v_names, df, depend_var, plot_name, fig_path, var_names, std):
+    """
+    plot_lp plot local projection graph
+    Args:
+        df [DataFrame]: Data contains coefs
+        depend_var [str]: dependent variable
+        plot_name [str]: name for the plot 
+        var_names [lst]: lst of string of variable names
+        fig_path [Path]: path of the figure
+    Return:
+        None
+    """
+    n_plot = len(v_names)
+    cols = 2
+    rows = n_plot//2 + (n_plot%2 > 0)
+    fig = plt.figure()
+    gs = gridspec.GridSpec(rows, cols)
+    depend_name = depend_var.replace("_", " ").title()
+
+    for i in range(0, n_plot):
+        v_name = v_names[i]
+        var_name = var_names[i]
+        df_sub = df[df.name == v_name]
+        Age = df_sub.age.to_numpy().T
+        Age = Age.astype(int)
+        Coef = df_sub.Coef.to_numpy().T 
+        Coef = Coef * std
+        lower_ci = - df_sub[["lower_ci"]].to_numpy().T + df_sub.Coef.to_numpy().T 
+        lower_ci  = lower_ci * std
+        upper_ci = df_sub[["upper_ci"]].to_numpy().T - df_sub.Coef.to_numpy().T 
+        upper_ci = upper_ci * std
+        yerr = np.vstack((lower_ci, upper_ci))
+        
+        ax = fig.add_subplot(gs[i])
+        ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+        #ax[i].set_ylim([-0.1, 0.1])
+        ax.scatter(Age, Coef)
+        ax.errorbar(Age, Coef, yerr = yerr, fmt = 'o',color = 'orange', 
+            ecolor = 'lightgreen', elinewidth = 3, capsize=5)   
+        ax.axhline(y=0, color='r', linestyle=':')
+        
+        ax.set_title(f"{var_name}".title())
+        ax.set_xlabel("Age")
+        ax.set_ylabel(f"{depend_name}".title())
+    
+    fig.suptitle(f'Effects of Regulation on {depend_name}')        
+    fig.tight_layout()
+    fig_final_path = fig_path/f"{plot_name}.png"
+    fig.savefig(fig_final_path, facecolor='white', transparent=False)
+    
+    return None
+

@@ -1,0 +1,37 @@
+                      PanelOLS Estimation Summary                      
+Dep. Variable:   ,net_job_creation,  R-squared:           ,0.5663      
+Estimator:       ,PanelOLS        ,  R-squared (Between): ,0.1448      
+No. Observations:,531501          ,  R-squared (Within):  ,0.5743      
+Date:            ,Thu, Jul 21 2022,  R-squared (Overall): ,0.5254      
+Time:            ,12:35:06        ,  Log-likelihood       ,-5.58e+06   
+Cov. Estimator:  ,Clustered       ,                       ,            
+                 ,                ,  F-statistic:         ,8.579e+04   
+Entities:        ,262             ,  P-value              ,0.0000      
+Avg Obs:         ,2028.6          ,  Distribution:        ,F(10,531208)
+Min Obs:         ,0.0000          ,                       ,            
+Max Obs:         ,2240.0          ,  F-statistic (robust):,1095.2      
+                 ,                ,  P-value              ,0.0000      
+Time periods:    ,43              ,  Distribution:        ,F(10,531208)
+Avg Obs:         ,1.236e+04       ,                       ,            
+Min Obs:         ,0.0000          ,                       ,            
+Max Obs:         ,1.72e+04        ,                       ,            
+                 ,                ,                       ,            
+                                  Parameter Estimates                                   
+                              ,Parameter ,Std. Err., T-stat,P-value, Lower CI , Upper CI
+C(age_grp_dummy)[T.0.0]       ,1.079e+04 ,1.563e+04,0.6905 ,0.4899 ,-1.984e+04,4.143e+04
+C(age_grp_dummy)[T.1.0]       ,-1.21e+04 ,1.608e+04,-0.7528,0.4516 ,-4.362e+04,1.941e+04
+C(age_grp_dummy)[T.2.0]       ,-1.265e+04,1.618e+04,-0.7816,0.4344 ,-4.436e+04,1.907e+04
+C(age_grp_dummy)[T.3.0]       ,-1.28e+04 ,1.619e+04,-0.7905,0.4292 ,-4.453e+04,1.893e+04
+C(age_grp_dummy)[T.4.0]       ,-1.272e+04,1.621e+04,-0.7850,0.4325 ,-4.449e+04,1.904e+04
+C(age_grp_dummy)[T.5.0]       ,-1.286e+04,1.62e+04 ,-0.7938,0.4273 ,-4.46e+04 ,1.889e+04
+chg_restriction_2_0_2         ,4763.8    ,2105.0   ,2.2630 ,0.0236 ,637.94    ,8889.6   
+entry_rate_whole              ,2.279e+04 ,5217.8   ,4.3683 ,0.0000 ,1.257e+04 ,3.302e+04
+entry_rate_whole_pre_cohort   ,-1.391e+04,5443.4   ,-2.5551,0.0106 ,-2.458e+04,-3239.5  
+log_emp_pre_cohort            ,267.81    ,54.769   ,4.8897 ,0.0000 ,160.46    ,375.15   
+log_restriction_2_2_pre_cohort,780.47    ,1478.0   ,0.5281 ,0.5975 ,-2116.3   ,3677.3   
+
+F-test for Poolability: 330.65
+P-value: 0.0000
+Distribution: F(282,531208)
+
+Included effects: Entity, Time

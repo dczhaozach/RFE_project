@@ -96,6 +96,7 @@ def data_clean(df, id_var, sector_dig, config):
     
     df["death"] = df["firmdeath_firms"]
     df["log_emp"] = np.log(df["emp"])
+    df["log_avg_emp"] = np.log(df["emp"]) - np.log(df["firms"])
     df["death_rate"] = df["death"]/df["firms"]
     
     df["sector"] = df["sector"].astype(str).str.slice(0, sector_dig)
@@ -265,7 +266,7 @@ def data_life_path(df_input):
             age_pre = age + 1
             df.loc[df["age_grp_dummy"] == age, f"full_chg_restriction_2_0"] = \
                 (df.loc[df["age_grp_dummy"] == age, f"L_{0}_log_restriction_2_0"] - 
-                 df.loc[df["age_grp_dummy"] == age, f"L_{age_pre}_log_restriction_2_0"])
+                 df.loc[df["age_grp_dummy"] == age, f"L_{age_pre}_log_restriction_2_0"])/age
             df.loc[df["age_grp_dummy"] == age, f"pre_cohort_log_restriction_2_0"] = \
                  df.loc[df["age_grp_dummy"] == age, f"L_{age_pre}_log_restriction_2_0"]
                             
@@ -273,6 +274,11 @@ def data_life_path(df_input):
             df.loc[df["age_grp_dummy"] == age, "log_emp_cohort"] = np.log(df.loc[df["age_grp_dummy"] == age, f"L_{age}_emp"])
             df.loc[df["age_grp_dummy"] == age, "log_emp_chg"] = np.log(df.loc[df["age_grp_dummy"] == age, "emp"]) - \
                 np.log(df.loc[df["age_grp_dummy"] == age, f"L_{age}_emp"])
+            df.loc[df["age_grp_dummy"] == age, "log_avg_emp_chg"] = \
+                ( \
+                (np.log(df.loc[df["age_grp_dummy"] == age, "emp"]) - np.log(df.loc[df["age_grp_dummy"] == age, "firms"])) - \
+                (np.log(df.loc[df["age_grp_dummy"] == age, f"L_{age}_emp"]) - np.log(df.loc[df["age_grp_dummy"] == age, f"L_{age}_firms"])) \
+                )
             df.loc[df["age_grp_dummy"] == age,"per_emp_chg"] = 2 * (df.loc[df["age_grp_dummy"] == age, "emp"] - 
                 df.loc[df["age_grp_dummy"] == age, f"L_{age}_emp"]) /  (df.loc[df["age_grp_dummy"] == age, "emp"] +
                 df.loc[df["age_grp_dummy"] == age, f"L_{age}_emp"])
@@ -343,7 +349,7 @@ def data_average(df_input):
         # changes in restrictions after entering
         df.loc[df.age_grp_dummy == age, "life_chg_restriction_2_0"] = \
             (df.loc[df.age_grp_dummy == age, "L_1_log_restriction_2_0"] - 
-            df.loc[df.age_grp_dummy == age, f"L_{age}_log_restriction_2_0"])
+            df.loc[df.age_grp_dummy == age, f"L_{age}_log_restriction_2_0"])/(age - 1)
         
         # changes in restrictions when entering
         df.loc[df.age_grp_dummy == age, "enter_chg_restriction_2_0"] = \

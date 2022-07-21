@@ -1,0 +1,42 @@
+                       PanelOLS Estimation Summary                        
+Dep. Variable:   ,net_job_creation_rate,  R-squared:           ,0.0371    
+Estimator:       ,PanelOLS             ,  R-squared (Between): ,0.0557    
+No. Observations:,8287                 ,  R-squared (Within):  ,0.0696    
+Date:            ,Thu, Jul 21 2022     ,  R-squared (Overall): ,0.0670    
+Time:            ,14:29:31             ,  Log-likelihood       ,-2.829e+04
+Cov. Estimator:  ,Clustered            ,                       ,          
+                 ,                     ,  F-statistic:         ,51.321    
+Entities:        ,262                  ,  P-value              ,0.0000    
+Avg Obs:         ,31.630               ,  Distribution:        ,F(15,7995)
+Min Obs:         ,0.0000               ,                       ,          
+Max Obs:         ,35.000               ,  F-statistic (robust):,-1.083e+12
+                 ,                     ,  P-value              ,1.0000    
+Time periods:    ,35                   ,  Distribution:        ,F(15,7995)
+Avg Obs:         ,236.77               ,                       ,          
+Min Obs:         ,232.00               ,                       ,          
+Max Obs:         ,239.00               ,                       ,          
+                 ,                     ,                       ,          
+                                Parameter Estimates                                 
+                              ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
+const                         ,-2.1113  ,17.467   ,-0.1209,0.9038 ,-36.351 ,32.128  
+L_0_chg_restriction_2_0       ,-2.3721  ,2.6069   ,-0.9099,0.3629 ,-7.4823 ,2.7381  
+L_0_entry_rate_whole          ,28.848   ,11.012   ,2.6198 ,0.0088 ,7.2626  ,50.434  
+L_0_log_gdp                   ,25.242   ,5.0501   ,4.9984 ,0.0000 ,15.343  ,35.142  
+L_1_chg_restriction_2_0       ,-2.9935  ,2.6456   ,-1.1315,0.2579 ,-8.1795 ,2.1926  
+L_1_entry_rate_whole          ,-0.9872  ,11.453   ,-0.0862,0.9313 ,-23.439 ,21.464  
+L_1_log_gdp                   ,5.5087   ,4.0677   ,1.3543 ,0.1757 ,-2.4650 ,13.482  
+L_2_chg_restriction_2_0       ,-2.6805  ,2.8692   ,-0.9342,0.3502 ,-8.3048 ,2.9438  
+L_2_entry_rate_whole          ,-3.3367  ,9.6058   ,-0.3474,0.7283 ,-22.167 ,15.493  
+L_2_log_gdp                   ,-27.325  ,6.1562   ,-4.4386,0.0000 ,-39.393 ,-15.257 
+L_3_chg_restriction_2_0       ,1.2903   ,1.6542   ,0.7800 ,0.4354 ,-1.9524 ,4.5329  
+L_3_entry_rate_whole          ,-14.722  ,8.5984   ,-1.7121,0.0869 ,-31.577 ,2.1336  
+L_3_log_gdp                   ,-5.4244  ,5.5606   ,-0.9755,0.3293 ,-16.325 ,5.4757  
+L_4_entry_rate_whole          ,-1.9207  ,7.5248   ,-0.2553,0.7985 ,-16.671 ,12.830  
+L_4_log_gdp                   ,3.5193   ,3.9675   ,0.8870 ,0.3751 ,-4.2580 ,11.297  
+pre_cohort_log_restriction_2_0,-1.2983  ,1.4930   ,-0.8696,0.3846 ,-4.2249 ,1.6284  
+
+F-test for Poolability: 9.4739
+P-value: 0.0000
+Distribution: F(276,7995)
+
+Included effects: Entity, Time
