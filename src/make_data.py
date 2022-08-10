@@ -37,7 +37,7 @@ def data_load(config):
 
     # load data paths
     data_file_path = Path(config["make_data"]["data_file_path"])
-    regdata_path = Path(config["make_data"]["regdata_path"])
+    regdata_path = Path(config["make_data"]["regdata_origin_path"])
     bds_naics_4_path = Path(config["make_data"]["bds_naics_4_path"])
     gdp_path = Path(config["make_data"]["gdp_path"])
     bds_sector_size_path = Path(config["make_data"]["bds_sector_size"])
@@ -68,6 +68,46 @@ def data_load(config):
     return df_sec_sz_ag, df_sec_ag, regdata, gdp
 
 
+def data_regdata(config):
+    """
+    data_regdata function that
+        - load raw Regdata
+        - create shift share instrument
+    Args:
+        config [str]: config file
+    Returns:
+        Reg data
+        
+    """
+    data_file_path = Path(config["make_data"]["data_file_path"])
+    regdata_doc_path = Path(config["make_data"]["regdata_doc_path"])
+    regdata_ind_path = Path(config["make_data"]["regdata_ind_path"])
+    
+    df_doc = pd.read_csv(data_file_path/regdata_doc_path)
+    df_ind = pd.read_csv(data_file_path/regdata_ind_path)
+    
+    df_doc["year"] = pd.to_numeric(df_doc.year.str.slice(0,4))
+    df_ind["year"] = pd.to_numeric(df_ind.year.str.slice(0,4))
+    df_ind_init = df_ind
+    df_ind_init = df_ind_init.rename(columns = {"year":"year_init", "probability":"probability_init"})
+    
+    df_ind.sort_values(["year", "NAICS"])
+    df_merge = df_ind.merge(df_doc[["year", "document_reference", "restrictions_1_0","restrictions_2_0"]], how='left', on=["year", "document_reference"], validate="many_to_one")
+    df_merge["year_init"] = df_merge["year"] - 15
+    df_merge = df_merge.merge(df_ind_init[["year_init", "document_reference", "NAICS", "probability_init"]], how='left', on=["year_init", "document_reference", "NAICS"], validate="many_to_one")
+
+    df_merge["industry_restrictions_2_0"] = df_merge["restrictions_2_0"]*df_merge["probability"]
+    df_merge["industry_restrictions_2_0_init"] = df_merge["restrictions_2_0"]*df_merge["probability_init"]
+    df_merge["industry_restrictions_1_0"] = df_merge["restrictions_1_0"]*df_merge["probability"]
+    df_merge["industry_restrictions_1_0_init"] = df_merge["restrictions_1_0"]*df_merge["probability_init"]
+    
+    regdata = df_merge.groupby(by=["year", "NAICS"])[["industry_restrictions_2_0", "industry_restrictions_2_0_init",
+                                                      "industry_restrictions_1_0", "industry_restrictions_1_0_init"]].sum()
+    regdata = regdata.reset_index()
+    regdata = regdata.rename(columns={"NAICS":"sector_reg"})
+    
+    return regdata
+    
 def data_clean(df, id_var, sector_dig, config):
     """
     data_clean function that
@@ -75,7 +115,7 @@ def data_clean(df, id_var, sector_dig, config):
 
     Args:
         df [DataFrame]: input main data
-        id_var [list]: list of strings contains id variables (sector, year, and fsize)
+        id_var [list]: list of strings contains id variables (sector, year, fage, and fsize)
         sector_dig [int]: sector digits
     Returns:
         Cleaned data
@@ -88,11 +128,68 @@ def data_clean(df, id_var, sector_dig, config):
     # change variable types
     dep_var = config["make_data"]["dep_var"]
     
-    var_lst = dep_var + [ "emp", "firms", "firmdeath_firms", "year"]
+    var_lst = dep_var + ["firmdeath_firms", "year", "firms", "emp", "estabs", "estabs_entry", "estabs_exit", "job_creation", "job_destruction", "net_job_creation", "denom"]
     for var in var_lst:
         df[var] = pd.to_numeric(df[var], errors="coerce", downcast=None)
 
     df.loc[df.firms <= 0, 'firms'] = np.nan
+    
+    # aggregate by age group
+    # coarse age group
+    conditions = [
+        df["fage"] == 'b) 1',
+        df["fage"] == 'c) 2',
+        df["fage"] == 'd) 3',
+        df["fage"] == 'e) 4',
+        df["fage"] == 'f) 5',
+        df["fage"] == 'g) 6 to 10',
+        df["fage"] == 'h) 11 to 15',
+        df["fage"] == 'i) 16 to 20',
+        df["fage"] == 'j) 21 to 25',
+        df["fage"] == 'k) 26+',
+        df["fage"] == 'l) Left Censored'
+    ]
+    
+    choices = [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06-10",
+        "11+",
+        "11+",
+        "11+",
+        "11+",
+        "11+",
+    ]    
+    
+    df["age_coarse"] = np.select(conditions, choices, default="00")
+    
+    # aggregate by age group
+    id_var = id_var[:-1] + ["age_coarse"]
+    column_var = ['firms', 'estabs', 'emp', 'denom', 
+                  'estabs_entry', 'estabs_exit', 'job_creation', 
+                  'job_creation_births', 'job_creation_continuers', 
+                  'job_destruction', 'job_destruction_deaths', 
+                  'job_destruction_continuers', 'job_destruction_rate_deaths', 
+                  'net_job_creation', 'firmdeath_firms', 'firmdeath_estabs', 
+                  'firmdeath_emp']
+    
+    df = df.groupby(["year"] + id_var)[column_var].sum()
+    df = df.reset_index()
+    
+    # calculate key rates
+    df["estabs_entry_rate"] = df["estabs_entry"]/df["estabs"]
+    df["estabs_exit_rate"] = df["estabs_exit"]/df["estabs"]
+    df["job_creation_rate"] = df["job_creation"]/df["denom"]
+    df["job_destruction_rate"] = df["job_destruction"]/df["denom"]
+    df["net_job_creation_rate"] = df["net_job_creation"]/df["denom"]
+    df["reallocation_rate"] = (
+        (df["job_creation_rate"] + df["job_destruction_rate"]
+        - abs(df["job_creation_rate"] - df["job_destruction_rate"]))
+    )
+    
     
     df["death"] = df["firmdeath_firms"]
     df["log_emp"] = np.log(df["emp"])
@@ -156,9 +253,9 @@ def data_sector_entry(df, sector):
     """
     df_age = pd.DataFrame()
     df_age["entry_whole"] = \
-        df.loc[df["fage"] == "a) 0", :].groupby(["year", sector])["firms"].sum()
+        df.loc[df["age_coarse"] == "00", :].groupby(["year", sector])["firms"].sum()
     df_age["incumbents_whole"] = \
-        df.loc[df["fage"] != "a) 0", :].groupby(["year", sector])["firms"].sum()
+        df.loc[df["age_coarse"] != "00", :].groupby(["year", sector])["firms"].sum()
     df_age = df_age.reset_index()
     
     return df_age
@@ -188,11 +285,11 @@ def data_life_path(df_input):
     ####################
 
     # define age groups
-    df = df.sort_values(by=["year", "sector", "fage"])
+    df = df.sort_values(by=["year", "sector", "age_coarse"])
     
     i = 0
-    for fage in df.fage.unique():
-        df.loc[df.fage == fage, "age_grp_dummy"] = i
+    for age_coarse in df.age_coarse.unique():
+        df.loc[df.age_coarse == age_coarse, "age_grp_dummy"] = i
         i = i + 1
 
     df.loc[df.age_grp_dummy >= 7, "age_grp_dummy"] = 7
@@ -211,15 +308,17 @@ def data_life_path(df_input):
     # merge by ages
     for age in range(0, 7):
         # create lag year data
-        df.loc[df.age_grp_dummy <= 5, f"L_{age}_year"] = \
-            df.loc[df.age_grp_dummy <= 5, "year"] - age
+        df.loc[:, f"L_{age}_year"] = \
+            df.loc[:, "year"] - age
 
         ####################
         # Merge with cohort year variables
         ####################
         df = df.merge(regdata, how = "left", left_on=[f"L_{age}_year", "sector_2"], right_on=["year_reg", "sector_reg"], validate = "many_to_one")
         df = df.rename(columns={"industry_restrictions_1_0": f"L_{age}_industry_restrictions_1_0", 
-                                "industry_restrictions_2_0": f"L_{age}_industry_restrictions_2_0"}, 
+                                "industry_restrictions_2_0": f"L_{age}_industry_restrictions_2_0",
+                                "industry_restrictions_1_0_init": f"L_{age}_industry_restrictions_1_0_init",
+                                "industry_restrictions_2_0_init": f"L_{age}_industry_restrictions_2_0_init",}, 
                                 errors="raise")
                                 
         df = df.drop(columns = {"sector_reg", "year_reg"})
@@ -242,6 +341,8 @@ def data_life_path(df_input):
             warnings.simplefilter("ignore")
             df[f"L_{age}_log_restriction_1_0"] = np.log(df[f"L_{age}_industry_restrictions_1_0"])
             df[f"L_{age}_log_restriction_2_0"] = np.log(df[f"L_{age}_industry_restrictions_2_0"])
+            df[f"L_{age}_log_restriction_1_0_init"] = np.log(df[f"L_{age}_industry_restrictions_1_0_init"])
+            df[f"L_{age}_log_restriction_2_0_init"] = np.log(df[f"L_{age}_industry_restrictions_2_0_init"])
             df[f"L_{age}_log_gdp"] = np.log(df[f"L_{age}_gdp"])
             df[f"L_{age}_log_emp"] = np.log(df[f"L_{age}_emp"])
             df[f"L_{age}_entry_rate_whole"] = df[f"L_{age}_entry_whole"]/df[f"L_{age}_incumbents_whole"]
@@ -252,12 +353,16 @@ def data_life_path(df_input):
             age_pre = age + 1 
             df[f"L_{age}_chg_restriction_2_0"] = (df[f"L_{age}_log_restriction_2_0"] - 
                                                   df[f"L_{age_pre}_log_restriction_2_0"])
+            df[f"L_{age}_chg_restriction_2_0_init"] = (df[f"L_{age}_log_restriction_2_0_init"] - 
+                                                  df[f"L_{age_pre}_log_restriction_2_0_init"])
             df[f"L_{age}_chg_gdp"] = (df[f"L_{age}_log_gdp"] - 
                                       df[f"L_{age_pre}_log_gdp"])
             df[f"L_{age}_chg_emp"] = (df[f"L_{age}_log_emp"] - 
                                       df[f"L_{age_pre}_emp"])
             df[f"L_{age}_chg_entry_rate_whole"] = (df[f"L_{age}_entry_rate_whole"] - 
                                                   df[f"L_{age_pre}_entry_rate_whole"])
+            df[f"L_{age}_emp_growth"] = 2 * ((df[f"L_{age}_emp"] - df[f"L_{age_pre}_emp"]) / 
+                                         (df[f"L_{age}_emp"] + df[f"L_{age_pre}_emp"]))
         
         df["death_rate_chg"] = df["death_rate"] - df["L_1_death_rate"]
 
@@ -302,16 +407,23 @@ def data_patterns(df_input):
     df_age = data_sector_entry(df, "sector_2")
     
     # aggregate death and firm counts
-    df_agg = pd.DataFrame((df.groupby(["year", "sector_2"])[["death", "firms"]].sum()))
-        
+    var_lst = ["death", "firms", "emp", "estabs", "estabs_entry", "estabs_exit", "job_creation", "job_destruction", "net_job_creation", "denom"]
+    df_agg = pd.DataFrame(df.groupby(["year", "sector_2"])[var_lst].sum())
+    
     regdata = regdata.rename(columns={"sector_reg": "sector_2"})
     df_agg = df_agg.merge(regdata, how="left", on=["sector_2", "year"])
     
     df_agg = df_agg.merge(gdp, how="left", on=["sector_2", "year"])
     
     df_agg = df_agg.merge(df_age, how="left", on=["sector_2", "year"])
+    
     df_agg["entry_rate_whole"] = df_agg[f"entry_whole"]/df_agg["firms"]
     df_agg["death_rate_whole"] = df_agg[f"death"]/df_agg["firms"]
+    df_agg["estabs_entry_rate"] = df_agg["estabs_entry"]/df_agg["estabs"]
+    df_agg["estabs_exit_rate"] = df_agg["estabs_exit"]/df_agg["estabs"]
+    df_agg["job_creation_rate"] = df_agg["job_creation"] / df_agg["denom"]
+    df_agg["job_destruction_rate"] = df_agg["job_destruction"] / df_agg["denom"]
+    df_agg["net_job_creation_rate"] = df_agg["net_job_creation"] / df_agg["denom"]
     
     return df_agg
 
@@ -407,10 +519,10 @@ def data_cohort_robust(df_input):
     ####################
 
     # define age groups
-    df = df.sort_values(by=["year", "sector", "fage"])
+    df = df.sort_values(by=["year", "sector", "age_coarse"])
     i = 0
-    for fage in df.fage.unique():
-        df.loc[df.fage == fage, "age_grp_dummy"] = i
+    for age_coarse in df.age_coarse.unique():
+        df.loc[df.age_coarse == age_coarse, "age_grp_dummy"] = i
         i = i + 1
 
     df.loc[df.age_grp_dummy >= 7, "age_grp_dummy"] = 7
@@ -494,33 +606,35 @@ def data_output(config_file):
     print("loading config files")
     config = parse_config(config_file)
     df_sec_sz_ag, df_sec_ag, regdata, gdp = data_load(config)
+    regdata_iv = data_regdata(config)
     
     print("cleaning the data")
     # clean data
     df_sec_ag = data_clean(df_sec_ag, ["sector", "fage"], 4, config)
-    df_sec_sz_ag = data_clean(df_sec_sz_ag, ["sector", "fage", "fsize"], 2, config)
+    df_sec_sz_ag = data_clean(df_sec_sz_ag, ["sector", "fsize", "fage"], 2, config)
     
     print("creating life path and average data")
     # data using age sector
-    data_input_sec_ag = (df_sec_ag, regdata, gdp)
+    data_input_sec_ag = (df_sec_ag, regdata_iv, gdp)
     df_life_path_sec_ag = data_life_path(data_input_sec_ag)
 
     df_average_sec_ag = data_average(df_life_path_sec_ag)
     
     print("creating aggregate pattern data")
     # aggregate data
-    data_input_agg = (df_sec_ag, regdata, gdp)
+    data_input_agg = (df_sec_ag, regdata_iv, gdp)
     df_agg = data_patterns(data_input_agg)
     
     print("creating hetero data file")
     # data using age sector size
-    data_input_sec_sz_ag = (df_sec_sz_ag, regdata, gdp)
+    data_input_sec_sz_ag = (df_sec_sz_ag, regdata_iv, gdp)
     df_life_path_sec_sz_ag = data_life_path(data_input_sec_sz_ag)
     df_average_sec_sz_ag = data_average(df_life_path_sec_sz_ag)
     
     print("creating robust data file")
     # robust
-    df_cohort_robust = data_cohort_robust(data_input_sec_ag)
+    data_input_cohort = (df_sec_ag, regdata, gdp)
+    df_cohort_robust = data_cohort_robust(data_input_cohort)
     
     print("saving data file")
     # store cleaned dataset

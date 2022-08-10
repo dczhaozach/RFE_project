@@ -40,9 +40,9 @@ def lag_variable(df, time_var, id_var, var, lags):
     lag_variable create lag variables by groups   
     Args:
         df [DataFrame]: dataframe
-        time_var [str]: time variable
+        time_var [lst]: time variable
         id_var [list of string]: id variable
-        var [str]: lagged varible
+        var [lst]: lagged varible
         lags: number of lags (1 means one lag)
     """
 
@@ -64,7 +64,7 @@ def coef_dict(v_names, res, ceof_dict, age):
     Args:
         v_name [list]: list of parameters
         res []: regression results
-        ceof_dict [dict]: dictionary to append 
+        ceof_dict [lst]: list to append 
         
     Return:
         new dictionary
