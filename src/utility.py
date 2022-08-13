@@ -51,7 +51,7 @@ def lag_variable(df, time_var, id_var, var, lags):
     df = df.set_index(index_var)
     df_shift = df[var]
     
-    shifted = df_shift.groupby(level=id_var).shift(-lags)
+    shifted = df_shift.groupby(level=id_var).shift(lags)
     shifted = shifted.rename(columns={var[0]: f"L_{lags}_{var[0]}"})
     df = df.join(shifted)
     df = df.reset_index()
@@ -133,6 +133,6 @@ def plot_lp(v_names, df, depend_var, plot_name, fig_path, var_names, std):
     fig.tight_layout()
     fig_final_path = fig_path/f"{plot_name}.png"
     fig.savefig(fig_final_path, facecolor='white', transparent=False)
-    
+    plt.close(fig)
     return None
 

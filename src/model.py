@@ -137,7 +137,7 @@ def model_life_path(config, depend_var):
         # create exogenous variable (list)
         exo_vars = []
         for lags in range(0, age+1):
-            exo_vars.append(f"L_{lags}_chg_restriction_2_0")
+            exo_vars.append(f"L_{lags}_chg_log_restriction_2_0")
             exo_vars.append(f"L_{lags}_entry_rate_whole")
             exo_vars.append(f"L_{lags}_log_gdp")
         
@@ -304,7 +304,7 @@ def model_life_path_hetero(config, depend_var):
         # create exogenous variable (list)
         exo_vars = []
         for lags in range(0, age + 1):
-            exo_vars.append(f"L_{lags}_chg_restriction_2_0")
+            exo_vars.append(f"L_{lags}_chg_log_restriction_2_0")
             exo_vars.append(f"L_{lags}_entry_rate_whole")
             exo_vars.append(f"L_{lags}_log_gdp")
         

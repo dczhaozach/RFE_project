@@ -79,34 +79,80 @@ def data_regdata(config):
         Reg data
         
     """
+    
+    ####################
+    # Load data
+    ####################  
+    
+    # path
     data_file_path = Path(config["make_data"]["data_file_path"])
     regdata_doc_path = Path(config["make_data"]["regdata_doc_path"])
     regdata_ind_path = Path(config["make_data"]["regdata_ind_path"])
     
+    # doc words count
     df_doc = pd.read_csv(data_file_path/regdata_doc_path)
+    # ind doc probability
     df_ind = pd.read_csv(data_file_path/regdata_ind_path)
     
+    ####################
+    # Create merged dataset
+    ####################
+    
+    # clean variables
     df_doc["year"] = pd.to_numeric(df_doc.year.str.slice(0,4))
     df_ind["year"] = pd.to_numeric(df_ind.year.str.slice(0,4))
-    df_ind_init = df_ind
-    df_ind_init = df_ind_init.rename(columns = {"year":"year_init", "probability":"probability_init"})
-    
-    df_ind.sort_values(["year", "NAICS"])
-    df_merge = df_ind.merge(df_doc[["year", "document_reference", "restrictions_1_0","restrictions_2_0"]], how='left', on=["year", "document_reference"], validate="many_to_one")
-    df_merge["year_init"] = df_merge["year"] - 15
-    df_merge = df_merge.merge(df_ind_init[["year_init", "document_reference", "NAICS", "probability_init"]], how='left', on=["year_init", "document_reference", "NAICS"], validate="many_to_one")
 
-    df_merge["industry_restrictions_2_0"] = df_merge["restrictions_2_0"]*df_merge["probability"]
-    df_merge["industry_restrictions_2_0_init"] = df_merge["restrictions_2_0"]*df_merge["probability_init"]
-    df_merge["industry_restrictions_1_0"] = df_merge["restrictions_1_0"]*df_merge["probability"]
-    df_merge["industry_restrictions_1_0_init"] = df_merge["restrictions_1_0"]*df_merge["probability_init"]
+    # create lag variable
+    df_doc = lag_variable(df_doc, ["year"], ["document_reference"], ["restrictions_2_0"], 1)
+
+    # create current measure
+    doc_var = ["year", "document_reference", "restrictions_1_0","restrictions_2_0", "L_1_restrictions_2_0"]
+    df_merge = df_ind.merge(df_doc[doc_var], how='left', on=["year", "document_reference"], validate="many_to_one")
+
+    # create initial shares
+    baseline_year = 1970
+    df_init = df_merge.loc[df_merge.year == baseline_year, ["NAICS", "probability", "document_reference", "restrictions_2_0"]]
+    df_init = df_init.rename(columns = {"probability": "probability_init"})
     
-    regdata = df_merge.groupby(by=["year", "NAICS"])[["industry_restrictions_2_0", "industry_restrictions_2_0_init",
-                                                      "industry_restrictions_1_0", "industry_restrictions_1_0_init"]].sum()
+    # initial shares
+    df_init["reg_s_d_init"] = df_init["probability_init"] * df_init["restrictions_2_0"]
+    df_init["reg_s_init"] = df_init.groupby(["NAICS"])["reg_s_d_init"].transform(lambda x: x.sum())
+    df_init["share_init"] = np.where(df_init["reg_s_d_init"]>0, df_init["reg_s_d_init"] / df_init["reg_s_init"], 0) 
+    init_var = ["NAICS", "document_reference", "reg_s_d_init", "reg_s_init", "share_init"]
+    
+    # merge with main dataset
+    df_merge = df_merge.merge(df_init[init_var], how='left', on=["NAICS", "document_reference"], validate="many_to_one")
+    
+    # replace non record with zero
+    for var in ["reg_s_d_init", "reg_s_init", "share_init"]:
+        df_merge[var] = np.where(df_merge[var].isna(), 0, df_merge[var])
+    
+    # create current share
+    df_merge["reg_s_d"] = df_merge["probability"] * df_merge["restrictions_2_0"]
+    df_merge["reg_s_d_1_0"] = df_merge["probability"] * df_merge["restrictions_1_0"]
+    df_merge["reg_s"] = df_merge.groupby(["NAICS", "year"])["reg_s_d"].transform(lambda x: x.sum())
+    df_merge["share"] = np.where(df_merge["reg_s_d"] > 0, df_merge["reg_s_d"] / df_merge["reg_s"], 0)
+    
+    # average initial log restriction (leave one out)
+    df_merge["log_reg_s_d"] = np.where(df_merge["reg_s_d"] > 0, np.log(df_merge["reg_s_d"]), 0)
+    df_merge["log_reg_d"] = np.where(df_merge["restrictions_2_0"] > 0, np.log(df_merge["restrictions_2_0"]), 0)
+    #df_merge["sum_log_reg_s_d"] = df_merge.groupby(["document_reference", "year"])["log_reg_s_d"].transform(lambda x: x.sum())
+    #df_merge["n_doc"] = df_merge.groupby(["document_reference", "year"])["log_reg_s_d"].transform(lambda x: x.size)
+    #df_merge["avg_log_reg_s_d"] = np.where(df_merge["n_doc"] > 1, (df_merge["sum_log_reg_s_d"] - df_merge["log_reg_s_d"])/(df_merge["n_doc"] - 1), np.nan)
+    
+    # prepare to aggregate (sum)
+    #df_merge["bartik_iv"] = df_merge["avg_log_reg_s_d"] * df_merge["share_init"]
+    df_merge["bartik_iv"] = df_merge["log_reg_d"] * df_merge["share_init"]
+    df_merge["industry_restrictions_2_0"] = df_merge["reg_s_d"]
+    df_merge["industry_restrictions_1_0"] = df_merge["reg_s_d_1_0"]
+    
+    # aggregate data and finalize
+    regdata = df_merge.groupby(by=["year", "NAICS"])[["industry_restrictions_2_0", "industry_restrictions_1_0", "bartik_iv"]].sum()
     regdata = regdata.reset_index()
     regdata = regdata.rename(columns={"NAICS":"sector_reg"})
     
     return regdata
+
     
 def data_clean(df, id_var, sector_dig, config):
     """
@@ -132,8 +178,6 @@ def data_clean(df, id_var, sector_dig, config):
     for var in var_lst:
         df[var] = pd.to_numeric(df[var], errors="coerce", downcast=None)
 
-    df.loc[df.firms <= 0, 'firms'] = np.nan
-    
     # aggregate by age group
     # coarse age group
     conditions = [
@@ -166,7 +210,6 @@ def data_clean(df, id_var, sector_dig, config):
     
     df["age_coarse"] = np.select(conditions, choices, default="00")
     
-    # aggregate by age group
     id_var = id_var[:-1] + ["age_coarse"]
     column_var = ['firms', 'estabs', 'emp', 'denom', 
                   'estabs_entry', 'estabs_exit', 'job_creation', 
@@ -176,7 +219,10 @@ def data_clean(df, id_var, sector_dig, config):
                   'net_job_creation', 'firmdeath_firms', 'firmdeath_estabs', 
                   'firmdeath_emp']
     
+
     df = df.groupby(["year"] + id_var)[column_var].sum()
+    # aggregate by age group
+    df.loc[df.firms <= 0, 'firms'] = np.nan
     df = df.reset_index()
     
     # calculate key rates
@@ -214,8 +260,13 @@ def data_clean(df, id_var, sector_dig, config):
     df.loc[df.sector_2 == 49, "sector_2"] = 48   
     
         
-    # lag var
-    for age in range(1, 7):
+    # lag var change variables
+    dep_var = dep_var + ["death_rate", "log_avg_emp", "log_emp", "emp", "firms"]
+    for var in dep_var:
+        df = lag_variable(df, ["year"], id_var, [var], 1)
+        df[f"{var}_chg"] = df[var] - df[f"L_1_{var}"]
+    
+    for age in range(2, 7):
         df = lag_variable(df, ["year"], id_var, ["emp"], age)
         df = lag_variable(df, ["year"], id_var, ["firms"], age)
         df = lag_variable(df, ["year"], id_var, ["death_rate"], age)
@@ -315,11 +366,11 @@ def data_life_path(df_input):
         # Merge with cohort year variables
         ####################
         df = df.merge(regdata, how = "left", left_on=[f"L_{age}_year", "sector_2"], right_on=["year_reg", "sector_reg"], validate = "many_to_one")
-        df = df.rename(columns={"industry_restrictions_1_0": f"L_{age}_industry_restrictions_1_0", 
-                                "industry_restrictions_2_0": f"L_{age}_industry_restrictions_2_0",
-                                "industry_restrictions_1_0_init": f"L_{age}_industry_restrictions_1_0_init",
-                                "industry_restrictions_2_0_init": f"L_{age}_industry_restrictions_2_0_init",}, 
-                                errors="raise")
+        df = df.rename(columns={
+                "industry_restrictions_1_0": f"L_{age}_industry_restrictions_1_0", 
+                "industry_restrictions_2_0": f"L_{age}_industry_restrictions_2_0",
+                "bartik_iv": f"L_{age}_bartik_iv",
+            }, errors="raise")
                                 
         df = df.drop(columns = {"sector_reg", "year_reg"})
 
@@ -341,8 +392,6 @@ def data_life_path(df_input):
             warnings.simplefilter("ignore")
             df[f"L_{age}_log_restriction_1_0"] = np.log(df[f"L_{age}_industry_restrictions_1_0"])
             df[f"L_{age}_log_restriction_2_0"] = np.log(df[f"L_{age}_industry_restrictions_2_0"])
-            df[f"L_{age}_log_restriction_1_0_init"] = np.log(df[f"L_{age}_industry_restrictions_1_0_init"])
-            df[f"L_{age}_log_restriction_2_0_init"] = np.log(df[f"L_{age}_industry_restrictions_2_0_init"])
             df[f"L_{age}_log_gdp"] = np.log(df[f"L_{age}_gdp"])
             df[f"L_{age}_log_emp"] = np.log(df[f"L_{age}_emp"])
             df[f"L_{age}_entry_rate_whole"] = df[f"L_{age}_entry_whole"]/df[f"L_{age}_incumbents_whole"]
@@ -351,20 +400,18 @@ def data_life_path(df_input):
         warnings.simplefilter("ignore")
         for age in range(0, 6):
             age_pre = age + 1 
-            df[f"L_{age}_chg_restriction_2_0"] = (df[f"L_{age}_log_restriction_2_0"] - 
+            df[f"L_{age}_chg_log_restriction_2_0"] = (df[f"L_{age}_log_restriction_2_0"] - 
                                                   df[f"L_{age_pre}_log_restriction_2_0"])
-            df[f"L_{age}_chg_restriction_2_0_init"] = (df[f"L_{age}_log_restriction_2_0_init"] - 
-                                                  df[f"L_{age_pre}_log_restriction_2_0_init"])
-            df[f"L_{age}_chg_gdp"] = (df[f"L_{age}_log_gdp"] - 
+            df[f"L_{age}_chg_bartik_iv"] = (df[f"L_{age}_bartik_iv"] - 
+                                                  df[f"L_{age_pre}_bartik_iv"])
+            df[f"L_{age}_chg_log_gdp"] = (df[f"L_{age}_log_gdp"] - 
                                       df[f"L_{age_pre}_log_gdp"])
-            df[f"L_{age}_chg_emp"] = (df[f"L_{age}_log_emp"] - 
+            df[f"L_{age}_chg_log_emp"] = (df[f"L_{age}_log_emp"] - 
                                       df[f"L_{age_pre}_emp"])
             df[f"L_{age}_chg_entry_rate_whole"] = (df[f"L_{age}_entry_rate_whole"] - 
                                                   df[f"L_{age_pre}_entry_rate_whole"])
             df[f"L_{age}_emp_growth"] = 2 * ((df[f"L_{age}_emp"] - df[f"L_{age_pre}_emp"]) / 
                                          (df[f"L_{age}_emp"] + df[f"L_{age_pre}_emp"]))
-        
-        df["death_rate_chg"] = df["death_rate"] - df["L_1_death_rate"]
 
         # cohort level data
         for age in range(1, 6):
@@ -377,14 +424,14 @@ def data_life_path(df_input):
                             
             df.loc[df["age_grp_dummy"] == age, "firms_cohort"] = df.loc[df["age_grp_dummy"] == age, f"L_{age}_firms"]
             df.loc[df["age_grp_dummy"] == age, "log_emp_cohort"] = np.log(df.loc[df["age_grp_dummy"] == age, f"L_{age}_emp"])
-            df.loc[df["age_grp_dummy"] == age, "log_emp_chg"] = np.log(df.loc[df["age_grp_dummy"] == age, "emp"]) - \
+            df.loc[df["age_grp_dummy"] == age, "log_emp_chg_cohort"] = np.log(df.loc[df["age_grp_dummy"] == age, "emp"]) - \
                 np.log(df.loc[df["age_grp_dummy"] == age, f"L_{age}_emp"])
-            df.loc[df["age_grp_dummy"] == age, "log_avg_emp_chg"] = \
+            df.loc[df["age_grp_dummy"] == age, "log_avg_emp_chg_cohort"] = \
                 ( \
                 (np.log(df.loc[df["age_grp_dummy"] == age, "emp"]) - np.log(df.loc[df["age_grp_dummy"] == age, "firms"])) - \
                 (np.log(df.loc[df["age_grp_dummy"] == age, f"L_{age}_emp"]) - np.log(df.loc[df["age_grp_dummy"] == age, f"L_{age}_firms"])) \
                 )
-            df.loc[df["age_grp_dummy"] == age,"per_emp_chg"] = 2 * (df.loc[df["age_grp_dummy"] == age, "emp"] - 
+            df.loc[df["age_grp_dummy"] == age,"per_emp_chg_cohort"] = 2 * (df.loc[df["age_grp_dummy"] == age, "emp"] - 
                 df.loc[df["age_grp_dummy"] == age, f"L_{age}_emp"]) /  (df.loc[df["age_grp_dummy"] == age, "emp"] +
                 df.loc[df["age_grp_dummy"] == age, f"L_{age}_emp"])
                 
@@ -639,12 +686,12 @@ def data_output(config_file):
     print("saving data file")
     # store cleaned dataset
     cleaned_data_path = Path(config["make_data"]["cleaned_data_path"])
-    df_cohort_robust.to_csv(Path.cwd()/cleaned_data_path/"cohort_robust.csv")
-    df_life_path_sec_ag.to_csv(Path.cwd()/cleaned_data_path/"life_path_sec_ag.csv")
-    df_agg.to_csv(Path.cwd()/cleaned_data_path/"agg_pattern.csv")
-    df_average_sec_ag.to_csv(Path.cwd()/cleaned_data_path/"average_sec_ag.csv")
-    df_life_path_sec_sz_ag.to_csv(Path.cwd()/cleaned_data_path/"life_path_sec_sz_ag.csv")
-    df_average_sec_sz_ag.to_csv(Path.cwd()/cleaned_data_path/"average_sec_sz_ag.csv")
+    df_cohort_robust.to_hdf(Path.cwd()/cleaned_data_path/"cohort_robust.h5", key = "data")
+    df_life_path_sec_ag.to_hdf(Path.cwd()/cleaned_data_path/"life_path_sec_ag.h5", key = "data")
+    df_agg.to_hdf(Path.cwd()/cleaned_data_path/"agg_pattern.h5", key = "data")
+    df_average_sec_ag.to_hdf(Path.cwd()/cleaned_data_path/"average_sec_ag.h5", key = "data")
+    df_life_path_sec_sz_ag.to_hdf(Path.cwd()/cleaned_data_path/"life_path_sec_sz_ag.h5", key = "data")
+    df_average_sec_sz_ag.to_hdf(Path.cwd()/cleaned_data_path/"average_sec_sz_ag.h5", key = "data")
 
 
 

@@ -1,39 +1,39 @@
                      PanelOLS Estimation Summary                     
-Dep. Variable:   ,log_emp_chg     ,  R-squared:           ,0.3021    
-Estimator:       ,PanelOLS        ,  R-squared (Between): ,-3.8193   
-No. Observations:,3026            ,  R-squared (Within):  ,0.3824    
-Date:            ,Thu, Jul 21 2022,  R-squared (Overall): ,0.2470    
-Time:            ,14:29:13        ,  Log-likelihood       ,3620.2    
+Dep. Variable:   ,log_emp_chg     ,  R-squared:           ,0.2477    
+Estimator:       ,PanelOLS        ,  R-squared (Between): ,-1.1577   
+No. Observations:,3109            ,  R-squared (Within):  ,0.3212    
+Date:            ,Wed, Aug 10 2022,  R-squared (Overall): ,0.2939    
+Time:            ,15:47:21        ,  Log-likelihood       ,4295.6    
 Cov. Estimator:  ,Robust          ,                       ,          
-                 ,                ,  F-statistic:         ,107.33    
+                 ,                ,  F-statistic:         ,85.161    
 Entities:        ,17              ,  P-value              ,0.0000    
-Avg Obs:         ,178.00          ,  Distribution:        ,F(12,2965)
+Avg Obs:         ,182.88          ,  Distribution:        ,F(12,3046)
 Min Obs:         ,0.0000          ,                       ,          
-Max Obs:         ,266.00          ,  F-statistic (robust):,37.673    
+Max Obs:         ,270.00          ,  F-statistic (robust):,37.669    
                  ,                ,  P-value              ,0.0000    
-Time periods:    ,36              ,  Distribution:        ,F(12,2965)
-Avg Obs:         ,84.056          ,                       ,          
-Min Obs:         ,74.000          ,                       ,          
-Max Obs:         ,99.000          ,                       ,          
+Time periods:    ,38              ,  Distribution:        ,F(12,3046)
+Avg Obs:         ,81.816          ,                       ,          
+Min Obs:         ,73.000          ,                       ,          
+Max Obs:         ,95.000          ,                       ,          
                  ,                ,                       ,          
                                 Parameter Estimates                                 
                               ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
-const                         ,-0.5934  ,0.2158   ,-2.7501,0.0060 ,-1.0166 ,-0.1703 
-L_0_entry_rate_whole          ,-6.1005  ,0.4973   ,-12.266,0.0000 ,-7.0757 ,-5.1254 
-L_0_log_gdp                   ,-0.1294  ,0.0560   ,-2.3122,0.0208 ,-0.2391 ,-0.0197 
-L_1_entry_rate_whole          ,0.0464   ,0.5451   ,0.0852 ,0.9321 ,-1.0223 ,1.1152  
-L_1_log_gdp                   ,0.1799   ,0.0751   ,2.3944 ,0.0167 ,0.0326  ,0.3273  
-L_2_entry_rate_whole          ,5.0017   ,0.4951   ,10.102 ,0.0000 ,4.0309  ,5.9725  
-L_2_log_gdp                   ,0.0496   ,0.0754   ,0.6570 ,0.5112 ,-0.0983 ,0.1975  
-L_3_entry_rate_whole          ,0.3548   ,0.3752   ,0.9456 ,0.3444 ,-0.3809 ,1.0905  
-L_3_log_gdp                   ,-0.0446  ,0.0535   ,-0.8330,0.4049 ,-0.1496 ,0.0604  
-cross                         ,0.0704   ,0.0531   ,1.3258 ,0.1850 ,-0.0337 ,0.1746  
-full_chg_restriction_2_0      ,0.0179   ,0.0459   ,0.3903 ,0.6963 ,-0.0720 ,0.1078  
-large_firm                    ,-0.9556  ,0.6026   ,-1.5858,0.1129 ,-2.1373 ,0.2260  
-pre_cohort_log_restriction_2_0,0.0300   ,0.0176   ,1.7005 ,0.0891 ,-0.0046 ,0.0646  
+const                         ,0.1378   ,0.1332   ,1.0350 ,0.3007 ,-0.1233 ,0.3989  
+L_0_entry_rate_whole          ,1.2583   ,0.2587   ,4.8639 ,0.0000 ,0.7511  ,1.7656  
+L_0_log_gdp                   ,0.1566   ,0.0364   ,4.3021 ,0.0000 ,0.0852  ,0.2279  
+L_1_entry_rate_whole          ,-0.8373  ,0.3183   ,-2.6308,0.0086 ,-1.4614 ,-0.2133 
+L_1_log_gdp                   ,-0.0643  ,0.0468   ,-1.3734,0.1697 ,-0.1560 ,0.0275  
+L_2_entry_rate_whole          ,5.5629   ,0.4127   ,13.478 ,0.0000 ,4.7536  ,6.3721  
+L_2_log_gdp                   ,-0.0660  ,0.0559   ,-1.1809,0.2377 ,-0.1755 ,0.0436  
+L_3_entry_rate_whole          ,-5.3950  ,0.3349   ,-16.111,0.0000 ,-6.0516 ,-4.7384 
+L_3_log_gdp                   ,-0.0385  ,0.0385   ,-0.9999,0.3174 ,-0.1141 ,0.0370  
+cross                         ,-0.0064  ,0.0411   ,-0.1550,0.8768 ,-0.0871 ,0.0743  
+full_chg_restriction_2_0      ,0.0212   ,0.0283   ,0.7505 ,0.4530 ,-0.0342 ,0.0766  
+large_firm                    ,0.0407   ,0.4589   ,0.0887 ,0.9293 ,-0.8591 ,0.9405  
+pre_cohort_log_restriction_2_0,-0.0130  ,0.0108   ,-1.2065,0.2277 ,-0.0342 ,0.0081  
 
-F-test for Poolability: 18.475
+F-test for Poolability: 12.087
 P-value: 0.0000
-Distribution: F(48,2965)
+Distribution: F(50,3046)
 
 Included effects: Entity, Time

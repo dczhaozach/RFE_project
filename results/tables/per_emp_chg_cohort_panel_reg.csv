@@ -1,0 +1,34 @@
+                      PanelOLS Estimation Summary                      
+Dep. Variable:   ,per_emp_chg_cohort,  R-squared:           ,0.0654    
+Estimator:       ,PanelOLS          ,  R-squared (Between): ,-3.0212   
+No. Observations:,45014             ,  R-squared (Within):  ,0.0834    
+Date:            ,Wed, Aug 10 2022  ,  R-squared (Overall): ,0.0617    
+Time:            ,16:26:32          ,  Log-likelihood       ,-2.045e+04
+Cov. Estimator:  ,Clustered         ,                       ,          
+                 ,                  ,  F-statistic:         ,576.87    
+Entities:        ,262               ,  P-value              ,0.0000    
+Avg Obs:         ,171.81            ,  Distribution:        ,F(7,44727)
+Min Obs:         ,0.0000            ,                       ,          
+Max Obs:         ,189.00            ,  F-statistic (robust):,2332.3    
+                 ,                  ,  P-value              ,0.0000    
+Time periods:    ,38                ,  Distribution:        ,F(7,44727)
+Avg Obs:         ,1184.6            ,                       ,          
+Min Obs:         ,955.00            ,                       ,          
+Max Obs:         ,1199.0            ,                       ,          
+                 ,                  ,                       ,          
+                             Parameter Estimates                             
+                       ,Parameter,Std. Err., T-stat,P-value,Lower CI,Upper CI
+C(age_grp_dummy)[T.1.0],0.3635   ,0.3086   ,1.1780 ,0.2388 ,-0.2413 ,0.9683  
+C(age_grp_dummy)[T.2.0],0.3736   ,0.3055   ,1.2227 ,0.2214 ,-0.2253 ,0.9724  
+C(age_grp_dummy)[T.3.0],0.4298   ,0.3067   ,1.4013 ,0.1611 ,-0.1714 ,1.0310  
+C(age_grp_dummy)[T.4.0],0.5375   ,0.3104   ,1.7316 ,0.0833 ,-0.0709 ,1.1459  
+C(age_grp_dummy)[T.5.0],0.6162   ,0.3119   ,1.9754 ,0.0482 ,0.0048  ,1.2275  
+L_0_entry_rate_whole   ,1.4804   ,0.1875   ,7.8952 ,0.0000 ,1.1129  ,1.8479  
+L_0_log_gdp            ,0.0298   ,0.0155   ,1.9156 ,0.0554 ,-0.0007 ,0.0603  
+L_0_log_restriction_2_0,-0.0682  ,0.0304   ,-2.2438,0.0249 ,-0.1278 ,-0.0086 
+
+F-test for Poolability: 40.902
+P-value: 0.0000
+Distribution: F(279,44727)
+
+Included effects: Entity, Time

@@ -18,5 +18,5 @@ model:
   average_sec_sz_ag_path: "data/cleaned/average_sec_sz_ag.csv"
   results_tables_path: "results/tables"
   results_figs_path: "results/figs"
-  dep_var: ["death_rate", "per_emp_chg", "log_emp_chg", "log_avg_emp_chg", "log_emp", "log_avg_emp", "job_creation_rate", "net_job_creation_rate", "job_destruction_rate", "estabs_exit_rate", "estabs_entry_rate", "reallocation_rate"]
+  dep_var: ["death_rate", "per_emp_chg_cohort", "log_emp_chg_cohort", "log_avg_emp_chg_cohort", "log_emp", "log_avg_emp", "job_creation_rate", "net_job_creation_rate", "job_destruction_rate", "estabs_exit_rate", "estabs_entry_rate", "reallocation_rate"]
   error_type: "clustered"

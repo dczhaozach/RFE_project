@@ -18,6 +18,7 @@ lxml = "*"
 tabulate = "*"
 requests = "*"
 python-dotenv = "*"
+tables = "*"
 
 [dev-packages]
 pylint = "*"
