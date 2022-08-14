@@ -7,16 +7,15 @@ make_data:
   bds_sector_size: "bds2019_sector_size_age.csv"
   gdp_path: "BEA/gdp.csv"
   cleaned_data_path: "data/cleaned"
-  dep_var: ["job_creation_rate", "net_job_creation_rate", "job_destruction_rate", "estabs_exit", "estabs_exit_rate", "net_job_creation", "estabs_entry_rate", "reallocation_rate"]
+  dep_var: ["job_creation_rate", "net_job_creation_rate", "job_destruction_rate", "estabs_exit_rate", "net_job_creation", "estabs_entry_rate", "reallocation_rate"]
   
 
 model:
-  cohort_robust_path: "data/cleaned/cohort_robust.csv"
-  life_path_sec_ag_path: "data/cleaned/life_path_sec_ag.csv"
-  average_sec_ag_path: "data/cleaned/average_sec_ag.csv"
-  life_path_sec_sz_ag_path: "data/cleaned/life_path_sec_sz_ag.csv"
-  average_sec_sz_ag_path: "data/cleaned/average_sec_sz_ag.csv"
+  sector_panel: "data/cleaned/sector_panel.h5"
+  sector_age_panel: "data/cleaned/sector_age_panel.h5"
+  sector_size_panel: "data/cleaned/sector_size_panel.h5"
+  sector_age_size_panel: "data/cleaned/sector_age_size_panel.h5"
   results_tables_path: "results/tables"
   results_figs_path: "results/figs"
-  dep_var: ["death_rate", "per_emp_chg_cohort", "log_emp_chg_cohort", "log_avg_emp_chg_cohort", "log_emp", "log_avg_emp", "job_creation_rate", "net_job_creation_rate", "job_destruction_rate", "estabs_exit_rate", "estabs_entry_rate", "reallocation_rate"]
+  dep_var: ["log_emp", "log_avg_emp", "job_creation_rate", "job_destruction_rate", "net_job_creation_rate", "reallocation_rate", "death_rate", "L_0_entry_rate", "estabs_exit_rate", "estabs_entry_rate"]
   error_type: "clustered"

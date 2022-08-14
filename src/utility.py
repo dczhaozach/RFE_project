@@ -47,7 +47,7 @@ def lag_variable(df, time_var, id_var, var, lags):
     """
 
     index_var = time_var + id_var
-
+    df = df.sort_values(by=index_var)
     df = df.set_index(index_var)
     df_shift = df[var]
     
@@ -58,7 +58,7 @@ def lag_variable(df, time_var, id_var, var, lags):
     
     return df
 
-def coef_dict(v_names, res, ceof_dict, age):
+def coef_dict(depend_var, v_name, res, ceof_dict, age):
     """
     coef_dict create dictionary of estimates and C.I. for selected parameters 
     Args:
@@ -70,21 +70,23 @@ def coef_dict(v_names, res, ceof_dict, age):
         new dictionary
     """
     temp_dict = copy.deepcopy(ceof_dict)
-    for v_name in v_names:
-        dict1 = {}
-        coefs_value = res.params[v_name]
-        lower_ci = res.conf_int().loc[v_name, "lower"]
-        upper_ci = res.conf_int().loc[v_name, "upper"]
-        sign = (lower_ci * upper_ci > 0)
-        dict1.update({"name": v_name, "age": age, "Coef": coefs_value,
-                      "lower_ci": lower_ci, "upper_ci": upper_ci,
-                      "significance": sign}) 
-        temp_dict.append(dict1)
+    dict1 = {}
+    coefs_value = res.params[v_name]
+    std = res.std_errors[v_name]
+    lower_ci = res.conf_int().loc[v_name, "lower"]
+    upper_ci = res.conf_int().loc[v_name, "upper"]
+    p_value = res.pvalues[v_name]
+    nobs = res.nobs
+    sign = (lower_ci * upper_ci > 0)
+    dict1.update({"depend_var": depend_var, "age": age, "Coef": coefs_value,
+                "std":std, "lower_ci": lower_ci, "upper_ci": upper_ci,
+                "p values":p_value, "significance": sign, "# obs":nobs}) 
+    temp_dict.append(dict1)
     
     return temp_dict
 
 
-def plot_lp(v_names, df, depend_var, plot_name, fig_path, var_names, std):
+def plot_lp(df, depend_var, plot_name, fig_path, std):
     """
     plot_lp plot local projection graph
     Args:
@@ -96,42 +98,32 @@ def plot_lp(v_names, df, depend_var, plot_name, fig_path, var_names, std):
     Return:
         None
     """
-    n_plot = len(v_names)
-    cols = 2
-    rows = n_plot//2 + (n_plot%2 > 0)
-    fig = plt.figure()
-    gs = gridspec.GridSpec(rows, cols)
+    fig, ax = plt.subplots()
     depend_name = depend_var.replace("_", " ").title()
 
-    for i in range(0, n_plot):
-        v_name = v_names[i]
-        var_name = var_names[i]
-        df_sub = df[df.name == v_name]
-        Age = df_sub.age.to_numpy().T
-        Age = Age.astype(int)
-        Coef = df_sub.Coef.to_numpy().T 
-        Coef = Coef * std
-        lower_ci = - df_sub[["lower_ci"]].to_numpy().T + df_sub.Coef.to_numpy().T 
-        lower_ci  = lower_ci * std
-        upper_ci = df_sub[["upper_ci"]].to_numpy().T - df_sub.Coef.to_numpy().T 
-        upper_ci = upper_ci * std
-        yerr = np.vstack((lower_ci, upper_ci))
-        
-        ax = fig.add_subplot(gs[i])
-        ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-        #ax[i].set_ylim([-0.1, 0.1])
-        ax.scatter(Age, Coef)
-        ax.errorbar(Age, Coef, yerr = yerr, fmt = 'o',color = 'orange', 
-            ecolor = 'lightgreen', elinewidth = 3, capsize=5)   
-        ax.axhline(y=0, color='r', linestyle=':')
-        
-        ax.set_title(f"{var_name}".title())
-        ax.set_xlabel("Age")
-        ax.set_ylabel(f"{depend_name}".title())
-    
+    df_sub = df[df.depend_var == depend_var]
+    Age = df_sub.age.to_numpy().T
+    Coef = df_sub.Coef.to_numpy().T 
+    Coef = Coef * std
+    lower_ci = - df_sub[["lower_ci"]].to_numpy().T + df_sub.Coef.to_numpy().T 
+    lower_ci  = lower_ci * std
+    upper_ci = df_sub[["upper_ci"]].to_numpy().T - df_sub.Coef.to_numpy().T 
+    upper_ci = upper_ci * std
+    yerr = np.vstack((lower_ci, upper_ci))
+
+    ax.scatter(Age, Coef)
+    ax.errorbar(Age, Coef, yerr = yerr, fmt = 'o',color = 'orange', 
+        ecolor = 'lightgreen', elinewidth = 3, capsize=5)   
+    ax.axhline(y=0, color='r', linestyle=':')
+
+    ax.set_title(f"{depend_name}".title())
+    ax.set_xlabel("Age")
+    ax.set_ylabel(f"{depend_name}".title())
+
     fig.suptitle(f'Effects of Regulation on {depend_name}')        
     fig.tight_layout()
-    fig_final_path = fig_path/f"{plot_name}.png"
+    fig_final_path = fig_path/f"{plot_name}_{depend_name}.png"
+    
     fig.savefig(fig_final_path, facecolor='white', transparent=False)
     plt.close(fig)
     return None
