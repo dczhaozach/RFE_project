@@ -61,7 +61,7 @@ def model_sector(config, depend_vars):
         depend_var, "sector_2", "firms"
         ]
         
-        formula_txt = f'{depend_var} ~ L_0_log_gdp + L_1_log_gdp + L_0_log_restriction_2_0 + EntityEffects + TimeEffects'
+        formula_txt = f'{depend_var} ~ L_0_log_gdp + L_0_log_restriction_2_0 + EntityEffects + TimeEffects'
         
         # regression
         data_ols = data_ols.loc[:, var_lst].dropna()
@@ -92,7 +92,7 @@ def model_sector(config, depend_vars):
         "L_0_log_gdp", "L_1_log_gdp",
         depend_var, "sector_2", 'firms', "sector", "year"]
         
-        formula_txt = f'{depend_var} ~ C(sector) + C(year) + L_0_log_gdp + L_1_log_gdp + [L_0_log_restriction_2_0 ~ L_0_bartik_iv]'
+        formula_txt = f'{depend_var} ~ C(sector) + C(year) + L_0_log_gdp  + [L_0_log_restriction_2_0 ~ L_0_bartik_iv]'
         
         # regression
         data_iv = data_iv.loc[:, var_list].dropna()
@@ -185,7 +185,6 @@ def model_sector_age(config, depend_vars):
             ]
             
             formula_txt = f'{depend_var} ~ C(year) + C(sector) \
-                                        + L_0_entry_rate  \
                                         + L_0_log_gdp     \
                                         + [L_0_log_restriction_2_0 ~ L_0_bartik_iv]'
                 

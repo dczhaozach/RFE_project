@@ -122,7 +122,7 @@ def data_regdata(config):
         )
 
     # create initial shares
-    baseline_year = 1986
+    baseline_year = 1970
     df_init = df_merge.loc[
         df_merge.year == baseline_year,
         ["NAICS", "probability", "document_reference", "restrictions_2_0"]
@@ -149,23 +149,24 @@ def data_regdata(config):
     
     # average initial log restriction (leave one out)
     df_merge["log_reg_s_d"] = np.where(df_merge["reg_s_d"] > 0, np.log(df_merge["reg_s_d"]), 0)
-    #df_merge["log_reg_d_one_out"] = np.where(
-    #    df_merge["restrictions_2_0"] - df_merge["reg_s_d"] > 0,
-    #    np.log(df_merge["restrictions_2_0"] - df_merge["reg_s_d"]),
-    #    0
-    #    )
-    
-    df_merge["sum_log_reg_s_d"] = df_merge.groupby(["document_reference", "year"])["log_reg_s_d"].transform(lambda x: x.sum())
-    df_merge["n_doc"] = df_merge.groupby(["document_reference", "year"])["log_reg_s_d"].transform(lambda x: x.size)
-    df_merge["avg_log_reg_s_d"] = np.where(
-        df_merge["n_doc"] > 1, 
-        (df_merge["sum_log_reg_s_d"] - df_merge["log_reg_s_d"])/(df_merge["n_doc"] - 1),
-        np.nan
+    df_merge["log_reg_d_one_out"] = np.where(
+        df_merge["restrictions_2_0"]  > 0,
+        np.log(df_merge["restrictions_2_0"]),
+        0
         )
     
+    #df_merge["sum_log_reg_s_d"] = df_merge.groupby(["document_reference", "year"])["log_reg_s_d"].transform(lambda x: x.sum())
+    #df_merge["n_doc"] = df_merge.groupby(["document_reference", "year"])["log_reg_s_d"].transform(lambda x: x.size)
+    #df_merge["sum_reg_s_d"] = df_merge.groupby(["document_reference", "year"])["reg_s_d"].transform(lambda x: x.sum())
+    #df_merge["log_reg_d_one_out"] = np.where(
+    #    df_merge["sum_reg_s_d"] - df_merge["reg_s_d"]> 0,
+    #    np.log(df_merge["sum_reg_s_d"] - df_merge["reg_s_d"]),
+    #    np.nan
+    #   )
+    
     # prepare to aggregate (sum)
-    df_merge["bartik_iv"] = df_merge["avg_log_reg_s_d"] * df_merge["share_init"]
-    #df_merge["bartik_iv"] = (df_merge["log_reg_d_one_out"]) * df_merge["share_init"]
+    #df_merge["bartik_iv"] = df_merge["avg_log_reg_s_d"] * df_merge["share_init"]
+    df_merge["bartik_iv"] = (df_merge["log_reg_d_one_out"]) * df_merge["share_init"]
     df_merge["industry_restrictions_2_0"] = df_merge["reg_s_d"]
     
     # aggregate data and finalize
@@ -192,6 +193,10 @@ def data_clean(df, id_var, sector_dig, config):
     ####################
     # clean data
     ####################
+    # create sector variables
+    df["sector"] = df["sector"].astype(str).str.slice(0, sector_dig)
+    df["sector"] = pd.to_numeric(df["sector"], errors="coerce", downcast=None)
+    
     
     # change variable types
     dep_var = config["make_data"]["dep_var"]
@@ -293,10 +298,7 @@ def data_clean(df, id_var, sector_dig, config):
     df["log_avg_emp"] = np.log(df["emp"]) - np.log(df["firms"])
     df["death_rate"] = df["death"]/df["firms"]
     
-    # create sector variables
-    df["sector"] = df["sector"].astype(str).str.slice(0, sector_dig)
-    df["sector"] = pd.to_numeric(df["sector"], errors="coerce", downcast=None)
-    
+
     # create sector at different digit
     for naics in range(2, 5):
         if naics > 2 and "fsize" in id_var:
@@ -446,6 +448,11 @@ def data_final(df_input, id_var):
             df[f"L_{lags}_log_gdp"] = np.log(df[f"L_{lags}_gdp"])
             df[f"L_{lags}_log_emp"] = np.log(df[f"L_{lags}_emp"])
             df[f"L_{lags}_entry_rate"] = df[f"L_{lags}_entry"]/df[f"L_{lags}_incumbents"]
+    
+    
+    # final restrictions
+    df = df[df.L_0_incumbents > 50]
+    df = df[df.sector_2 != 11]
     
     # create change variables        
     with warnings.catch_warnings():
