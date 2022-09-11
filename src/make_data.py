@@ -49,7 +49,7 @@ def data_load(config):
     # reg data
     regdata = pd.read_csv(data_file_path/regdata_path)
     regdata["sector_reg"] = regdata["NAICS"]
-    regdata = regdata.loc[:, ["year", "sector_reg", 
+    regdata = regdata.loc[:, ["year", "sector_reg",
                               "industry_restrictions_1_0", "industry_restrictions_2_0"]]
 
     # sector gdp data
@@ -97,84 +97,146 @@ def data_regdata(config):
     ####################
     # Create merged dataset
     ####################
-    
-    # clean variables
-    df_doc["year"] = pd.to_numeric(df_doc.year.str.slice(0,4))
-    df_ind["year"] = pd.to_numeric(df_ind.year.str.slice(0,4))
+    mode = 1
+    if mode == 1:
+        # clean variables
+        df_doc = df_doc.drop_duplicates("document_id")
+        df_doc["year"] = pd.to_numeric(df_doc.date.str.slice(0,4))
 
-    # create lag variable
-    df_doc = lag_variable(df_doc, ["year"], ["document_reference"], ["restrictions_2_0"], 1)
+        # create current measure
+        doc_var = [
+            "year",
+            "document_id",
+            "agency",
+            "document_reference",
+            "restrictions_2_0",
+            ]
 
-    # create current measure
-    doc_var = [
-        "year",
-        "document_reference",
-        "restrictions_1_0",
-        "restrictions_2_0",
-        "L_1_restrictions_2_0",
-        ]
-    
-    df_merge = df_ind.merge(
-        df_doc[doc_var], 
-        how='left', 
-        on=["year", "document_reference"], 
-        validate="many_to_one",
-        )
+        df_merge_part = df_ind.merge(
+            df_doc[doc_var], 
+            how='inner', 
+            on=["document_id"], 
+            validate="many_to_one",
+            )
 
-    # create initial shares
-    baseline_year = 1970
-    df_init = df_merge.loc[
-        df_merge.year == baseline_year,
-        ["NAICS", "probability", "document_reference", "restrictions_2_0"]
-        ]
-    df_init = df_init.rename(columns = {"probability": "probability_init"})
-    
-    # initial shares
-    df_init["reg_s_d_init"] = df_init["probability_init"] * df_init["restrictions_2_0"]
-    df_init["reg_s_init"] = df_init.groupby(["NAICS"])["reg_s_d_init"].transform(lambda x: x.sum())
-    df_init["share_init"] = np.where(df_init["reg_s_d_init"]>0, df_init["reg_s_d_init"] / df_init["reg_s_init"], 0) 
-    
-    # merge with main dataset
-    init_var = ["NAICS", "document_reference", "reg_s_d_init", "reg_s_init", "share_init"]
-    df_merge = df_merge.merge(df_init[init_var], how='left', on=["NAICS", "document_reference"], validate="many_to_one")
-    
-    # replace non record with zero
-    for var in ["reg_s_d_init", "reg_s_init", "share_init"]:
-        df_merge[var] = np.where(df_merge[var].isna(), 0, df_merge[var])
-    
-    # create current share
-    df_merge["reg_s_d"] = df_merge["probability"] * df_merge["restrictions_2_0"]
-    df_merge["reg_s"] = df_merge.groupby(["NAICS", "year"])["reg_s_d"].transform(lambda x: x.sum())
-    df_merge["share"] = np.where(df_merge["reg_s_d"] > 0, df_merge["reg_s_d"] / df_merge["reg_s"], 0)
-    
-    # average initial log restriction (leave one out)
-    df_merge["log_reg_s_d"] = np.where(df_merge["reg_s_d"] > 0, np.log(df_merge["reg_s_d"]), 0)
-    df_merge["log_reg_d_one_out"] = np.where(
-        df_merge["restrictions_2_0"]  > 0,
-        np.log(df_merge["restrictions_2_0"]),
-        0
-        )
-    
-    #df_merge["sum_log_reg_s_d"] = df_merge.groupby(["document_reference", "year"])["log_reg_s_d"].transform(lambda x: x.sum())
-    #df_merge["n_doc"] = df_merge.groupby(["document_reference", "year"])["log_reg_s_d"].transform(lambda x: x.size)
-    #df_merge["sum_reg_s_d"] = df_merge.groupby(["document_reference", "year"])["reg_s_d"].transform(lambda x: x.sum())
-    #df_merge["log_reg_d_one_out"] = np.where(
-    #    df_merge["sum_reg_s_d"] - df_merge["reg_s_d"]> 0,
-    #    np.log(df_merge["sum_reg_s_d"] - df_merge["reg_s_d"]),
-    #    np.nan
-    #   )
-    
-    # prepare to aggregate (sum)
-    #df_merge["bartik_iv"] = df_merge["avg_log_reg_s_d"] * df_merge["share_init"]
-    df_merge["bartik_iv"] = (df_merge["log_reg_d_one_out"]) * df_merge["share_init"]
-    df_merge["industry_restrictions_2_0"] = df_merge["reg_s_d"]
-    
+        df_merge_part["reg_s_d"] = df_merge_part["probability"] * df_merge_part["restrictions_2_0"]
+        df_merge = df_merge_part.groupby(["year", "industry", "agency"])[["reg_s_d", "restrictions_2_0"]].sum()
+        df_merge = df_merge.reset_index()
+
+
+        # initial shares
+        df_merge["reg_s"] = df_merge.groupby(["industry", "year"])["reg_s_d"].transform(lambda x: x.sum())
+        df_merge["share"] = np.where(df_merge["reg_s_d"]>0, df_merge["reg_s_d"] / df_merge["reg_s"], 0)
+
+        # replace non record with zero
+        for var in ["reg_s_d", "reg_s", "share"]:
+            df_merge[var] = np.where(df_merge[var].isna(), 0, df_merge[var])
+            
+        # create initial shares
+        baseline_year = 1986
+        df_init = df_merge.loc[
+            df_merge.year == baseline_year,
+            ["industry", "agency", "share"]
+            ]
+        df_init = df_init.rename(columns = {"share": "share_init"})
+        
+        df_share = pd.pivot_table(df_init, values="share_init", index=["industry"], columns=["agency"])
+        
+        # merge with main dataset
+        init_var = ["industry", "agency", "share_init"]
+        df_merge = df_merge.merge(df_init[init_var], how='left', on=["industry", "agency"], validate="many_to_one")
+        
+                
+        # average initial log restriction (leave one out)
+        df_merge["log_reg_s_d"] = np.where(df_merge["reg_s_d"] > 0, np.log(df_merge["reg_s_d"]), 0)
+        df_merge["log_reg_d_one_out"] = np.where(
+            df_merge["restrictions_2_0"]  > 0,
+            np.log(df_merge["restrictions_2_0"] - df_merge["reg_s_d"]),
+            0
+            )
+
+        df_merge["bartik_iv"] = (df_merge["log_reg_d_one_out"]) * df_merge["share_init"]
+        df_merge["industry_restrictions_2_0"] = df_merge["reg_s_d"]
+                
+    else:
+        # clean variables
+        df_doc = df_doc.drop_duplicates("document_id")
+        df_doc["year"] = pd.to_numeric(df_doc.date.str.slice(0,4))
+
+        # create current measure
+        doc_var = [
+            "year",
+            "document_id",
+            "agency",
+            "document_reference",
+            "restrictions_2_0",
+            ]
+        
+        df_merge = df_ind.merge(
+            df_doc[doc_var], 
+            how='inner', 
+            on=["document_id"], 
+            validate="many_to_one",
+            )
+        
+        
+
+        # create initial shares
+        baseline_year = 1986
+        df_init = df_merge.loc[
+            df_merge.year == baseline_year,
+            ["industry", "probability", "document_reference", "restrictions_2_0"]
+            ]
+        df_init = df_init.rename(columns = {"probability": "probability_init"})
+        
+        # initial shares
+        df_init["reg_s_part_init"] = df_init["probability_init"] * df_init["restrictions_2_0"]
+        
+        
+        df_init["reg_s_init"] = df_init.groupby(["industry"])["reg_s_d_init"].transform(lambda x: x.sum())
+        df_init["share_init"] = np.where(df_init["reg_s_d_init"]>0, df_init["reg_s_d_init"] / df_init["reg_s_init"], 0) 
+        
+        # merge with main dataset
+        init_var = ["industry", "document_reference", "reg_s_d_init", "reg_s_init", "share_init"]
+        df_merge = df_merge.merge(df_init[init_var], how='left', on=["industry", "document_reference"], validate="many_to_one")
+        
+        # replace non record with zero
+        for var in ["reg_s_d_init", "reg_s_init", "share_init"]:
+            df_merge[var] = np.where(df_merge[var].isna(), 0, df_merge[var])
+        
+        # create current share
+        df_merge["reg_s_d"] = df_merge["probability"] * df_merge["restrictions_2_0"]
+        df_merge["reg_s"] = df_merge.groupby(["industry", "year"])["reg_s_d"].transform(lambda x: x.sum())
+        df_merge["share"] = np.where(df_merge["reg_s_d"] > 0, df_merge["reg_s_d"] / df_merge["reg_s"], 0)
+        
+        # average initial log restriction (leave one out)
+        df_merge["log_reg_s_d"] = np.where(df_merge["reg_s_d"] > 0, np.log(df_merge["reg_s_d"]), 0)
+        df_merge["log_reg_d_one_out"] = np.where(
+            df_merge["restrictions_2_0"]  > 0,
+            np.log(df_merge["restrictions_2_0"]),
+            0
+            )
+        
+        #df_merge["sum_log_reg_s_d"] = df_merge.groupby(["document_reference", "year"])["log_reg_s_d"].transform(lambda x: x.sum())
+        #df_merge["n_doc"] = df_merge.groupby(["document_reference", "year"])["log_reg_s_d"].transform(lambda x: x.size)
+        #df_merge["sum_reg_s_d"] = df_merge.groupby(["document_reference", "year"])["reg_s_d"].transform(lambda x: x.sum())
+        #df_merge["log_reg_d_one_out"] = np.where(
+        #    df_merge["sum_reg_s_d"] - df_merge["reg_s_d"]> 0,
+        #    np.log(df_merge["sum_reg_s_d"] - df_merge["reg_s_d"]),
+        #    np.nan
+        #   )
+        
+        # prepare to aggregate (sum)
+        #df_merge["bartik_iv"] = df_merge["avg_log_reg_s_d"] * df_merge["share_init"]
+        df_merge["bartik_iv"] = (df_merge["log_reg_d_one_out"]) * df_merge["share_init"]
+        df_merge["industry_restrictions_2_0"] = df_merge["reg_s_d"]
+        
     # aggregate data and finalize
-    regdata = df_merge.groupby(by=["year", "NAICS"])[["industry_restrictions_2_0", "bartik_iv"]].sum()
+    regdata = df_merge.groupby(by=["year", "industry"])[["industry_restrictions_2_0", "bartik_iv"]].sum()
     regdata = regdata.reset_index()
-    regdata = regdata.rename(columns={"NAICS":"sector_reg"})
+    regdata = regdata.rename(columns={"industry":"sector_reg"})
     
-    return regdata
+    return regdata, df_share
 
     
 def data_clean(df, id_var, sector_dig, config):
@@ -451,8 +513,10 @@ def data_final(df_input, id_var):
     
     
     # final restrictions
-    df = df[df.L_0_incumbents > 50]
+    df = df[df.L_0_incumbents > 30]
     df = df[df.sector_2 != 11]
+    #df = df[df.sector_2 != 52]
+    df = df[df.sector_2 != 92]
     
     # create change variables        
     with warnings.catch_warnings():
@@ -535,7 +599,7 @@ def data_output(config_file):
     print("loading config files")
     config = parse_config(config_file)
     df_sec_sz_ag_raw, df_sec_ag_raw, regdata, gdp = data_load(config)
-    regdata_iv = data_regdata(config)
+    regdata_iv, df_share = data_regdata(config)
     
     print("cleaning the data")
     # clean data
@@ -574,6 +638,7 @@ def data_output(config_file):
     # store cleaned dataset
     cleaned_data_path = Path(config["make_data"]["cleaned_data_path"])
     
+    df_share.to_hdf(Path.cwd()/cleaned_data_path/"df_share.h5", key = "data")
     data_final_sec.to_hdf(Path.cwd()/cleaned_data_path/"sector_panel.h5", key = "data")
     data_final_sec_sz.to_hdf(Path.cwd()/cleaned_data_path/"sector_size_panel.h5", key = "data")
     data_final_sec_ag.to_hdf(Path.cwd()/cleaned_data_path/"sector_age_panel.h5", key = "data")

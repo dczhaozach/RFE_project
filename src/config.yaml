@@ -1,8 +1,8 @@
 make_data:
   data_file_path: "C:/Users/zach_/Nobackupfile/Data/BDS"     # raw data file dir
   regdata_origin_path: "Regdata/regdata_4_0_industries.csv"
-  regdata_doc_path: "Regdata/regdata_4_0_documents.csv"
-  regdata_ind_path: "Regdata/regdata_4_0_documents_2digit_naics.csv"
+  regdata_doc_path: "Regdata/RegData-US_4-1/document_restrictions.csv"
+  regdata_ind_path: "Regdata/RegData-US_4-1/2digit_probability.csv"
   bds_naics_4_path: "bds2019_naics_4_age.csv"
   bds_sector_size: "bds2019_sector_size_age.csv"
   gdp_path: "BEA/gdp.csv"

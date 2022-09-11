@@ -1,28 +1,28 @@
                     PanelOLS Estimation Summary                     
-Dep. Variable:   ,log_avg_emp     ,  R-squared:           ,0.0328   
-Estimator:       ,PanelOLS        ,  R-squared (Between): ,0.9284   
-No. Observations:,8079            ,  R-squared (Within):  ,0.2712   
-Date:            ,Wed, Aug 17 2022,  R-squared (Overall): ,0.9261   
-Time:            ,19:47:06        ,  Log-likelihood       ,4524.1   
+Dep. Variable:   ,log_avg_emp     ,  R-squared:           ,0.0739   
+Estimator:       ,PanelOLS        ,  R-squared (Between): ,0.8942   
+No. Observations:,9412            ,  R-squared (Within):  ,0.0997   
+Date:            ,Sat, Aug 20 2022,  R-squared (Overall): ,0.8920   
+Time:            ,20:45:55        ,  Log-likelihood       ,6494.6   
 Cov. Estimator:  ,Robust          ,                       ,         
-                 ,                ,  F-statistic:         ,132.20   
-Entities:        ,260             ,  P-value              ,0.0000   
-Avg Obs:         ,31.073          ,  Distribution:        ,F(2,7803)
-Min Obs:         ,0.0000          ,                       ,         
-Max Obs:         ,34.000          ,  F-statistic (robust):,32.407   
+                 ,                ,  F-statistic:         ,362.86   
+Entities:        ,280             ,  P-value              ,0.0000   
+Avg Obs:         ,33.614          ,  Distribution:        ,F(2,9097)
+Min Obs:         ,3.0000          ,                       ,         
+Max Obs:         ,34.000          ,  F-statistic (robust):,101.87   
                  ,                ,  P-value              ,0.0000   
-Time periods:    ,34              ,  Distribution:        ,F(2,7803)
-Avg Obs:         ,237.62          ,                       ,         
-Min Obs:         ,236.00          ,                       ,         
-Max Obs:         ,240.00          ,                       ,         
+Time periods:    ,34              ,  Distribution:        ,F(2,9097)
+Avg Obs:         ,276.82          ,                       ,         
+Min Obs:         ,274.00          ,                       ,         
+Max Obs:         ,279.00          ,                       ,         
                  ,                ,                       ,         
                             Parameter Estimates                             
                        ,Parameter,Std. Err.,T-stat,P-value,Lower CI,Upper CI
-L_0_log_gdp            ,0.2055   ,0.0283   ,7.2584,0.0000 ,0.1500  ,0.2610  
-L_0_log_restriction_2_0,0.1331   ,0.0240   ,5.5448,0.0000 ,0.0861  ,0.1802  
+L_0_log_gdp            ,0.2306   ,0.0221   ,10.417,0.0000 ,0.1872  ,0.2740  
+L_0_log_restriction_2_0,0.1638   ,0.0141   ,11.651,0.0000 ,0.1362  ,0.1913  
 
-F-test for Poolability: 874.78
+F-test for Poolability: 1106.9
 P-value: 0.0000
-Distribution: F(273,7803)
+Distribution: F(312,9097)
 
 Included effects: Entity, Time
