@@ -2,8 +2,8 @@
 Dep. Variable:   ,L_0_entry_rate  ,  R-squared:           ,0.0193   
 Estimator:       ,PanelOLS        ,  R-squared (Between): ,0.2661   
 No. Observations:,9412            ,  R-squared (Within):  ,0.2393   
-Date:            ,Tue, Sep 20 2022,  R-squared (Overall): ,0.2647   
-Time:            ,09:53:38        ,  Log-likelihood       ,2.396e+04
+Date:            ,Tue, Oct 18 2022,  R-squared (Overall): ,0.2647   
+Time:            ,11:44:57        ,  Log-likelihood       ,2.396e+04
 Cov. Estimator:  ,Robust          ,                       ,         
                  ,                ,  F-statistic:         ,89.482   
 Entities:        ,280             ,  P-value              ,0.0000   

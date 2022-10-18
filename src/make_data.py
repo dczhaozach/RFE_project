@@ -134,7 +134,7 @@ def data_regdata(config):
             df_merge[var] = np.where(df_merge[var].isna(), 0, df_merge[var])
             
         # create initial shares
-        baseline_year = 1975
+        baseline_year = 1986
         df_init = df_merge.loc[
             df_merge.year == baseline_year,
             ["industry", "agency", "share"]
