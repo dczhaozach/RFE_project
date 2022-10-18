@@ -126,6 +126,7 @@ def data_regdata(config):
 
         # initial shares
         df_merge["reg_s"] = df_merge.groupby(["industry", "year"])["reg_s_d"].transform(lambda x: x.sum())
+        df_merge["reg_d"] = df_merge.groupby(["agency", "year"])["reg_s_d"].transform(lambda x: x.sum())
         df_merge["share"] = np.where(df_merge["reg_s_d"]>0, df_merge["reg_s_d"] / df_merge["reg_s"], 0)
 
         # replace non record with zero
@@ -133,7 +134,7 @@ def data_regdata(config):
             df_merge[var] = np.where(df_merge[var].isna(), 0, df_merge[var])
             
         # create initial shares
-        baseline_year = 1986
+        baseline_year = 1975
         df_init = df_merge.loc[
             df_merge.year == baseline_year,
             ["industry", "agency", "share"]
@@ -151,7 +152,7 @@ def data_regdata(config):
         df_merge["log_reg_s_d"] = np.where(df_merge["reg_s_d"] > 0, np.log(df_merge["reg_s_d"]), 0)
         df_merge["log_reg_d_one_out"] = np.where(
             df_merge["restrictions_2_0"]  > 0,
-            np.log(df_merge["restrictions_2_0"] - df_merge["reg_s_d"]),
+            np.log(df_merge["restrictions_2_0"] - df_merge["reg_s_d"]) ,
             0
             )
 
@@ -176,7 +177,7 @@ def data_regdata(config):
             df_doc[doc_var], 
             how='inner', 
             on=["document_id"], 
-            validate="many_to_one",
+            validate="many_to_one",                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
             )
         
         
