@@ -136,7 +136,7 @@ def data_regdata(config):
         # create initial shares
         baseline_year = 1986
         df_init = df_merge.loc[
-            df_merge.year == baseline_year,
+            df_merge.year == baseline_year, 
             ["industry", "agency", "share"]
             ]
         df_init = df_init.rename(columns = {"share": "share_init"})
@@ -639,12 +639,12 @@ def data_output(config_file):
     # store cleaned dataset
     cleaned_data_path = Path(config["make_data"]["cleaned_data_path"])
     
-    df_share.to_hdf(Path.cwd()/cleaned_data_path/"df_share.h5", key = "data")
-    data_final_sec.to_hdf(Path.cwd()/cleaned_data_path/"sector_panel.h5", key = "data")
-    data_final_sec_sz.to_hdf(Path.cwd()/cleaned_data_path/"sector_size_panel.h5", key = "data")
-    data_final_sec_ag.to_hdf(Path.cwd()/cleaned_data_path/"sector_age_panel.h5", key = "data")
-    data_final_sec_sz_ag.to_hdf(Path.cwd()/cleaned_data_path/"sector_age_size_panel.h5", key = "data")
-    df_agg.to_hdf(Path.cwd()/cleaned_data_path/"agg_pattern.h5", key = "data")
+    df_share.to_csv(Path.cwd()/cleaned_data_path/"df_share.csv")
+    data_final_sec.to_csv(Path.cwd()/cleaned_data_path/"sector_panel.csv")
+    data_final_sec_sz.to_csv(Path.cwd()/cleaned_data_path/"sector_size_panel.csv")
+    data_final_sec_ag.to_csv(Path.cwd()/cleaned_data_path/"sector_age_panel.csv")
+    data_final_sec_sz_ag.to_csv(Path.cwd()/cleaned_data_path/"sector_age_size_panel.csv")
+    df_agg.to_csv(Path.cwd()/cleaned_data_path/"agg_pattern.csv")
     
 
 @click.command()
